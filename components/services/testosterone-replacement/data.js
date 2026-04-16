@@ -1,10 +1,4 @@
-export const trtNavLinks = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  { label: "Plans", href: "#plans" },
-  { label: "Delivery", href: "#delivery" },
-  { label: "FAQ", href: "#faq" },
-];
+export { sharedServiceNavLinks as trtNavLinks } from "@/components/navigation/nav-data";
 
 export const trtHero = {
   eyebrow: "Restore Balance. Reclaim Energy. Optimize Performance.",

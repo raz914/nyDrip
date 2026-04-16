@@ -1,4 +1,5 @@
 import Image from "next/image";
+import SharedNavbar from "@/components/navigation/SharedNavbar";
 
 import {
   aboutLinks,
@@ -15,14 +16,12 @@ import {
 import {
   ArrowRightIcon,
   ChevronDownIcon,
-  MenuIcon,
   StarIcon,
 } from "@/components/home/icons";
 import {
   FaqItem,
   Field,
   FooterMenuGroup,
-  GhostLink,
   GoogleBadge,
   IconBadge,
   PrimaryLink,
@@ -33,58 +32,25 @@ import {
 } from "@/components/home/primitives";
 
 export function SiteHeader() {
-  return (
-    <>
-      <header className="fixed inset-x-0 top-0 z-50 hidden border-b border-white/10 bg-[rgba(142,142,142,0.2)] backdrop-blur-md md:block">
-        <div className="mx-auto flex w-full max-w-[1512px] items-center justify-between px-10 py-5 text-white">
-          <a href="#home" className="text-base font-medium tracking-[0.18em]">
-            DRIPLOUNGE
-          </a>
-          <nav className="flex items-center gap-10 text-sm lg:text-base">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="transition-colors hover:text-[#ffedba]"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-          <div className="flex items-center gap-4">
-            <GhostLink href="#contact">Login</GhostLink>
-            <PrimaryLink href="#consultation">Book Your Appointment</PrimaryLink>
-          </div>
-        </div>
-      </header>
+  const headerCtas = [
+    {
+      label: "Login",
+      href: "#contact",
+      variant: "secondary",
+      showArrow: true,
+      fullWidthMobile: true,
+    },
+    {
+      label: "Book Your Appointment",
+      href: "#consultation",
+      variant: "primary",
+      showArrow: true,
+      fullWidthMobile: true,
+    },
+  ];
 
-      <div className="fixed inset-x-0 top-0 z-50 border-b border-black/10 bg-[rgba(255,255,255,0.2)] backdrop-blur-md md:hidden">
-        <details className="group">
-          <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-8 text-[#111111] marker:hidden">
-            <span className="text-sm font-medium tracking-[0.18em]">DRIPLOUNGE</span>
-            <MenuIcon />
-          </summary>
-          <div className="space-y-4 border-t border-black/10 bg-white/95 px-5 py-5 text-[#111111] shadow-[0_20px_40px_rgba(17,17,17,0.16)]">
-            {navLinks.map((link) => (
-              <a key={link.href} href={link.href} className="block text-base font-medium">
-                {link.label}
-              </a>
-            ))}
-            <div className="flex flex-col gap-3 pt-2">
-              <PrimaryLink href="#consultation" fullWidth>
-                Book Your Appointment
-              </PrimaryLink>
-              <a
-                href="#contact"
-                className="inline-flex items-center justify-center border border-[#111111] px-5 py-2.5 text-[15px] font-medium text-[#111111]"
-              >
-                Login
-              </a>
-            </div>
-          </div>
-        </details>
-      </div>
-    </>
+  return (
+    <SharedNavbar theme="home" brandHref="#home" links={navLinks} ctas={headerCtas} />
   );
 }
 

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import SharedNavbar from "@/components/navigation/SharedNavbar";
 
 import { aboutLinks, areasWeServe, services as footerServices } from "@/components/home/data";
 import {
@@ -7,7 +8,6 @@ import {
   CalendarIcon,
   ChevronDownIcon,
   LeafIcon,
-  MenuIcon,
   SparkIcon,
   StethoscopeIcon,
 } from "@/components/home/icons";
@@ -19,23 +19,6 @@ import {
   servicesHero,
   servicesIntro,
 } from "@/components/services/data";
-
-function HeaderButton({ href, children, outlined = false, showArrow = true }) {
-  return (
-    <Link
-      href={href}
-      className={[
-        "inline-flex items-center justify-center gap-2 px-5 py-2.5 text-[15px] font-medium transition-colors",
-        outlined
-          ? "border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-white"
-          : "bg-[var(--color-primary)] text-white hover:bg-[#0a33ca]",
-      ].join(" ")}
-    >
-      <span>{children}</span>
-      {showArrow ? <ArrowRightIcon className="h-5 w-5" /> : null}
-    </Link>
-  );
-}
 
 function LearnMoreLink({ href }) {
   return (
@@ -116,63 +99,25 @@ function FooterGroup({ title, items }) {
 }
 
 export function ServicesHeader({ links = serviceNavLinks }) {
+  const headerCtas = [
+    {
+      label: "Log In",
+      href: "#contact",
+      variant: "secondary",
+      showArrow: false,
+      fullWidthMobile: true,
+    },
+    {
+      label: "Book Your Appointment",
+      href: "/#consultation",
+      variant: "primary",
+      showArrow: true,
+      fullWidthMobile: true,
+    },
+  ];
+
   return (
-    <>
-      <header className="sticky top-0 z-50 hidden border-b border-black/10 bg-white/95 backdrop-blur-md md:block">
-        <div className="mx-auto flex w-full max-w-[1512px] items-center justify-between px-10 py-5 text-[#111111]">
-          <Link href="/" className="text-base font-medium tracking-[0.18em]">
-            DRIPLOUNGE
-          </Link>
-
-          <nav className="flex items-center gap-8 text-sm uppercase lg:text-base">
-            {links.map((link) => (
-              <Link
-                key={link.href + link.label}
-                href={link.href}
-                className="transition-colors hover:text-[var(--color-primary)]"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="flex items-center gap-4">
-            <HeaderButton href="#contact" outlined showArrow={false}>
-              Log In
-            </HeaderButton>
-            <HeaderButton href="/#consultation">Book Your Appointment</HeaderButton>
-          </div>
-        </div>
-      </header>
-
-      <div className="sticky top-0 z-50 border-b border-black/10 bg-white/95 backdrop-blur-md md:hidden">
-        <details className="group">
-          <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-8 text-[#111111] marker:hidden">
-            <span className="text-sm font-medium tracking-[0.18em]">DRIPLOUNGE</span>
-            <MenuIcon />
-          </summary>
-
-          <div className="space-y-4 border-t border-black/10 bg-white px-5 py-5 text-[#111111] shadow-[0_20px_40px_rgba(17,17,17,0.12)]">
-            {links.map((link) => (
-              <Link
-                key={link.href + link.label}
-                href={link.href}
-                className="block text-base font-medium uppercase"
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            <div className="flex flex-col gap-3 pt-2">
-              <HeaderButton href="/#consultation">Book Your Appointment</HeaderButton>
-              <HeaderButton href="#contact" outlined showArrow={false}>
-                Log In
-              </HeaderButton>
-            </div>
-          </div>
-        </details>
-      </div>
-    </>
+    <SharedNavbar theme="services" brandHref="/" links={links} ctas={headerCtas} />
   );
 }
 

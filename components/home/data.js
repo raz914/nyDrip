@@ -1,10 +1,4 @@
-export const navLinks = [
-  { label: "Home", href: "#home" },
-  { label: "Our Services", href: "/services" },
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "Why Us", href: "#why-us" },
-  { label: "FAQ", href: "#faq" },
-];
+export { homeNavLinks as navLinks } from "@/components/navigation/nav-data";
 
 export const featuredDrips = [
   {

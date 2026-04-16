@@ -1,10 +1,4 @@
-export const ivTherapyNavLinks = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  { label: "Benefits", href: "#benefits" },
-  { label: "FAQ", href: "#faq" },
-  { label: "Contact", href: "#contact" },
-];
+export { sharedServiceNavLinks as ivTherapyNavLinks } from "@/components/navigation/nav-data";
 
 export const ivTherapyHero = {
   eyebrow: "Fast Hydration - Targeted Nutrients - Proven Benefits",

@@ -39,6 +39,19 @@ export function MenuIcon() {
   );
 }
 
+export function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
+      <path
+        d="M6 6l12 12M18 6 6 18"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
 export function WaterIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">

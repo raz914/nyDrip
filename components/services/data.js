@@ -1,10 +1,4 @@
-export const serviceNavLinks = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "#services-offer" },
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "Contact", href: "#contact" },
-  { label: "FAQ", href: "/#faq" },
-];
+export { sharedServiceNavLinks as serviceNavLinks } from "@/components/navigation/nav-data";
 
 export const servicesHero = {
   title: "Wellness Services",
@@ -62,6 +56,7 @@ export const serviceItems = [
     image: "/services/corporate-partnership.jpg",
     alt: "Corporate wellness meeting",
     imageClassName: "object-cover object-center",
+    href: "/services/corporate-partnership",
   },
   {
     title: "OUR MEMBERSHIPS",
