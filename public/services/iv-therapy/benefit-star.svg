@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="star_shine">
+<mask id="mask0_0_13" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="52" height="52">
+<rect id="Bounding box" width="52" height="52" fill="var(--fill-0, #D9D9D9)"/>
+</mask>
+<g mask="url(#mask0_0_13)">
+<path id="star_shine_2" d="M46.15 40.5167L39.65 34.0167L42.6833 30.9833L49.1833 37.4833L46.15 40.5167ZM38.35 14.5167L35.3167 11.4833L41.8167 4.98333L44.85 8.01667L38.35 14.5167ZM13.65 14.5167L7.15 8.01667L10.1833 4.98333L16.6833 11.4833L13.65 14.5167ZM5.85 40.5167L2.81667 37.4833L9.31667 30.9833L12.35 34.0167L5.85 40.5167ZM12.6208 45.5L16.1417 30.2792L4.33333 20.0417L19.9333 18.6875L26 4.33333L32.0667 18.6875L47.6667 20.0417L35.8583 30.2792L39.3792 45.5L26 37.4292L12.6208 45.5Z" fill="var(--fill-0, #111111)"/>
+</g>
+</g>
+</svg>

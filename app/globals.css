@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --color-primary: #0d42ff;
+  --color-secondary: #ff63ff;
+  --color-black: #111111;
+  --color-dark-gray: #1c1c1e;
+  --color-mid-dark: #2c2c2e;
+  --color-gray: #858585;
+  --color-light: #f0f2f5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: #ffffff;
+  color: var(--color-black);
+}
+
+body {
+  min-height: 100vh;
+  font-family: "Avenir Next", "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+}
+
+input,
+textarea,
+button {
+  font: inherit;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
