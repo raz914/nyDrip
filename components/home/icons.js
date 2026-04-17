@@ -64,6 +64,31 @@ export function WaterIcon() {
   );
 }
 
+export function MigraineIcon({ className = "h-6 w-6" }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+      <path
+        d="M7 8h10M6.2 12h11.6M7 16h10"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.9"
+      />
+    </svg>
+  );
+}
+
+export function CompactDropIcon({ className = "h-6 w-6" }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+      <path
+        d="M12 4c2.4 2.8 4.2 5.3 4.2 7.7a4.2 4.2 0 0 1-8.4 0c0-2.4 1.8-4.9 4.2-7.7Z"
+        stroke="currentColor"
+        strokeWidth="1.9"
+      />
+    </svg>
+  );
+}
+
 export function DropIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
@@ -82,17 +107,17 @@ export function DropIcon() {
   );
 }
 
-export function BoltIcon() {
+export function BoltIcon({ className = "h-6 w-6 fill-current" }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6 fill-current" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
       <path d="M13.3 2 5.8 13h4.8L9.8 22 18.2 10h-4.7L13.3 2Z" />
     </svg>
   );
 }
 
-export function LeafIcon() {
+export function LeafIcon({ className = "h-6 w-6" }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
       <path
         d="M19 5c-8.5 0-13 4.7-13 10.5V19h3.5C15.3 19 20 14.5 20 6V5h-1Z"
         stroke="currentColor"
@@ -108,9 +133,33 @@ export function LeafIcon() {
   );
 }
 
-export function CalendarIcon() {
+export function SpaIcon({ className = "h-6 w-6" }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+      <path
+        d="M12 20.2c2.8-1.4 4.7-4.1 4.7-7.3V8.7h-.1c-2.7 0-4.9 1.1-6.1 3.1"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M12 20.2c-2.8-1.4-4.7-4.1-4.7-7.3V8.7h.1c2.7 0 4.9 1.1 6.1 3.1"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M12 7.3c-1.5 0-2.8 1.2-2.8 2.8 0 1.3.8 2.1 2.8 3.5 2-1.4 2.8-2.2 2.8-3.5 0-1.6-1.3-2.8-2.8-2.8Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+export function CalendarIcon({ className = "h-6 w-6" }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
       <rect
         x="3.5"
         y="5.5"
@@ -130,9 +179,9 @@ export function CalendarIcon() {
   );
 }
 
-export function StethoscopeIcon() {
+export function StethoscopeIcon({ className = "h-6 w-6" }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
       <path
         d="M7 4v6a3 3 0 0 0 6 0V4M17 13a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0 0V9"
         stroke="currentColor"
@@ -149,12 +198,31 @@ export function StethoscopeIcon() {
   );
 }
 
-export function SparkIcon() {
+export function SparkIcon({ className = "h-6 w-6" }) {
   return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
       <path
         d="m12 3 1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4L12 3Z"
         stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+export function VaccineIcon({ className = "h-6 w-6" }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+      <path
+        d="M6 6.5h5.2v5.2H6V6.5Zm.9 5.2v5.8h3.4v-5.8"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <path
+        d="m14.5 9.3 1.7-1.7m0 0 1.7 1.7m-1.7-1.7v6.3m0 0H15m1.2 0h1.3m-1.3 0v2.8m-.8 0h1.6"
+        stroke="currentColor"
+        strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.8"
       />

@@ -1,4 +1,5 @@
 import {
+  CompactDropIcon,
   ArrowRightIcon,
   BoltIcon,
   CalendarIcon,
@@ -7,6 +8,7 @@ import {
   DropIcon,
   HeartIcon,
   LeafIcon,
+  MigraineIcon,
   ShieldIcon,
   SparkIcon,
   StarIcon,
@@ -24,13 +26,13 @@ export function PrimaryLink({
     <a
       href={href}
       className={[
-        "inline-flex items-center justify-center gap-2 px-5 py-2.5 text-[15px] font-medium transition-transform duration-200 hover:-translate-y-0.5",
+        "inline-flex items-center justify-center gap-2 px-8 py-3.5 text-[15px] font-semibold transition-transform duration-200 hover:-translate-y-0.5",
         fullWidth ? "w-full sm:w-auto" : "",
         light ? "bg-white text-[#111111]" : "bg-[var(--color-primary)] text-white",
       ].join(" ")}
     >
       <span>{children}</span>
-      <ArrowRightIcon />
+      <ArrowRightIcon className="h-5 w-5" />
     </a>
   );
 }
@@ -47,21 +49,29 @@ export function GhostLink({ href, children }) {
   );
 }
 
-export function TextCta({ href, children }) {
+export function TextCta({ href, children, className = "" }) {
   return (
     <a
       href={href}
-      className="inline-flex items-center gap-2 py-3 text-[14px] font-medium text-[var(--color-primary)] underline decoration-transparent underline-offset-4 transition hover:decoration-current md:text-base"
+      className={[
+        "inline-flex items-center gap-2 py-3 text-[15px] font-semibold text-[#0d42ff] underline decoration-transparent underline-offset-4 transition hover:text-[#0d42ff] hover:decoration-current",
+        className,
+      ].join(" ")}
     >
       <span>{children}</span>
-      <ArrowRightIcon className="h-5 w-5" />
+      <ArrowRightIcon className="h-4 w-4" />
     </a>
   );
 }
 
-export function SectionBand({ children }) {
+export function SectionBand({ children, className = "" }) {
   return (
-    <div className="bg-[#111111] px-3 py-2 text-center text-sm text-white md:text-base">
+    <div
+      className={[
+        "bg-[#111111] px-3 py-2 text-center text-sm text-white md:text-base",
+        className,
+      ].join(" ")}
+    >
       {children}
     </div>
   );
@@ -130,18 +140,37 @@ export function Field({ label, name, type = "text", textarea = false }) {
   );
 }
 
-export function IconBadge({ kind, dark = true }) {
+export function IconBadge({ kind, dark = true, variant = "default", className = "" }) {
+  const darkClassName =
+    variant === "compact"
+      ? "flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#1c1c1e] text-white [&_svg]:h-[18px] [&_svg]:w-[18px]"
+      : "flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#1c1c1e] text-white md:h-[72px] md:w-[72px]";
+
   return (
     <div
-      className={
-        dark
-          ? "flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#1c1c1e] text-white md:h-[72px] md:w-[72px]"
-          : "flex h-6 w-6 items-center justify-center text-[#111111]"
-      }
+      className={[
+        dark ? darkClassName : "flex h-6 w-6 items-center justify-center text-[#111111]",
+        className,
+      ].join(" ")}
     >
-      {kind === "water" && <WaterIcon />}
-      {kind === "drop" && <DropIcon />}
-      {kind === "bolt" && <BoltIcon />}
+      {kind === "water" &&
+        (variant === "compact" ? (
+          <MigraineIcon className="h-[18px] w-[18px]" />
+        ) : (
+          <WaterIcon />
+        ))}
+      {kind === "drop" &&
+        (variant === "compact" ? (
+          <CompactDropIcon className="h-[18px] w-[18px]" />
+        ) : (
+          <DropIcon />
+        ))}
+      {kind === "bolt" &&
+        (variant === "compact" ? (
+          <BoltIcon className="h-[17px] w-[17px] fill-current" />
+        ) : (
+          <BoltIcon />
+        ))}
       {kind === "spa" && <LeafIcon />}
       {kind === "calendar" && <CalendarIcon />}
       {kind === "stethoscope" && <StethoscopeIcon />}

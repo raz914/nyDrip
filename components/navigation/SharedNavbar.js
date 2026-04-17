@@ -13,12 +13,12 @@ import {
 const themeStyles = {
   home: {
     desktopHeader:
-      "fixed inset-x-0 top-0 z-50 hidden border-b border-white/10 bg-[rgba(142,142,142,0.2)] backdrop-blur-md md:block",
-    desktopInner: "mx-auto flex w-full max-w-[1512px] items-center justify-between px-10 py-5 text-white",
-    brand: "text-base font-medium tracking-[0.18em]",
-    desktopNav: "flex items-center gap-10 text-sm lg:text-base",
-    desktopLink: "transition-colors hover:text-[#ffedba]",
-    desktopTriggerButton: "transition-colors hover:text-[#ffedba]",
+      "fixed inset-x-0 top-0 z-50 hidden border-b border-white/15 bg-[rgba(17,17,17,0.42)] backdrop-blur-md md:block",
+    desktopInner: "mx-auto flex w-full max-w-[1512px] items-center justify-between px-10 py-3.5 text-white",
+    brand: "text-[14px] font-semibold tracking-[0.2em]",
+    desktopNav: "flex items-center gap-9 text-[14px] tracking-normal",
+    desktopLink: "text-white/92 transition-colors hover:text-white",
+    desktopTriggerButton: "text-white/92 transition-colors hover:text-white",
     desktopDropdown:
       "absolute left-0 top-full min-w-[280px] border border-white/15 bg-[#111111]/95 p-3 text-white shadow-[0_20px_40px_rgba(17,17,17,0.32)] backdrop-blur-xl",
     desktopDropdownLink:
@@ -33,9 +33,9 @@ const themeStyles = {
     mobileChildLink: "block py-2 pl-4 text-sm text-[#2c2c2e]",
     mobileTriggerButton: "text-[#111111]",
     ctaPrimary:
-      "inline-flex items-center justify-center gap-2 bg-[var(--color-primary)] px-5 py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-[#0a33ca]",
+      "inline-flex items-center justify-center gap-2 bg-[var(--color-primary)] px-6 py-2.5 text-[15px] font-semibold text-white transition-colors hover:bg-[#0a33ca]",
     ctaSecondary:
-      "inline-flex items-center justify-center gap-2 border border-white/80 px-5 py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-white hover:text-[#111111]",
+      "inline-flex items-center justify-center gap-2 border border-white/85 px-6 py-2.5 text-[15px] font-semibold text-white transition-colors hover:bg-white hover:text-[#111111]",
     mobileSecondary:
       "inline-flex items-center justify-center gap-2 border border-[#111111] px-5 py-2.5 text-[15px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white",
   },
@@ -105,7 +105,7 @@ function CtaButton({ cta, theme, mobile = false, onClick }) {
       ].join(" ")}
     >
       <span>{cta.label}</span>
-      {cta.showArrow === false ? null : <ArrowRightIcon className="h-5 w-5" />}
+      {cta.showArrow !== false ? <ArrowRightIcon className="h-4 w-4" /> : null}
     </NavAnchor>
   );
 }

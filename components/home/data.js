@@ -46,21 +46,21 @@ export const serviceCards = [
   {
     title: "NYD+ Drip",
     description:
-      "Can help fuel energy, support cellular repair and may enhance mental clarity.",
+      "Can help fuel energy, support cellular repair & may enhance mental clarity.",
     price: "$ 545",
     image: "/homepage/nyd-bag.png",
     alt: "NYD+ drip bag",
   },
   {
     title: "Radiance Drip",
-    description: "May help you glow from within with antioxidants and vitamins.",
+    description: "May help you glow from within with antioxidants & vitamins.",
     price: "$ 275",
     image: "/homepage/radiance-bag.png",
     alt: "Radiance drip bag",
   },
   {
     title: "Bikini Blitz Drip",
-    description: "Can help boost metabolism, may fuel energy and support confidence.",
+    description: "Can help boost metabolism, may fuel energy & support confidence.",
     price: "$ 275",
     image: "/homepage/bikini-bag.png",
     alt: "Bikini Blitz drip bag",
@@ -68,7 +68,7 @@ export const serviceCards = [
   {
     title: "Performance Drip",
     description:
-      "Helps support strength, recovery, and hydration for high-performance days.",
+      "Help enhance strength, may support muscle recovery & promote hydration",
     price: "$ 275",
     image: "/homepage/performance-bag.png",
     alt: "Performance drip bag",
@@ -77,28 +77,28 @@ export const serviceCards = [
 
 export const steps = [
   {
-    title: "01 - Choose Your Drip",
+    title: "01- Choose Your Drip",
     description:
       "Browse IV therapy, TRT, peptides, or wellness boosters based on your goals - energy, recovery, beauty, or hormone balance.",
     icon: "spa",
   },
   {
-    title: "02 - Book & Consult",
+    title: "02- Book & Consult",
     description:
       "Schedule online or call (845) 391-0338. Our medical team quickly reviews your history and provides practitioner-led clearance.",
     icon: "calendar",
   },
   {
-    title: "03 - Professional Treatment",
+    title: "03- Professional Treatment",
     description:
       "A licensed nurse comes to your home, office, or hotel, or you can visit our lounge. Relax for 30-45 minutes while we administer your personalized infusion.",
     icon: "stethoscope",
   },
   {
-    title: "04 - Feel the Results",
+    title: "04- Feel the Results",
     description:
       "Experience sharper focus and renewed energy within hours. We can help you build a repeatable monthly wellness plan that fits your routine.",
-    icon: "spark",
+    icon: "vaccines",
   },
 ];
 

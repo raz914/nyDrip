@@ -15,8 +15,12 @@ import {
 } from "@/components/home/data";
 import {
   ArrowRightIcon,
+  CalendarIcon,
   ChevronDownIcon,
+  SpaIcon,
   StarIcon,
+  StethoscopeIcon,
+  VaccineIcon,
 } from "@/components/home/icons";
 import {
   FaqItem,
@@ -56,35 +60,49 @@ export function SiteHeader() {
 
 export function HeroSection() {
   return (
-    <section id="home" className="relative isolate min-h-[700px] overflow-hidden md:min-h-[910px]">
+    <section id="home" className="relative isolate min-h-screen overflow-hidden">
       <Image
         src="/homepage/hero-bg.jpg"
         alt="People training in a dark studio"
         fill
         priority
         sizes="100vw"
-        className="object-cover"
+        className="object-cover grayscale"
       />
-      <div className="absolute inset-0 bg-black/60" />
-      <div className="relative mx-auto flex min-h-[700px] max-w-[1512px] flex-col items-center px-5 pb-20 pt-72 text-center text-white md:min-h-[910px] md:px-10 md:pb-28 md:pt-[280px]">
-        <div className="mb-6 inline-flex items-center gap-2">
-          <StarIcon className="h-5 w-5 text-[#ffedba]" />
-          <span className="bg-gradient-to-r from-[#ffedba] to-[#f6b451] bg-clip-text text-sm text-transparent md:text-base">
+      <div className="absolute inset-0 bg-black/68" />
+      <div className="relative mx-auto flex min-h-screen max-w-[1512px] flex-col items-center justify-center px-5 pb-20 pt-28 text-center text-white md:px-10 md:pb-28 md:pt-20">
+        <div className="mb-8 inline-flex items-center gap-2.5">
+          <svg viewBox="0 0 24 24" className="h-4 w-4 fill-[#f4d37f]" aria-hidden="true">
+            <path d="m12 3.8 2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4-3.9-3.8 5.4-.8L12 3.8Z" />
+          </svg>
+          <span className="text-[13px] font-medium tracking-wide text-[#f4d37f] md:text-[15px]">
             15,000+ Happy Patients Served
           </span>
         </div>
-        <h1 className="max-w-[820px] text-[2rem] font-semibold uppercase leading-[1] md:text-[5rem]">
+        <h1 className="max-w-[880px] text-[2.5rem] font-bold uppercase leading-[1.08] tracking-tight md:text-[4.2rem] lg:text-[4.5rem]">
           <span className="block">Mobile IV Therapy +</span>
           <span className="block">NY Lounge</span>
         </h1>
-        <p className="mt-5 max-w-[704px] text-sm leading-6 text-white md:text-base md:leading-7">
-          Wellness Your Way. Personalized IV hydration and vitamin therapy at your
+        <p className="mt-6 max-w-[720px] text-[15px] leading-6 text-white/85 md:text-base md:leading-7 lg:text-[17px]">
+          Wellness Your Way. Personalized IV hydration and vitamin therapy—at your
           home, hotel, office, or at our New York Drip Lounge.
         </p>
-        <div className="mt-7">
-          <PrimaryLink href="#consultation" light>
-            Reserve Your Experience
-          </PrimaryLink>
+        <div className="mt-10">
+          <a
+            href="#consultation"
+            className="inline-flex min-w-[236px] items-center justify-center gap-2 border border-white bg-white px-8 py-3.5 text-[15px] font-semibold text-black transition-transform duration-200 hover:-translate-y-0.5 md:text-base"
+          >
+            <span className="text-black">Reserve Your Experience</span>
+            <svg viewBox="0 0 24 24" className="h-5 w-5 text-black" fill="none" aria-hidden="true">
+              <path
+                d="M5 12h12m0 0-4.5-4.5M17 12l-4.5 4.5"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.7"
+              />
+            </svg>
+          </a>
         </div>
       </div>
     </section>
@@ -103,46 +121,50 @@ export function FeaturedDripsSection() {
             index < featuredDrips.length - 1 ? "border-y" : "border-b",
           ].join(" ")}
         >
-          <div className="mx-auto grid max-w-[1512px] gap-0 lg:grid-cols-[585px_minmax(0,867px)]">
-            <div className="order-1 flex flex-col gap-10 px-5 py-20 md:px-10 lg:order-none lg:justify-center">
-              <IconBadge kind={drip.icon} />
-              <div className="space-y-10">
+          <div className="grid gap-0 lg:grid-cols-2">
+            <div className="order-1 flex flex-col gap-8 bg-[#ededee] px-5 py-14 md:px-10 md:py-16 lg:order-none lg:justify-center lg:px-14">
+              <IconBadge kind={drip.icon} variant="compact" />
+              <div className="space-y-8">
                 <div>
-                  <h2 className="text-[3rem] font-normal leading-none md:text-[4rem]">
+                  <h2 className="text-[3rem] font-normal leading-none tracking-[-0.02em] md:text-[4rem]">
                     {drip.title}
                   </h2>
                 </div>
-                <div className="max-w-[545px] space-y-2">
-                  <p className="text-lg font-semibold md:text-xl">{drip.subtitle}</p>
-                  <p className="text-sm leading-6 text-[#2c2c2e] md:text-base md:leading-7">
+                <div className="max-w-[560px] space-y-2">
+                  <p className="text-[31px] font-semibold leading-tight text-[#111111] md:text-[33px]">
+                    {drip.subtitle}
+                  </p>
+                  <p className="text-[15px] leading-6 text-[#2a2a2c] md:text-[16px] md:leading-7">
                     {drip.description}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="relative min-h-[433px] overflow-hidden border-t border-[#111111] lg:min-h-[580px] lg:border-l lg:border-t-0">
+            <div className="relative min-h-[433px] overflow-hidden border-t border-[#111111] lg:min-h-[560px] lg:border-l lg:border-t-0">
               <Image
                 src={drip.backgroundImage}
                 alt={drip.backgroundAlt}
                 fill
-                sizes="(min-width: 1024px) 867px, 100vw"
+                sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover"
               />
               {drip.overlay ? <div className="absolute inset-0 bg-white/20" /> : null}
-              <div className="relative flex min-h-[433px] items-center justify-center px-5 py-10 lg:min-h-[580px]">
-                <div className="w-full max-w-[546px] border border-[#111111] bg-white p-10 md:p-12">
-                  <div className="relative mx-auto aspect-[300/376] w-full max-w-[300px]">
+              <div className="relative flex min-h-[433px] items-center justify-center px-5 py-10 lg:min-h-[560px] lg:px-8">
+                <div className="w-full max-w-[560px] border border-[#808184] bg-[#efefef] p-8 md:p-10 lg:p-12">
+                  <div className="relative mx-auto aspect-[300/376] w-full max-w-[292px]">
                     <Image
                       src={drip.productImage}
                       alt={drip.productAlt}
                       fill
-                      sizes="300px"
+                      sizes="292px"
                       className="object-contain"
                     />
                   </div>
-                  <div className="mt-6 text-center">
-                    <TextCta href="#consultation">Reserve Now - {drip.price}</TextCta>
+                  <div className="mt-5 text-center">
+                    <TextCta href="#consultation" className="!text-[#0d42ff] !text-[14px] !font-semibold">
+                      Reserve Now - {drip.price}
+                    </TextCta>
                   </div>
                 </div>
               </div>
@@ -156,13 +178,13 @@ export function FeaturedDripsSection() {
 
 export function ServicesSection() {
   return (
-    <section className="overflow-hidden px-5 py-24 md:px-10">
-      <div className="mx-auto flex max-w-[1512px] flex-col items-center gap-14">
-        <div className="max-w-[888px] space-y-3 text-center">
-          <h2 className="text-[2rem] font-bold leading-tight md:text-[3.25rem]">
+    <section className="overflow-hidden bg-white px-5 py-20 md:px-7 lg:px-8">
+      <div className="mx-auto flex w-full flex-col items-center gap-14">
+        <div className="max-w-[1100px] space-y-3 text-center">
+          <h2 className="text-[2rem] font-bold leading-[0.98] tracking-[-0.01em] md:text-[4.2rem]">
             Hydration and Health Services
           </h2>
-          <SectionBand>
+          <SectionBand className="mt-2 mx-auto md:mt-3 md:inline-block md:px-4 md:whitespace-nowrap">
             At NY Drip Lounge, we provide a range of premium wellness services to help
             you feel revitalized, recharged, and at your best.
           </SectionBand>
@@ -174,14 +196,14 @@ export function ServicesSection() {
               key={card.title}
               className="min-w-[173px] flex-none space-y-5 md:min-w-[240px] lg:min-w-0"
             >
-              <div className="relative h-[195px] overflow-hidden bg-[#f0f2f5] md:h-[280px] lg:h-[397px]">
-                <div className="absolute inset-0 p-3 md:p-6">
+              <div className="relative h-[195px] overflow-hidden bg-[#dbdde1] md:h-[280px] lg:h-[420px]">
+                <div className="absolute inset-0 p-3 md:p-5">
                   <div className="relative h-full w-full">
                     <Image
                       src={card.image}
                       alt={card.alt}
                       fill
-                      sizes="(min-width: 1024px) 300px, 173px"
+                      sizes="(min-width: 1024px) 24vw, 173px"
                       className="object-contain"
                     />
                   </div>
@@ -189,15 +211,42 @@ export function ServicesSection() {
               </div>
               <div className="space-y-5">
                 <div className="space-y-2">
-                  <h3 className="text-lg font-medium md:text-xl">{card.title}</h3>
-                  <p className="text-sm leading-6 text-[#2c2c2e] md:text-base">
+                  <h3 className="text-[2rem] font-medium leading-tight text-[#111111] md:text-[2.25rem]">
+                    {card.title}
+                  </h3>
+                  <p className="text-[15px] leading-6 text-[#2c2c2e] md:text-[17px]">
                     {card.description}
                   </p>
                 </div>
-                <TextCta href="#consultation">Reserve Now - {card.price}</TextCta>
+                <TextCta
+                  href="#consultation"
+                  className="!text-[#0d42ff] !text-[15px] !font-semibold !underline !decoration-[#0d42ff] !decoration-[0.9px]"
+                >
+                  Reserve Now - {card.price}
+                </TextCta>
               </div>
             </article>
           ))}
+        </div>
+
+        <div className="flex items-center justify-center gap-3 text-[#111111]" aria-hidden="true">
+          <button
+            type="button"
+            className="flex h-7 w-7 items-center justify-center text-[#d2d4d9]"
+          >
+            <ArrowRightIcon className="h-3.5 w-3.5 rotate-180" />
+          </button>
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-[#111111]" />
+            <span className="h-2 w-2 rounded-full bg-[#c3c6cc]" />
+            <span className="h-2 w-2 rounded-full bg-[#c3c6cc]" />
+          </div>
+          <button
+            type="button"
+            className="flex h-7 w-7 items-center justify-center text-[#d2d4d9]"
+          >
+            <ArrowRightIcon className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
     </section>
@@ -205,26 +254,51 @@ export function ServicesSection() {
 }
 
 export function HowItWorksSection() {
+  const stepIcons = {
+    spa: <SpaIcon className="h-6 w-6" />,
+    calendar: <CalendarIcon className="h-6 w-6" />,
+    stethoscope: <StethoscopeIcon className="h-6 w-6" />,
+    vaccines: <VaccineIcon className="h-6 w-6" />,
+  };
+
+  const stepIconClassNames = {
+    spa: "relative h-6 w-6 flex-none order-1 grow-0 shrink-0 text-[#111111]",
+    calendar: "h-6 w-6 flex-none order-1 grow-0 shrink-0 text-[#111111]",
+    stethoscope: "h-6 w-6 flex-none order-1 grow-0 shrink-0 text-[#111111]",
+    vaccines: "h-6 w-6 flex-none order-1 grow-0 shrink-0 text-[#111111]",
+  };
+
   return (
-    <section id="how-it-works" className="overflow-hidden px-5 py-24 md:px-10">
-      <div className="mx-auto grid max-w-[1512px] gap-10 lg:grid-cols-[342px_minmax(0,948px)] lg:items-start lg:justify-between">
-        <div className="space-y-3">
-          <h2 className="text-[2rem] font-medium md:text-[3.25rem]">How It Works</h2>
-          <SectionBand>
+    <section id="how-it-works" className="overflow-hidden bg-white px-5 py-24 md:px-10 lg:py-28">
+      <div className="mx-auto grid max-w-[1512px] gap-12 lg:grid-cols-[360px_minmax(0,820px)] lg:items-start lg:justify-between lg:gap-14">
+        <div className="space-y-6 lg:pt-6">
+          <h2 className="text-[2.7rem] font-medium leading-[1.02] md:text-[4.7rem]">
+            How It Works
+          </h2>
+          <SectionBand className="max-w-[292px] text-left text-[17px] leading-[1.35] md:max-w-[328px] md:px-5 md:py-2.5">
             Enjoy effortless wellness with our in-home IV therapy, tailored for your
             comfort and convenience.
           </SectionBand>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-0">
           {steps.map((step) => (
-            <div key={step.title} className="border-t border-[#111111] pt-5">
-              <div className="grid gap-4 lg:grid-cols-2 lg:gap-5">
+            <div key={step.title} className="border-t border-[#767679] py-5">
+              <div className="grid items-start gap-5 lg:grid-cols-2 lg:gap-8">
                 <div className="space-y-4">
-                  <IconBadge kind={step.icon} dark={false} />
-                  <h3 className="text-lg font-semibold md:text-xl">{step.title}</h3>
+                  <h3 className="text-[1.9rem] font-semibold leading-tight md:text-[2.05rem]">
+                    {step.title}
+                  </h3>
+                  <div
+                    className={[
+                      stepIconClassNames[step.icon],
+                      "[&_svg]:h-6 [&_svg]:w-6",
+                    ].join(" ")}
+                  >
+                    {stepIcons[step.icon]}
+                  </div>
                 </div>
-                <p className="text-sm leading-6 text-[#2c2c2e] md:text-base md:leading-7">
+                <p className="text-[15px] leading-6 text-[#2f2f31] md:text-[16px] md:leading-7">
                   {step.description}
                 </p>
               </div>
@@ -244,24 +318,40 @@ export function MobileIvSection() {
         alt="Clinical wellness treatment environment"
         fill
         sizes="100vw"
-        className="object-cover"
+        className="object-cover object-center saturate-0"
       />
-      <div className="absolute inset-0 bg-black/80" />
-      <div className="relative mx-auto flex min-h-[800px] max-w-[1512px] flex-col justify-end px-5 py-24 md:min-h-[609px] md:px-10">
-        <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-[947px] space-y-3 text-white">
-            <h2 className="text-xl font-medium md:text-[2.875rem]">
+      <div className="absolute inset-0 bg-black/78" />
+      <div className="relative mx-auto flex min-h-[500px] w-full max-w-[1380px] items-center px-5 py-12 md:min-h-[540px] md:px-10 md:py-14">
+        <div className="flex w-full flex-col gap-8 md:flex-row md:items-center md:justify-between md:gap-24 lg:gap-32">
+          <div className="max-w-[760px] space-y-3 text-left text-white">
+            <h2 className="text-[1.75rem] font-semibold leading-tight md:whitespace-nowrap md:text-[2.25rem]">
               Mobile IV Drip Therapy in New York
             </h2>
-            <p className="text-sm leading-6 text-white/90 md:text-base md:leading-7">
-              At NY Drip Lounge, we make wellness effortless with expert mobile IV
-              therapy delivered right to your door, whether you are at home, the
-              office, your hotel, or an event. Our licensed medical team provides
-              professional, hospital-grade care with a personalized drip plan tailored
-              to your body&apos;s needs.
+            <p
+              className="max-w-[620px] text-[13px] leading-5 text-white/95 md:text-[14px] md:leading-6"
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 4,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
+              At NY Drip Lounge, we make wellness effortless with expert mobile IV therapy delivered right to your door-whether you're at home,
+the office, your hotel, or an event. Our licensed medical team provides professional, hospital-grade care with a personalized drip plan
+tailored to your body's needs. From hydration and immunity to beauty and recovery, each session is customized to help you feel your
+best-fast. Serving New York City and surrounding areas, we bring comfort, convenience, and care directly to you. No lines, no travel-
+just expert treatment, on your schedule..
             </p>
           </div>
-          <PrimaryLink href="#why-us">Read More</PrimaryLink>
+          <div className="self-start md:ml-10 md:shrink-0 md:self-center">
+            <a
+              href="#why-us"
+              className="inline-flex min-w-[224px] items-center justify-center gap-3 bg-[#0d42ff] px-9 py-4 text-[15px] font-medium text-white transition-transform duration-200 hover:-translate-y-0.5 md:min-w-[256px] md:text-[16px]"
+            >
+              <span className="text-white">Read More</span>
+              <ArrowRightIcon className="h-4 w-4 text-white" />
+            </a>
+          </div>
         </div>
       </div>
     </section>
