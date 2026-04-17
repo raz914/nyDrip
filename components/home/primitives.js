@@ -163,8 +163,8 @@ export function Field({ label, name, type = "text", textarea = false }) {
 export function IconBadge({ kind, dark = true, variant = "default", className = "" }) {
   const darkClassName =
     variant === "compact"
-      ? "flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#1c1c1e] text-white [&_svg]:h-[18px] [&_svg]:w-[18px]"
-      : "flex h-[52px] w-[52px] items-center justify-center rounded-full bg-[#1c1c1e] text-white md:h-[72px] md:w-[72px]";
+      ? "flex h-[52px] w-[52px] items-center justify-center rounded-full bg-black text-white [&_svg]:h-[18px] [&_svg]:w-[18px]"
+      : "flex h-[52px] w-[52px] items-center justify-center rounded-full bg-black text-white md:h-[72px] md:w-[72px]";
 
   return (
     <div

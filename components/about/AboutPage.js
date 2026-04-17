@@ -83,12 +83,12 @@ function AboutHeader() {
   );
 }
 
-function HeroCollagePanel({ className = "", imageClassName = "" }) {
+function HeroCollagePanel({ src, alt, className = "", imageClassName = "" }) {
   return (
     <div className={["relative overflow-hidden bg-white/5", className].join(" ")}>
       <Image
-        src={aboutHero.image}
-        alt={aboutHero.imageAlt}
+        src={src || aboutHero.image}
+        alt={alt || aboutHero.imageAlt}
         fill
         priority
         sizes="(min-width: 1024px) 33vw, 33vw"
@@ -101,31 +101,81 @@ function HeroCollagePanel({ className = "", imageClassName = "" }) {
 function AboutHeroSection() {
   return (
     <section className="bg-[#111111] text-white">
-      <div className="mx-auto max-w-[1512px] px-5 pb-20 pt-28 md:px-10 md:pb-[120px] md:pt-[140px]">
-        <div className="grid gap-10 lg:grid-cols-[342px_minmax(0,1fr)] lg:grid-rows-[auto_auto] lg:items-end">
-          <div className="space-y-6 lg:row-span-2 lg:self-end">
-            <p className="max-w-[342px] text-sm leading-6 text-white/90 md:text-base">
+      <div className="mx-auto max-w-[1512px] px-5 pb-10 pt-[110px] md:px-10 md:pb-[120px] md:pt-[110px]">
+        <div className="grid gap-x-3 lg:gap-x-4 gap-y-10 lg:grid-cols-4 lg:grid-rows-[auto_1fr] lg:items-start">
+          
+          <div className="lg:col-span-1 lg:col-start-1 lg:row-start-1 self-end pb-6 lg:pb-0 mb-4 lg:-ml-12 xl:-ml-16 lg:translate-y-12 relative z-10">
+            <p className="text-sm leading-[1.6] text-white/90 md:text-[15px] lg:w-[90%] xl:w-[95%]">
               {aboutHero.intro}
             </p>
-            <div className="space-y-1">
-              <h1 className="text-[3.8rem] font-semibold leading-[0.9] tracking-[-0.05em] md:text-[6.25rem]">
-                {aboutHero.title}
-              </h1>
-              <p className="text-[3.8rem] font-semibold leading-[0.9] tracking-[-0.05em] text-[var(--color-secondary)] md:text-[6.25rem]">
-                {aboutHero.highlight}
-              </p>
+          </div>
+
+          <div className="lg:col-span-1 lg:col-start-2 lg:row-start-1">
+            {/* Left Image */}
+            <HeroCollagePanel 
+              src="/about/left image.png"
+              alt="About left image"
+              className="h-[180px] w-full md:h-[260px] lg:h-[368px]" 
+              imageClassName="object-cover" 
+            />
+          </div>
+
+          <div className="hidden lg:col-span-1 lg:col-start-3 lg:row-span-2 lg:row-start-1 lg:block">
+            {/* Middle Image - Adjusted */}
+            <HeroCollagePanel 
+              src="/about/middle image.png"
+              alt="About middle image"
+              className="h-[280px] w-full md:h-[430px] lg:h-[660px]" 
+              imageClassName="object-center" 
+            />
+          </div>
+
+          <div className="hidden lg:col-span-1 lg:col-start-4 lg:row-span-2 lg:row-start-1 lg:block lg:-mt-2">
+            {/* Right Image - Normal */}
+            <HeroCollagePanel 
+              src="/about/right.png"
+              alt="About right image"
+              className="h-[220px] w-full md:h-[340px] lg:h-[550px]" 
+              imageClassName="object-center" 
+            />
+            <div className="mt-[22px] text-sm leading-6 text-white/90 md:text-base">
+              {aboutHero.outro}
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 md:gap-5 lg:min-h-[701px] lg:items-start">
-            <HeroCollagePanel className="h-[180px] self-start md:h-[260px] lg:h-[368px]" imageClassName="object-left-top" />
-            <HeroCollagePanel className="h-[280px] self-start md:h-[430px] lg:h-[698px]" imageClassName="object-center" />
-            <HeroCollagePanel className="h-[220px] self-start md:h-[340px] lg:h-[550px]" imageClassName="object-right-top" />
+          {/* Mobile visible layout for middle/right images */}
+          <div className="grid grid-cols-2 gap-3 md:gap-5 lg:hidden">
+            <HeroCollagePanel 
+              src="/about/middle image.png"
+              alt="About middle image"
+              className="h-[280px] w-full md:h-[430px]" 
+              imageClassName="object-center" 
+            />
+            <HeroCollagePanel 
+              src="/about/right.png"
+              alt="About right image"
+              className="h-[220px] w-full md:h-[340px]" 
+              imageClassName="object-center" 
+            />
           </div>
 
-          <div className="max-w-[342px] justify-self-end text-sm leading-6 text-white/90 md:text-base">
-            {aboutHero.outro}
+          {/* Title spans across the first columns under intro text and left image */}
+          <div className="lg:col-span-3 lg:col-start-1 lg:row-start-2 lg:self-start lg:-mt-2 lg:-ml-12 xl:-ml-16 z-10 w-[120%] lg:w-auto">
+            <div className="space-y-1">
+              <h1 className="text-[3.8rem] font-semibold leading-[0.9] tracking-[-0.05em] md:text-[6rem] lg:text-[7vw] xl:text-[8rem] whitespace-nowrap">
+                {aboutHero.title}
+              </h1>
+              <p className="text-[3.8rem] font-semibold leading-[0.9] tracking-[-0.05em] text-[var(--color-secondary)] md:text-[6rem] lg:text-[7vw] xl:text-[8rem] whitespace-nowrap">
+                {aboutHero.highlight}
+              </p>
+            </div>
+            
+            {/* Mobile Outro Text */}
+            <div className="mt-6 text-sm leading-6 text-white/90 md:text-base lg:hidden">
+              {aboutHero.outro}
+            </div>
           </div>
+          
         </div>
       </div>
     </section>
