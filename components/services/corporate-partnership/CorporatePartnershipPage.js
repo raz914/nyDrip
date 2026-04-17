@@ -164,7 +164,7 @@ function CorporatePricingCard({ plan }) {
           <div className="flex justify-center">
             <Link
               href={plan.ctaHref}
-              className="inline-flex items-center justify-center bg-[var(--color-primary)] px-5 py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-[#0a33ca]"
+              className="inline-flex items-center justify-center bg-[var(--color-primary)] px-5 py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-[#0a33ca] [&_span]:text-white [&_svg]:text-white"
             >
               {plan.ctaLabel}
             </Link>

@@ -33,7 +33,7 @@ const themeStyles = {
     mobileChildLink: "block py-2 pl-4 text-sm text-[#2c2c2e]",
     mobileTriggerButton: "text-[#111111]",
     ctaPrimary:
-      "inline-flex items-center justify-center gap-2 bg-[var(--color-primary)] px-6 py-2.5 text-[15px] font-semibold text-white transition-colors hover:bg-[#0a33ca]",
+      "inline-flex items-center justify-center gap-2 bg-[var(--color-primary)] px-6 py-2.5 text-[15px] font-semibold text-white transition-colors hover:bg-[#0a33ca] [&_span]:text-white [&_svg]:text-white",
     ctaSecondary:
       "inline-flex items-center justify-center gap-2 border border-white/85 px-6 py-2.5 text-[15px] font-semibold text-white transition-colors hover:bg-white hover:text-[#111111]",
     mobileSecondary:
@@ -62,7 +62,7 @@ const themeStyles = {
     mobileChildLink: "block py-2 pl-4 text-sm uppercase text-[#2c2c2e]",
     mobileTriggerButton: "text-[#111111]",
     ctaPrimary:
-      "inline-flex items-center justify-center gap-2 bg-[var(--color-primary)] px-5 py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-[#0a33ca]",
+      "inline-flex items-center justify-center gap-2 bg-[var(--color-primary)] px-5 py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-[#0a33ca] [&_span]:text-white [&_svg]:text-white",
     ctaSecondary:
       "inline-flex items-center justify-center gap-2 border border-[#111111] px-5 py-2.5 text-[15px] font-medium text-[#111111] transition-colors hover:bg-[#111111] hover:text-white",
     mobileSecondary:

@@ -3,7 +3,7 @@ import SharedNavbar from "@/components/navigation/SharedNavbar";
 
 import {
   aboutLinks,
-  areasWeServe,
+  areaEntries,
   benefits,
   faqs,
   featuredDrips,
@@ -346,7 +346,7 @@ just expert treatment, on your schedule..
           <div className="self-start md:ml-10 md:shrink-0 md:self-center">
             <a
               href="#why-us"
-              className="inline-flex min-w-[224px] items-center justify-center gap-3 bg-[#0d42ff] px-9 py-4 text-[15px] font-medium text-white transition-transform duration-200 hover:-translate-y-0.5 md:min-w-[256px] md:text-[16px]"
+              className="inline-flex min-w-[224px] items-center justify-center gap-3 bg-[#0d42ff] px-9 py-4 text-[15px] font-medium text-white transition-transform duration-200 hover:-translate-y-0.5 md:min-w-[256px] md:text-[16px] [&_span]:text-white [&_svg]:text-white"
             >
               <span className="text-white">Read More</span>
               <ArrowRightIcon className="h-4 w-4 text-white" />
@@ -574,7 +574,7 @@ export function ContactSection() {
 
           <button
             type="button"
-            className="inline-flex items-center justify-center gap-2 bg-[var(--color-primary)] px-5 py-2.5 text-[15px] font-medium text-white"
+            className="inline-flex items-center justify-center gap-2 bg-[var(--color-primary)] px-5 py-2.5 text-[15px] font-medium text-white [&_span]:text-white [&_svg]:text-white"
           >
             <span>Submit</span>
             <ArrowRightIcon />
@@ -616,7 +616,7 @@ export function SiteFooter() {
         </div>
 
         <FooterMenuGroup title="About" items={aboutLinks} />
-        <FooterMenuGroup title="Areas We Serve" items={areasWeServe} />
+        <FooterMenuGroup title="Areas We Serve" items={areaEntries} />
         <FooterMenuGroup title="Our Services" items={services} />
       </div>
 

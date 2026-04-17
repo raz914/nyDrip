@@ -172,18 +172,71 @@ export const faqs = [
   },
 ];
 
-export const areasWeServe = [
-  "Newburgh",
-  "Middletown",
-  "Peekskill",
-  "Sloatsburg",
-  "Washingtonville",
-  "Rhinebeck",
-  "Scarsdale",
-  "Westchester",
-  "Amenia",
-  "Purchase",
+export const areaEntries = [
+  {
+    label: "Newburgh",
+    slug: "newburgh",
+    isLive: true,
+    href: "/areas/newburgh",
+    pin: { left: "29%", top: "56%" },
+  },
+  {
+    label: "Middletown",
+    slug: "middletown",
+    isLive: false,
+    pin: { left: "18%", top: "69%" },
+  },
+  {
+    label: "Peekskill",
+    slug: "peekskill",
+    isLive: false,
+    pin: { left: "16%", top: "60%" },
+  },
+  {
+    label: "Sloatsburg",
+    slug: "sloatsburg",
+    isLive: false,
+    pin: { left: "46%", top: "52%" },
+  },
+  {
+    label: "Washingtonville",
+    slug: "washingtonville",
+    isLive: false,
+    pin: { left: "33%", top: "67%" },
+  },
+  {
+    label: "Rhinebeck",
+    slug: "rhinebeck",
+    isLive: false,
+    pin: { left: "28%", top: "48%" },
+  },
+  {
+    label: "Scarsdale",
+    slug: "scarsdale",
+    isLive: false,
+    pin: { left: "68%", top: "69%" },
+  },
+  {
+    label: "Westchester",
+    slug: "westchester",
+    isLive: false,
+    pin: { left: "73%", top: "74%" },
+  },
+  {
+    label: "Amenia",
+    slug: "amenia",
+    isLive: false,
+    pin: { left: "73%", top: "29%" },
+  },
+  {
+    label: "Purchase",
+    slug: "purchase",
+    isLive: false,
+    pin: { left: "78%", top: "80%" },
+  },
 ];
+
+export const areasWeServe = areaEntries.map((area) => area.label);
 
 export const services = [
   "IV Therapy Services",

@@ -11,8 +11,8 @@ export const homeNavLinks = [
     href: "/services",
     children: serviceDropdownLinks,
   },
-  { label: "Memberships", href: "#contact" },
-  { label: "About", href: "#why-us" },
+  { label: "Memberships", href: "/memberships" },
+  { label: "About", href: "/about" },
   { label: "Blog", href: "#contact" },
 ];
 
@@ -23,7 +23,7 @@ export const sharedServiceNavLinks = [
     href: "/services",
     children: serviceDropdownLinks,
   },
-  { label: "Memberships", href: "#contact" },
-  { label: "About", href: "/#why-us" },
+  { label: "Memberships", href: "/memberships" },
+  { label: "About", href: "/about" },
   { label: "Blog", href: "/#contact" },
 ];

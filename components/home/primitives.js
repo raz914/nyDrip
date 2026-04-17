@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import {
   CompactDropIcon,
   ArrowRightIcon,
@@ -28,7 +30,9 @@ export function PrimaryLink({
       className={[
         "inline-flex items-center justify-center gap-2 px-8 py-3.5 text-[15px] font-semibold transition-transform duration-200 hover:-translate-y-0.5",
         fullWidth ? "w-full sm:w-auto" : "",
-        light ? "bg-white text-[#111111]" : "bg-[var(--color-primary)] text-white",
+        light
+          ? "bg-white text-[#111111]"
+          : "bg-[var(--color-primary)] text-white [&_span]:text-white [&_svg]:text-white",
       ].join(" ")}
     >
       <span>{children}</span>
@@ -92,13 +96,29 @@ export function FaqItem({ question, answer }) {
 }
 
 export function FooterMenuGroup({ title, items }) {
+  function renderItem(item) {
+    if (typeof item === "string") {
+      return item;
+    }
+
+    if (!item.href) {
+      return item.label;
+    }
+
+    return (
+      <Link href={item.href} className="transition-colors hover:text-white">
+        {item.label}
+      </Link>
+    );
+  }
+
   return (
     <>
       <div className="hidden md:block">
         <p className="mb-3 text-base font-medium text-white">{title}</p>
         <ul className="space-y-2 text-sm text-[#858585] md:text-base">
           {items.map((item) => (
-            <li key={item}>{item}</li>
+            <li key={typeof item === "string" ? item : item.label}>{renderItem(item)}</li>
           ))}
         </ul>
       </div>
@@ -109,7 +129,7 @@ export function FooterMenuGroup({ title, items }) {
         </summary>
         <ul className="mt-4 space-y-2 text-sm text-[#858585]">
           {items.map((item) => (
-            <li key={item}>{item}</li>
+            <li key={typeof item === "string" ? item : item.label}>{renderItem(item)}</li>
           ))}
         </ul>
       </details>

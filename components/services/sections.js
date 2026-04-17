@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SharedNavbar from "@/components/navigation/SharedNavbar";
 
-import { aboutLinks, areasWeServe, services as footerServices } from "@/components/home/data";
+import { aboutLinks, areaEntries, services as footerServices } from "@/components/home/data";
 import {
   ArrowRightIcon,
   CalendarIcon,
@@ -72,13 +72,29 @@ function ContactField({ label, name, type = "text", textarea = false }) {
 }
 
 function FooterGroup({ title, items }) {
+  function renderItem(item) {
+    if (typeof item === "string") {
+      return item;
+    }
+
+    if (!item.href) {
+      return item.label;
+    }
+
+    return (
+      <Link href={item.href} className="transition-colors hover:text-white">
+        {item.label}
+      </Link>
+    );
+  }
+
   return (
     <>
       <div className="hidden md:block">
         <p className="mb-3 text-base font-medium text-white">{title}</p>
         <ul className="space-y-2 text-sm text-[#858585] md:text-base">
           {items.map((item) => (
-            <li key={item}>{item}</li>
+            <li key={typeof item === "string" ? item : item.label}>{renderItem(item)}</li>
           ))}
         </ul>
       </div>
@@ -90,7 +106,7 @@ function FooterGroup({ title, items }) {
         </summary>
         <ul className="mt-4 space-y-2 text-sm text-[#858585]">
           {items.map((item) => (
-            <li key={item}>{item}</li>
+            <li key={typeof item === "string" ? item : item.label}>{renderItem(item)}</li>
           ))}
         </ul>
       </details>
@@ -287,7 +303,7 @@ export function ServicesContactSection() {
 
           <button
             type="button"
-            className="inline-flex w-full items-center justify-center gap-2 bg-[var(--color-primary)] px-5 py-2.5 text-[15px] font-medium text-white sm:w-auto"
+            className="inline-flex w-full items-center justify-center gap-2 bg-[var(--color-primary)] px-5 py-2.5 text-[15px] font-medium text-white [&_span]:text-white [&_svg]:text-white sm:w-auto"
           >
             <span>Submit</span>
             <ArrowRightIcon className="h-5 w-5" />
@@ -330,7 +346,7 @@ export function ServicesFooter() {
         </div>
 
         <FooterGroup title="About" items={aboutLinks} />
-        <FooterGroup title="Areas We Serve" items={areasWeServe} />
+        <FooterGroup title="Areas We Serve" items={areaEntries} />
         <FooterGroup title="Our Services" items={footerServices} />
       </div>
 
