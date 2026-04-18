@@ -11,6 +11,7 @@ import {
   VaccineIcon,
 } from "@/components/home/icons";
 import { FaqItem, TextCta } from "@/components/home/primitives";
+import { getAreaProductPrice } from "@/components/pricing/catalog";
 import { ServicesContactSection, ServicesFooter, ServicesHeader } from "@/components/services/sections";
 
 function ActionLink({
@@ -127,7 +128,7 @@ function AreaProductsSection({ title, products }) {
                   <h3 className="text-xl font-medium leading-tight">{product.title}</h3>
                   <p className="text-base leading-6 text-[#2c2c2e]">{product.description}</p>
                 </div>
-                <TextCta href="#contact">{`Reserve Now - ${product.price}`}</TextCta>
+                <TextCta href="#contact">{`Reserve Now - ${getAreaProductPrice(product.title) ?? product.price}`}</TextCta>
               </div>
             </article>
           ))}
