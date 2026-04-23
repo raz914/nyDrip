@@ -73,6 +73,7 @@ export const serviceItems = [
     image: "/services/nad-injection-kit.jpg",
     alt: "NAD injection kit case",
     imageClassName: "object-cover object-[center_15%]",
+    href: "/services/nad-injection-kit",
   },
 ];
 
