@@ -219,7 +219,7 @@ export function ServicesSection() {
                   </p>
                 </div>
                 <TextCta
-                  href="#consultation"
+                  href={card.href ?? "#consultation"}
                   className="!text-[#0d42ff] !text-[15px] !font-semibold !underline !decoration-[#0d42ff] !decoration-[0.9px]"
                 >
                   Reserve Now - {card.price}
@@ -336,11 +336,15 @@ export function MobileIvSection() {
                 overflow: "hidden",
               }}
             >
-              At NY Drip Lounge, we make wellness effortless with expert mobile IV therapy delivered right to your door-whether you're at home,
-the office, your hotel, or an event. Our licensed medical team provides professional, hospital-grade care with a personalized drip plan
-tailored to your body's needs. From hydration and immunity to beauty and recovery, each session is customized to help you feel your
-best-fast. Serving New York City and surrounding areas, we bring comfort, convenience, and care directly to you. No lines, no travel-
-just expert treatment, on your schedule..
+              At NY Drip Lounge, we make wellness effortless with expert mobile IV
+              therapy delivered right to your door-whether you&apos;re at home, the office,
+              your hotel, or an event. Our licensed medical team provides
+              professional, hospital-grade care with a personalized drip plan tailored
+              to your body&apos;s needs. From hydration and immunity to beauty and
+              recovery, each session is customized to help you feel your best-fast.
+              Serving New York City and surrounding areas, we bring comfort,
+              convenience, and care directly to you. No lines, no travel-just expert
+              treatment, on your schedule..
             </p>
           </div>
           <div className="self-start md:ml-10 md:shrink-0 md:self-center">

@@ -17,6 +17,7 @@ export const ivTherapyProducts = [
     price: "$ 545",
     image: "/services/iv-therapy/nyd-drip.png",
     alt: "NYD+ drip bag",
+    href: "/services/nyd-plus-drip",
   },
   {
     title: "Radiance Drip",

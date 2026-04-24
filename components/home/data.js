@@ -50,6 +50,7 @@ export const serviceCards = [
     price: "$ 545",
     image: "/homepage/nyd-bag.png",
     alt: "NYD+ drip bag",
+    href: "/services/nyd-plus-drip",
   },
   {
     title: "Radiance Drip",

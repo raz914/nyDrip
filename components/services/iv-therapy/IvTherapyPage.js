@@ -61,7 +61,9 @@ function IvTherapyProductsSection() {
                   <h3 className="text-lg font-medium leading-tight">{product.title}</h3>
                   <p className="text-sm leading-6 text-[#2c2c2e]">{product.description}</p>
                 </div>
-                <TextCta href="#contact">Reserve Now - {product.price}</TextCta>
+                <TextCta href={product.href ?? "#contact"}>
+                  Reserve Now - {product.price}
+                </TextCta>
               </div>
             </article>
           ))}
@@ -84,7 +86,9 @@ function IvTherapyProductsSection() {
                   <h3 className="text-xl font-medium leading-tight">{product.title}</h3>
                   <p className="text-base leading-6 text-[#2c2c2e]">{product.description}</p>
                 </div>
-                <TextCta href="#contact">Reserve Now - {product.price}</TextCta>
+                <TextCta href={product.href ?? "#contact"}>
+                  Reserve Now - {product.price}
+                </TextCta>
               </div>
             </article>
           ))}
