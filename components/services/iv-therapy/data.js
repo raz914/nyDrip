@@ -6,7 +6,7 @@ export const ivTherapyHero = {
   description:
     "Recharge your body at NY Drip Lounge with our expertly formulated IV therapy. Our drips deliver essential vitamins, minerals, and antioxidants directly into your bloodstream, giving you fast, effective results. Whether you are recovering from a tough week, enhancing your skin, or supporting immune health, our IV infusions are tailored to meet your wellness needs and get you back to feeling your best.",
   ctaLabel: "Book IV Therapy",
-  ctaHref: "#contact",
+  ctaHref: "/booking",
 };
 
 export const ivTherapyProducts = [

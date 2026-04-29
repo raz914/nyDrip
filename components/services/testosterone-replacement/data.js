@@ -6,7 +6,7 @@ export const trtHero = {
   description:
     "Did you know? According to the American Urological Association, nearly 40% of men over age 45 have low testosterone (Low T), which can lead to fatigue, weight gain, low libido, and loss of muscle mass. At NY Drip Lounge, our Testosterone Optimization Therapy (TOT) is designed to help men take back control of their health with safe, medically supervised treatment.",
   ctaLabel: "Book Your Consultation Now",
-  ctaHref: "#contact",
+  ctaHref: "/booking?service=testosterone-replacement-therapy-trt",
 };
 
 export const trtPricing = {
@@ -26,7 +26,7 @@ export const trtPricing = {
         "Unlimited visits and ongoing support",
       ],
       ctaLabel: "Get Initial Consultation",
-      ctaHref: "#contact",
+      ctaHref: "/booking?service=testosterone-replacement-therapy-trt",
     },
     {
       name: "Ongoing Monthly Plan",
@@ -40,7 +40,7 @@ export const trtPricing = {
         "Unlimited check-ins and expert support",
       ],
       ctaLabel: "Get Ongoing Monthly Plan",
-      ctaHref: "#contact",
+      ctaHref: "/booking?service=testosterone-replacement-therapy-trt",
     },
   ],
 };

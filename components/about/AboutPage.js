@@ -59,14 +59,14 @@ function AboutHeader() {
   const headerCtas = [
     {
       label: "Log In",
-      href: "#contact",
+      href: "/login",
       variant: "secondary",
       showArrow: false,
       fullWidthMobile: true,
     },
     {
       label: "Book Your Appointment",
-      href: "/#consultation",
+      href: "/booking",
       variant: "primary",
       showArrow: true,
       fullWidthMobile: true,

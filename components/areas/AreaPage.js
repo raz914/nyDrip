@@ -46,6 +46,10 @@ function ActionLink({
   );
 }
 
+function getBookingAwareHref(label, href) {
+  return label.toLowerCase().includes("book") ? "/booking" : href;
+}
+
 function AreaFeatureIcon({ kind }) {
   if (kind === "calendar") {
     return <CalendarIcon className="h-5 w-5" />;
@@ -162,7 +166,11 @@ function AreaLocalSection({ localSection }) {
           </div>
 
           <div className="flex justify-start lg:justify-end">
-            <ActionLink href={localSection.ctaHref}>{localSection.ctaLabel}</ActionLink>
+            <ActionLink
+              href={getBookingAwareHref(localSection.ctaLabel, localSection.ctaHref)}
+            >
+              {localSection.ctaLabel}
+            </ActionLink>
           </div>
         </div>
       </div>
@@ -230,7 +238,9 @@ function AreaBookingSection({ booking }) {
             <p className="text-sm leading-7 text-[#111111] md:text-base">
               {booking.description}
             </p>
-            <ActionLink href={booking.ctaHref}>{booking.ctaLabel}</ActionLink>
+            <ActionLink href={getBookingAwareHref(booking.ctaLabel, booking.ctaHref)}>
+              {booking.ctaLabel}
+            </ActionLink>
           </div>
         </article>
 

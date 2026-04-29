@@ -7,8 +7,17 @@ import {
   ServicesFooter,
   ServicesHeader,
 } from "@/components/services/sections";
+import {
+  getBookingHrefForProductTitle,
+  getBookingHrefForServiceId,
+} from "@/components/booking/data";
 
 function ProductIntroSection({ hero, benefits }) {
+  const ctaHref =
+    hero.ctaHref === "#contact"
+      ? getBookingHrefForProductTitle(hero.title)
+      : hero.ctaHref;
+
   return (
     <section className="border-b border-black/10 px-5 py-12 md:px-10 md:py-16">
       <div className="mx-auto grid max-w-[1512px] gap-10 lg:grid-cols-[585px_minmax(0,827px)] lg:gap-5">
@@ -62,7 +71,7 @@ function ProductIntroSection({ hero, benefits }) {
               />
             ) : null}
 
-            <PrimaryLink href={hero.ctaHref}>{hero.ctaLabel}</PrimaryLink>
+            <PrimaryLink href={ctaHref}>{hero.ctaLabel}</PrimaryLink>
           </div>
 
           <div className="space-y-6">
@@ -144,6 +153,11 @@ function ProductProofSection({ section }) {
 }
 
 function ProductConsultationSection({ section }) {
+  const ctaHref =
+    section.ctaHref === "#contact"
+      ? getBookingHrefForServiceId("online-telehealth-consultations")
+      : section.ctaHref;
+
   return (
     <section className="overflow-hidden px-5 py-24 md:px-10">
       <div className="mx-auto grid max-w-[1512px] gap-10 lg:grid-cols-[464px_minmax(0,464px)_464px] lg:items-start">
@@ -170,7 +184,7 @@ function ProductConsultationSection({ section }) {
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
-            <PrimaryLink href={section.ctaHref}>{section.ctaLabel}</PrimaryLink>
+            <PrimaryLink href={ctaHref}>{section.ctaLabel}</PrimaryLink>
           </div>
         </article>
 
@@ -218,7 +232,7 @@ function ProductAddOnsSection({ section }) {
                 {item.description}
               </p>
               <a
-                href={item.href ?? "#contact"}
+                href={item.href?.startsWith("/booking") ? item.href : "/booking"}
                 className="inline-flex items-center gap-2 text-lg font-medium transition hover:opacity-70"
               >
                 Reserve Now - {item.price} <span aria-hidden>→</span>

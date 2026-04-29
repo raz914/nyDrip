@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 
+import { getBookingHrefForProductTitle } from "@/components/booking/data";
 import { ChevronDownIcon } from "@/components/home/icons";
 import { TextCta } from "@/components/home/primitives";
 
@@ -35,7 +36,7 @@ function ProductCard({ product }) {
           <h3 className="text-xl font-medium leading-tight">{product.title}</h3>
           <p className="text-base leading-6 text-[#2c2c2e]">{product.description}</p>
         </div>
-        <TextCta href={product.href}>
+        <TextCta href={getBookingHrefForProductTitle(product.title)}>
           Reserve Now - {product.price}
         </TextCta>
       </div>

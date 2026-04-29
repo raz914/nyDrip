@@ -9,6 +9,7 @@ import {
   CloseIcon,
   MenuIcon,
 } from "@/components/home/icons";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 const themeStyles = {
   home: {
@@ -88,12 +89,133 @@ function NavAnchor({ href, className, children, onClick, ...props }) {
 
 function CtaButton({ cta, theme, mobile = false, onClick }) {
   const styles = themeStyles[theme];
+  const dropdownRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
   const baseClassName =
     cta.variant === "primary"
       ? styles.ctaPrimary
       : mobile
         ? styles.mobileSecondary
         : styles.ctaSecondary;
+
+  useEffect(() => {
+    if (!isOpen) {
+      return undefined;
+    }
+
+    function handlePointerDown(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  if (cta.items?.length) {
+    return (
+      <div ref={dropdownRef} className={mobile ? "relative w-full" : "relative"}>
+        <button
+          type="button"
+          aria-expanded={isOpen}
+          className={[
+            baseClassName,
+            mobile && cta.fullWidthMobile ? "w-full" : "",
+          ].join(" ")}
+          onClick={() => setIsOpen((current) => !current)}
+        >
+          <span>{cta.label}</span>
+          <ChevronDownIcon
+            className={[
+              "h-4 w-4 transition-transform duration-200",
+              isOpen ? "rotate-180" : "",
+            ].join(" ")}
+          />
+        </button>
+
+        <div
+          className={[
+            mobile
+              ? "mt-2 w-full border border-black/10 bg-white p-2 text-[#111111] shadow-[0_12px_28px_rgba(17,17,17,0.12)]"
+              : theme === "home"
+                ? "absolute right-0 top-full mt-3 min-w-[220px] border border-white/15 bg-[#111111]/95 p-2 text-white shadow-[0_20px_40px_rgba(17,17,17,0.32)] backdrop-blur-xl"
+                : "absolute right-0 top-full mt-3 min-w-[220px] border border-black/10 bg-white p-2 text-[#111111] shadow-[0_20px_40px_rgba(17,17,17,0.12)]",
+            isOpen ? "block" : "hidden",
+          ].join(" ")}
+        >
+          {cta.items.map((item) => {
+            const itemClassName = mobile
+              ? "block w-full rounded-sm px-3 py-2 text-left text-sm transition-colors hover:bg-[#f0f2f5] hover:text-[var(--color-primary)]"
+              : theme === "home"
+                ? "block w-full rounded-sm px-3 py-2 text-left text-sm transition-colors hover:bg-white/10 hover:text-[#ffedba]"
+                : "block w-full rounded-sm px-3 py-2 text-left text-sm uppercase transition-colors hover:bg-[#f0f2f5] hover:text-[var(--color-primary)]";
+
+            if (item.action) {
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  className={itemClassName}
+                  onClick={() => {
+                    setIsOpen(false);
+                    item.action();
+                    onClick?.();
+                  }}
+                >
+                  {item.label}
+                </button>
+              );
+            }
+
+            return (
+              <NavAnchor
+                key={item.href}
+                href={item.href}
+                className={itemClassName}
+                onClick={() => {
+                  setIsOpen(false);
+                  onClick?.();
+                }}
+              >
+                {item.label}
+              </NavAnchor>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (cta.action) {
+    return (
+      <button
+        type="button"
+        onClick={() => {
+          cta.action();
+          onClick?.();
+        }}
+        className={[
+          baseClassName,
+          mobile && cta.fullWidthMobile ? "w-full" : "",
+        ].join(" ")}
+      >
+        <span>{cta.label}</span>
+        {cta.showArrow !== false ? <ArrowRightIcon className="h-4 w-4" /> : null}
+      </button>
+    );
+  }
 
   return (
     <NavAnchor
@@ -119,9 +241,29 @@ export default function SharedNavbar({
   const styles = themeStyles[theme];
   const dropdownId = useId();
   const navRef = useRef(null);
+  const { user, signOut } = useAuth();
   const [desktopOpen, setDesktopOpen] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState(null);
+  const renderedCtas = ctas.map((cta) => {
+    const isLoginCta = cta.label.toLowerCase().replace(/\s/g, "") === "login";
+
+    if (!user || !isLoginCta) {
+      return cta;
+    }
+
+    return {
+      ...cta,
+      label: user.displayName || "Account",
+      href: "#",
+      showArrow: true,
+      items: [
+        { label: "Dashboard", href: "/dashboard" },
+        { label: "Profile Settings", href: "/profile-settings" },
+        { label: "Log Out", action: signOut },
+      ],
+    };
+  });
 
   useEffect(() => {
     function handleKeyDown(event) {
@@ -252,7 +394,7 @@ export default function SharedNavbar({
           </nav>
 
           <div className="flex items-center gap-4">
-            {ctas.map((cta) => (
+            {renderedCtas.map((cta) => (
               <CtaButton key={cta.label + cta.href} cta={cta} theme={theme} />
             ))}
           </div>
@@ -382,7 +524,7 @@ export default function SharedNavbar({
           </nav>
 
           <div className="flex flex-col gap-3 border-t border-black/10 pt-5">
-            {ctas.map((cta) => (
+            {renderedCtas.map((cta) => (
               <CtaButton
                 key={cta.label + cta.href}
                 cta={cta}

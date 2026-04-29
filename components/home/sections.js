@@ -1,6 +1,7 @@
 import Image from "next/image";
 import SharedNavbar from "@/components/navigation/SharedNavbar";
 import ServiceCardsCarousel from "@/components/home/ServiceCardsCarousel";
+import { getBookingHrefForProductTitle } from "@/components/booking/data";
 
 import {
   aboutLinks,
@@ -40,14 +41,14 @@ export function SiteHeader() {
   const headerCtas = [
     {
       label: "Login",
-      href: "#contact",
+      href: "/login",
       variant: "secondary",
       showArrow: true,
       fullWidthMobile: true,
     },
     {
       label: "Book Your Appointment",
-      href: "#consultation",
+      href: "/booking",
       variant: "primary",
       showArrow: true,
       fullWidthMobile: true,
@@ -90,7 +91,7 @@ export function HeroSection() {
         </p>
         <div className="mt-10">
           <a
-            href="#consultation"
+            href="/booking"
             className="inline-flex min-w-[236px] items-center justify-center gap-2 border border-white bg-white px-8 py-3.5 text-[15px] font-semibold text-black transition-transform duration-200 hover:-translate-y-0.5 md:text-base"
           >
             <span className="text-black">Reserve Your Experience</span>
@@ -163,7 +164,7 @@ export function FeaturedDripsSection() {
                     />
                   </div>
                   <div className="mt-5 text-center">
-                    <TextCta href={drip.href ?? "#consultation"} className="!text-[#0d42ff] !text-[14px] !font-semibold">
+                    <TextCta href={getBookingHrefForProductTitle(drip.title)} className="!text-[#0d42ff] !text-[14px] !font-semibold">
                       Reserve Now - {drip.price}
                     </TextCta>
                   </div>
