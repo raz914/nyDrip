@@ -1,11 +1,11 @@
-import NydPlusDripPage from "@/components/services/nyd-plus-drip/NydPlusDripPage";
+import NadDripIvTherapyPage from "@/components/services/nad-drip-iv-therapy/NadDripIvTherapyPage";
 
 export const metadata = {
-  title: "NYD+ Drip | DripLounge",
+  title: "NAD+ Drip | DripLounge",
   description:
-    "Explore NYD+ Drip pricing, benefits, and concierge booking options for NAD+ wellness support at DripLounge.",
+    "Explore NAD+ Drip pricing, benefits, and concierge booking options at DripLounge.",
 };
 
 export default function Page() {
-  return <NydPlusDripPage />;
+  return <NadDripIvTherapyPage />;
 }

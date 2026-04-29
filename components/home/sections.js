@@ -1,5 +1,6 @@
 import Image from "next/image";
 import SharedNavbar from "@/components/navigation/SharedNavbar";
+import ServiceCardsCarousel from "@/components/home/ServiceCardsCarousel";
 
 import {
   aboutLinks,
@@ -162,7 +163,7 @@ export function FeaturedDripsSection() {
                     />
                   </div>
                   <div className="mt-5 text-center">
-                    <TextCta href="#consultation" className="!text-[#0d42ff] !text-[14px] !font-semibold">
+                    <TextCta href={drip.href ?? "#consultation"} className="!text-[#0d42ff] !text-[14px] !font-semibold">
                       Reserve Now - {drip.price}
                     </TextCta>
                   </div>
@@ -179,7 +180,7 @@ export function FeaturedDripsSection() {
 export function ServicesSection() {
   return (
     <section className="overflow-hidden bg-white px-5 py-20 md:px-7 lg:px-8">
-      <div className="mx-auto flex w-full flex-col items-center gap-14">
+      <div className="mx-auto flex w-full max-w-[1180px] flex-col items-center gap-12">
         <div className="max-w-[1100px] space-y-3 text-center">
           <h2 className="text-[2rem] font-bold leading-[0.98] tracking-[-0.01em] md:text-[4.2rem]">
             Hydration and Health Services
@@ -190,64 +191,7 @@ export function ServicesSection() {
           </SectionBand>
         </div>
 
-        <div className="flex w-full gap-4 overflow-x-auto pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible">
-          {serviceCards.map((card) => (
-            <article
-              key={card.title}
-              className="min-w-[173px] flex-none space-y-5 md:min-w-[240px] lg:min-w-0"
-            >
-              <div className="relative h-[195px] overflow-hidden bg-[#dbdde1] md:h-[280px] lg:h-[420px]">
-                <div className="absolute inset-0 p-3 md:p-5">
-                  <div className="relative h-full w-full">
-                    <Image
-                      src={card.image}
-                      alt={card.alt}
-                      fill
-                      sizes="(min-width: 1024px) 24vw, 173px"
-                      className="object-contain"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-5">
-                <div className="space-y-2">
-                  <h3 className="text-[2rem] font-medium leading-tight text-[#111111] md:text-[2.25rem]">
-                    {card.title}
-                  </h3>
-                  <p className="text-[15px] leading-6 text-[#2c2c2e] md:text-[17px]">
-                    {card.description}
-                  </p>
-                </div>
-                <TextCta
-                  href={card.href ?? "#consultation"}
-                  className="!text-[#0d42ff] !text-[15px] !font-semibold !underline !decoration-[#0d42ff] !decoration-[0.9px]"
-                >
-                  Reserve Now - {card.price}
-                </TextCta>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <div className="flex items-center justify-center gap-3 text-[#111111]" aria-hidden="true">
-          <button
-            type="button"
-            className="flex h-7 w-7 items-center justify-center text-[#d2d4d9]"
-          >
-            <ArrowRightIcon className="h-3.5 w-3.5 rotate-180" />
-          </button>
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[#111111]" />
-            <span className="h-2 w-2 rounded-full bg-[#c3c6cc]" />
-            <span className="h-2 w-2 rounded-full bg-[#c3c6cc]" />
-          </div>
-          <button
-            type="button"
-            className="flex h-7 w-7 items-center justify-center text-[#d2d4d9]"
-          >
-            <ArrowRightIcon className="h-3.5 w-3.5" />
-          </button>
-        </div>
+        <ServiceCardsCarousel cards={serviceCards} />
       </div>
     </section>
   );

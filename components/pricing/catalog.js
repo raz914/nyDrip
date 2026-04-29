@@ -63,6 +63,7 @@ const areaProductPriceMap = {
   "Hangover Cure Drip": "$275.00",
   "Hangover Drip": "$275.00",
   Hangover: "$275.00",
+  "Glutathione IV Therapy": "$175.00",
   "Hydration Drip": "$175.00",
   "NYD+ Drip": "$545.00",
 };

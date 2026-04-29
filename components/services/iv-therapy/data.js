@@ -11,27 +11,57 @@ export const ivTherapyHero = {
 
 export const ivTherapyProducts = [
   {
-    title: "NYD+ Drip",
+    title: "Migraine Drip",
     description:
-      "Can help fuel energy, support cellular repair and may enhance mental clarity.",
-    price: "$ 545",
-    image: "/services/iv-therapy/nyd-drip.png",
-    alt: "NYD+ drip bag",
-    href: "/services/nyd-plus-drip",
+      "May help ease migraine symptoms with hydration, electrolytes, magnesium, and B vitamins.",
+    price: "$ 275",
+    image: "/services/iv-therapy/migraine-drip.png",
+    alt: "Migraine IV infusion bag",
+    href: "/services/migraine-iv-therapy",
+  },
+  {
+    title: "Energy Drip",
+    description:
+      "May help fight fatigue, restore vitality, and support focus with B-vitamins and amino acids.",
+    price: "$ 275",
+    image: "/services/iv-therapy/energy-drip.png",
+    alt: "Energy IV infusion bag",
+    href: "/services/energy-drip-iv-therapy",
   },
   {
     title: "Radiance Drip",
-    description: "May help you glow from within with antioxidants and vitamins.",
+    description:
+      "May help you glow from within with antioxidants and vitamins.",
     price: "$ 275",
-    image: "/services/iv-therapy/radiance-drip.png",
-    alt: "Radiance drip bag",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance IV infusion bag",
+    href: "/services/radiance-drip-iv-therapy",
   },
   {
-    title: "Bikini Blitz Drip",
-    description: "Can help boost metabolism, may fuel energy and support confidence.",
+    title: "Detox Drip",
+    description: "May help support metabolism, energy conversion, mood, and confidence.",
     price: "$ 275",
-    image: "/services/iv-therapy/bikini-blitz-drip.png",
-    alt: "Bikini Blitz drip bag",
+    image: "/services/iv-therapy/detox-drip.png",
+    alt: "Detox IV infusion bag",
+    href: "/services/detox-drip-iv-therapy",
+  },
+  {
+    title: "Myers Drip",
+    description:
+      "May help restore energy, support balance, and ease fatigue with vitamins and minerals.",
+    price: "$ 275",
+    image: "/services/iv-therapy/myers-drip.png",
+    alt: "Myers IV infusion bag",
+    href: "/services/myers-drip-iv-therapy",
+  },
+  {
+    title: "Rejuvenate Drip",
+    description:
+      "May help hydrate skin, support collagen, and enhance your natural glow.",
+    price: "$ 275",
+    image: "/services/iv-therapy/rejuvenate-drip.png",
+    alt: "Rejuvenate IV infusion bag",
+    href: "/services/rejuvenate-drip-iv-therapy",
   },
   {
     title: "Performance Drip",
@@ -40,6 +70,7 @@ export const ivTherapyProducts = [
     price: "$ 275",
     image: "/services/iv-therapy/performance-drip.png",
     alt: "Performance drip bag",
+    href: "/services/performance-drip-iv-therapy",
   },
 ];
 

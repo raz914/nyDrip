@@ -10,8 +10,9 @@ import {
   StethoscopeIcon,
   VaccineIcon,
 } from "@/components/home/icons";
-import { FaqItem, TextCta } from "@/components/home/primitives";
-import { getAreaProductPrice } from "@/components/pricing/catalog";
+import { FaqItem } from "@/components/home/primitives";
+import AreaServicesCarousel from "@/components/areas/AreaServicesCarousel";
+import { serviceItems } from "@/components/services/data";
 import { ServicesContactSection, ServicesFooter, ServicesHeader } from "@/components/services/sections";
 
 function ActionLink({
@@ -103,36 +104,14 @@ function AreaHeroSection({ hero }) {
   );
 }
 
-function AreaProductsSection({ title, products }) {
+function AreaServicesSection({ areaLabel }) {
   return (
     <section className="px-5 py-20 md:px-10 md:py-[100px]">
       <div className="mx-auto max-w-[1512px]">
         <h2 className="text-center text-[2.25rem] font-bold leading-none tracking-[-0.03em] md:text-[3.25rem]">
-          {title}
+          Services We Have in {areaLabel}
         </h2>
-
-        <div className="mt-14 grid gap-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-5">
-          {products.map((product) => (
-            <article key={product.title}>
-              <div className="relative h-[320px] overflow-hidden bg-[#f0f2f5] md:h-[397px]">
-                <Image
-                  src={product.image}
-                  alt={product.alt}
-                  fill
-                  sizes="(min-width: 1024px) 343px, (min-width: 768px) 50vw, 100vw"
-                  className="object-contain p-4 md:p-[21px]"
-                />
-              </div>
-              <div className="mt-5 space-y-3">
-                <div className="space-y-2">
-                  <h3 className="text-xl font-medium leading-tight">{product.title}</h3>
-                  <p className="text-base leading-6 text-[#2c2c2e]">{product.description}</p>
-                </div>
-                <TextCta href="#contact">{`Reserve Now - ${getAreaProductPrice(product.title) ?? product.price}`}</TextCta>
-              </div>
-            </article>
-          ))}
-        </div>
+        <AreaServicesCarousel services={serviceItems} />
       </div>
     </section>
   );
@@ -286,7 +265,7 @@ export default function AreaPage({ area }) {
       <ServicesHeader />
       <main className="bg-white text-[#111111]">
         <AreaHeroSection hero={area.hero} />
-        <AreaProductsSection title={area.productsTitle} products={area.products} />
+        <AreaServicesSection areaLabel={area.label} />
         <AreaLocalSection localSection={area.localSection} />
         <AreaHowItWorksSection howItWorks={area.howItWorks} />
         <AreaBookingSection booking={area.booking} />
@@ -304,3 +283,4 @@ export default function AreaPage({ area }) {
     </>
   );
 }
+

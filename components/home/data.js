@@ -10,8 +10,9 @@ export const featuredDrips = [
     icon: "water",
     backgroundImage: "/homepage/migraine-bg.jpg",
     backgroundAlt: "A cool-toned wellness texture behind the migraine drip",
-    productImage: "/homepage/migraine-bag.png",
+    productImage: "/services/iv-therapy/migraine-drip.png",
     productAlt: "Migraine drip product bag",
+    href: "/services/migraine-iv-therapy",
     overlay: false,
   },
   {
@@ -29,50 +30,127 @@ export const featuredDrips = [
   },
   {
     title: "Energy Drip",
-    subtitle: "A Pick-me-up When You Need it Most",
+    subtitle: "A pick-me-up when you need it most",
     description:
-      "Feeling drained? Our Energy Drip delivers a revitalizing blend of B-vitamins, amino acids, and electrolytes that may help fight fatigue, restore vitality, and support recovery. It is built for busy weeks, post-workout bounce-back, and the days when you simply need a reset.",
+      "Feeling drained? Our Energy Drip delivers a revitalizing blend of B-vitamins, amino acids, and electrolytes that may help fight fatigue, restore vitality, and support recovery. Designed to help enhance natural energy and focus, it can be a great option for busy weeks, post-workout bounce-back, or when you simply need a refresh.",
     price: "$ 275",
     icon: "bolt",
     backgroundImage: "/homepage/energy-bg.jpg",
     backgroundAlt: "Fresh green texture behind the energy drip",
-    productImage: "/homepage/energy-bag.png",
+    productImage: "/services/iv-therapy/energy-drip.png",
     productAlt: "Energy drip product bag",
+    href: "/services/energy-drip-iv-therapy",
     overlay: true,
   },
 ];
 
 export const serviceCards = [
   {
-    title: "NYD+ Drip",
+    title: "Migraine Drip",
     description:
-      "Can help fuel energy, support cellular repair & may enhance mental clarity.",
-    price: "$ 545",
-    image: "/homepage/nyd-bag.png",
-    alt: "NYD+ drip bag",
-    href: "/services/nyd-plus-drip",
+      "May help ease headaches, nausea, and light sensitivity with hydration and targeted support.",
+    price: "$ 275",
+    image: "/services/iv-therapy/migraine-drip.png",
+    alt: "Migraine Drip bag",
+    href: "/services/migraine-iv-therapy",
+  },
+  {
+    title: "Energy Drip",
+    description:
+      "May help fight fatigue, restore vitality, and support focus with B-vitamins and amino acids.",
+    price: "$ 275",
+    image: "/services/iv-therapy/energy-drip.png",
+    alt: "Energy Drip bag",
+    href: "/services/energy-drip-iv-therapy",
   },
   {
     title: "Radiance Drip",
-    description: "May help you glow from within with antioxidants & vitamins.",
+    description:
+      "Can help fuel energy, support cellular repair & may enhance mental clarity.",
     price: "$ 275",
-    image: "/homepage/radiance-bag.png",
-    alt: "Radiance drip bag",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance Drip bag",
+    href: "/services/radiance-drip-iv-therapy",
   },
   {
-    title: "Bikini Blitz Drip",
-    description: "Can help boost metabolism, may fuel energy & support confidence.",
+    title: "Detox Drip",
+    description: "May help support metabolism, energy conversion, mood, and confidence.",
     price: "$ 275",
-    image: "/homepage/bikini-bag.png",
-    alt: "Bikini Blitz drip bag",
+    image: "/services/iv-therapy/detox-drip.png",
+    alt: "Detox Drip bag",
+    href: "/services/detox-drip-iv-therapy",
+  },
+  {
+    title: "Myers Drip",
+    description:
+      "May help restore energy, support balance, and ease fatigue with vitamins and minerals.",
+    price: "$ 275",
+    image: "/services/iv-therapy/myers-drip.png",
+    alt: "Myers Drip bag",
+    href: "/services/myers-drip-iv-therapy",
+  },
+  {
+    title: "Rejuvenate Drip",
+    description:
+      "May help hydrate skin, support collagen, and enhance your natural glow.",
+    price: "$ 275",
+    image: "/services/iv-therapy/rejuvenate-drip.png",
+    alt: "Rejuvenate Drip bag",
+    href: "/services/rejuvenate-drip-iv-therapy",
   },
   {
     title: "Performance Drip",
     description:
       "Help enhance strength, may support muscle recovery & promote hydration",
     price: "$ 275",
-    image: "/homepage/performance-bag.png",
+    image: "/services/iv-therapy/performance-drip.png",
     alt: "Performance drip bag",
+    href: "/services/performance-drip-iv-therapy",
+  },
+  {
+    title: "NAD+ Drip",
+    description:
+      "May support cellular energy, sharper focus, and recovery from physical and mental fatigue.",
+    price: "$ 545",
+    image: "/services/iv-therapy/nad-drip.png",
+    alt: "NAD+ drip bag",
+    href: "/services/nad-drip-iv-therapy",
+  },
+  {
+    title: "Hangover Cure Drip",
+    description:
+      "May help ease headaches, nausea, fatigue, and dehydration after a long night.",
+    price: "$ 275",
+    image: "/services/iv-therapy/hangover-cure-drip.png",
+    alt: "Hangover Cure drip bag",
+    href: "/services/hangover-cure-iv-therapy",
+  },
+  {
+    title: "Immunity Drip",
+    description:
+      "May support immune readiness with Vitamin C, zinc, hydration, and targeted nutrients.",
+    price: "$ 275",
+    image: "/services/iv-therapy/immunity-drip.png",
+    alt: "Immunity drip bag",
+    href: "/services/immunity-drip-iv-therapy",
+  },
+  {
+    title: "Glutathione IV Therapy",
+    description:
+      "A targeted antioxidant infusion designed to support cellular health and skin clarity.",
+    price: "$ 175",
+    image: "/services/iv-therapy/glutathione-iv-drip.png",
+    alt: "Glutathione IV drip bag",
+    href: "/services/glutathione-iv-therapy",
+  },
+  {
+    title: "Spring Restore Drip",
+    description:
+      "May support seasonal balance, immunity, brighter skin, and steady energy.",
+    price: "$ 350",
+    image: "/services/iv-therapy/spring-restore-drip.png",
+    alt: "Spring Restore drip bag",
+    href: "/services/spring-restore-iv-therapy",
   },
 ];
 
@@ -263,3 +341,12 @@ export const services = [
 ];
 
 export const aboutLinks = ["How It Works", "Our Blog", "Areas We Serve"];
+
+
+
+
+
+
+
+
+

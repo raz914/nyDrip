@@ -1,13 +1,13 @@
 import Image from "next/image";
 
 import { faqs } from "@/components/home/data";
-import { ChevronDownIcon } from "@/components/home/icons";
-import { FaqItem, PrimaryLink, TextCta } from "@/components/home/primitives";
+import { FaqItem, PrimaryLink } from "@/components/home/primitives";
 import {
   ServicesContactSection,
   ServicesFooter,
   ServicesHeader,
 } from "@/components/services/sections";
+import IvTherapyProductsCarousel from "@/components/services/iv-therapy/IvTherapyProductsCarousel";
 import {
   ivTherapyBenefits,
   ivTherapyHero,
@@ -44,77 +44,7 @@ function IvTherapyProductsSection() {
           IV Therapy Drips
         </h2>
 
-        <div className="mt-14 flex gap-4 overflow-x-auto pb-2 md:hidden">
-          {ivTherapyProducts.map((product) => (
-            <article key={product.title} className="min-w-[173px] flex-none">
-              <div className="relative h-[195px] overflow-hidden bg-[#f0f2f5]">
-                <Image
-                  src={product.image}
-                  alt={product.alt}
-                  fill
-                  sizes="173px"
-                  className="object-contain p-3"
-                />
-              </div>
-              <div className="mt-3 space-y-3">
-                <div className="space-y-1">
-                  <h3 className="text-lg font-medium leading-tight">{product.title}</h3>
-                  <p className="text-sm leading-6 text-[#2c2c2e]">{product.description}</p>
-                </div>
-                <TextCta href={product.href ?? "#contact"}>
-                  Reserve Now - {product.price}
-                </TextCta>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <div className="mt-14 hidden grid-cols-4 gap-5 md:grid">
-          {ivTherapyProducts.map((product) => (
-            <article key={product.title}>
-              <div className="relative h-[397px] overflow-hidden bg-[#f0f2f5]">
-                <Image
-                  src={product.image}
-                  alt={product.alt}
-                  fill
-                  sizes="343px"
-                  className="object-contain p-[21px]"
-                />
-              </div>
-              <div className="mt-5 space-y-5">
-                <div className="space-y-2">
-                  <h3 className="text-xl font-medium leading-tight">{product.title}</h3>
-                  <p className="text-base leading-6 text-[#2c2c2e]">{product.description}</p>
-                </div>
-                <TextCta href={product.href ?? "#contact"}>
-                  Reserve Now - {product.price}
-                </TextCta>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        <div className="mt-14 hidden items-center justify-center gap-4 md:flex">
-          <button
-            type="button"
-            aria-label="Previous drips"
-            className="rounded-full border border-black/15 p-2 text-[#111111]"
-          >
-            <ChevronDownIcon className="h-4 w-4 -rotate-90" />
-          </button>
-          <div className="flex items-center gap-2">
-            <span className="h-3 w-3 rounded-full bg-[#111111]" />
-            <span className="h-3 w-3 rounded-full bg-black/20" />
-            <span className="h-3 w-3 rounded-full bg-black/20" />
-          </div>
-          <button
-            type="button"
-            aria-label="Next drips"
-            className="rounded-full border border-black/15 p-2 text-[#111111]"
-          >
-            <ChevronDownIcon className="h-4 w-4 rotate-90" />
-          </button>
-        </div>
+        <IvTherapyProductsCarousel products={ivTherapyProducts} />
       </div>
     </section>
   );

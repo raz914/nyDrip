@@ -24,22 +24,25 @@ const middletownProducts = [
     title: "Rejuvenate",
     description: "Hydrates and refreshes the body.",
     price: "$ 275",
-    image: "/homepage/radiance-bag.png",
+    image: "/services/iv-therapy/rejuvenate-drip.png",
     alt: "Rejuvenate IV product bag",
+    href: "/services/rejuvenate-drip-iv-therapy",
   },
   {
     title: "Performance",
     description: "Improves stamina and recovery.",
     price: "$ 275",
-    image: "/homepage/performance-bag.png",
+    image: "/services/iv-therapy/performance-drip.png",
     alt: "Performance IV product bag",
+    href: "/services/performance-drip-iv-therapy",
   },
   {
     title: "Myers Drip",
     description: "Supports overall wellness and energy.",
     price: "$ 275",
-    image: "/homepage/nyd-bag.png",
+    image: "/services/iv-therapy/myers-drip.png",
     alt: "Myers drip product bag",
+    href: "/services/myers-drip-iv-therapy",
   },
 ];
 
@@ -87,18 +90,19 @@ const peekskillProducts = [
     alt: "Radiance drip product bag",
   },
   {
-    title: "Immunity Drip",
+    title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
-    image: "/homepage/nyd-bag.png",
-    alt: "Immunity drip product bag",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance Drip product bag",
   },
   {
     title: "Performance",
     description: "Improves stamina and recovery.",
     price: "$ 275",
-    image: "/homepage/performance-bag.png",
+    image: "/services/iv-therapy/performance-drip.png",
     alt: "Performance IV product bag",
+    href: "/services/performance-drip-iv-therapy",
   },
 ];
 
@@ -146,18 +150,19 @@ const sloatsburgProducts = [
     alt: "Radiance drip product bag",
   },
   {
-    title: "NAD+",
+    title: "Radiance Drip",
     description: "Anti-aging + energy boost.",
-    price: "$ 545",
-    image: "/homepage/nyd-bag.png",
-    alt: "NAD+ drip product bag",
+    price: "$ 275",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance Drip product bag",
+    href: "/services/radiance-drip-iv-therapy",
   },
   {
-    title: "Immunity Drip",
+    title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
     image: "/homepage/energy-bag.png",
-    alt: "Immunity drip product bag",
+    alt: "Radiance Drip product bag",
   },
 ];
 
@@ -175,7 +180,7 @@ const sloatsburgFaqs = [
   {
     question: "What are the most popular IV drips in Sloatsburg?",
     answer:
-      "Hangover, Radiance, NAD+, and Immunity drips are among the most requested treatments.",
+      "Hangover Cure and Radiance drips are among the most requested treatments.",
   },
   {
     question: "Can I book same-day IV therapy in Sloatsburg?",
@@ -205,18 +210,19 @@ const washingtonvilleProducts = [
     alt: "Radiance drip product bag",
   },
   {
-    title: "NAD+",
+    title: "Radiance Drip",
     description: "Anti-aging + energy boost.",
-    price: "$ 545",
-    image: "/homepage/nyd-bag.png",
-    alt: "NAD+ drip product bag",
+    price: "$ 275",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance Drip product bag",
+    href: "/services/radiance-drip-iv-therapy",
   },
   {
-    title: "Immunity Drip",
+    title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
     image: "/homepage/energy-bag.png",
-    alt: "Immunity drip product bag",
+    alt: "Radiance Drip product bag",
   },
 ];
 
@@ -264,18 +270,20 @@ const rhinebeckProducts = [
     alt: "Radiance drip product bag",
   },
   {
-    title: "NAD+",
+    title: "Radiance Drip",
     description: "Anti-aging + energy boost.",
-    price: "$ 545",
-    image: "/homepage/nyd-bag.png",
-    alt: "NAD+ drip product bag",
+    price: "$ 275",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance Drip product bag",
+    href: "/services/radiance-drip-iv-therapy",
   },
   {
     title: "Rejuvenate",
     description: "Hydrates and refreshes the body.",
     price: "$ 275",
-    image: "/homepage/bikini-bag.png",
+    image: "/services/iv-therapy/rejuvenate-drip.png",
     alt: "Rejuvenate drip product bag",
+    href: "/services/rejuvenate-drip-iv-therapy",
   },
 ];
 
@@ -323,18 +331,19 @@ const scarsdaleProducts = [
     alt: "Radiance drip product bag",
   },
   {
-    title: "NAD+",
+    title: "Radiance Drip",
     description: "Anti-aging + energy boost.",
-    price: "$ 545",
-    image: "/homepage/nyd-bag.png",
-    alt: "NAD+ drip product bag",
+    price: "$ 275",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance Drip product bag",
+    href: "/services/radiance-drip-iv-therapy",
   },
   {
-    title: "Immunity Drip",
+    title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
     image: "/homepage/energy-bag.png",
-    alt: "Immunity drip product bag",
+    alt: "Radiance Drip product bag",
   },
 ];
 
@@ -382,18 +391,19 @@ const westchesterProducts = [
     alt: "Radiance drip product bag",
   },
   {
-    title: "NAD+",
+    title: "Radiance Drip",
     description: "Anti-aging + energy boost.",
-    price: "$ 545",
-    image: "/homepage/nyd-bag.png",
-    alt: "NAD+ drip product bag",
+    price: "$ 275",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance Drip product bag",
+    href: "/services/radiance-drip-iv-therapy",
   },
   {
-    title: "Immunity Drip",
+    title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
     image: "/homepage/energy-bag.png",
-    alt: "Immunity drip product bag",
+    alt: "Radiance Drip product bag",
   },
 ];
 
@@ -430,29 +440,32 @@ const ameniaProducts = [
     title: "Rejuvenate",
     description: "Hydrates and refreshes the body.",
     price: "$ 275",
-    image: "/homepage/bikini-bag.png",
+    image: "/services/iv-therapy/rejuvenate-drip.png",
     alt: "Rejuvenate drip product bag",
+    href: "/services/rejuvenate-drip-iv-therapy",
   },
   {
     title: "Myers Drip",
     description: "Supports overall wellness and energy.",
     price: "$ 275",
-    image: "/homepage/nyd-bag.png",
+    image: "/services/iv-therapy/myers-drip.png",
     alt: "Myers drip product bag",
+    href: "/services/myers-drip-iv-therapy",
   },
   {
-    title: "NAD+",
+    title: "Radiance Drip",
     description: "Anti-aging + energy boost.",
-    price: "$ 545",
-    image: "/homepage/nyd-bag.png",
-    alt: "NAD+ drip product bag",
+    price: "$ 275",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance Drip product bag",
+    href: "/services/radiance-drip-iv-therapy",
   },
   {
-    title: "Immunity Drip",
+    title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
     image: "/homepage/energy-bag.png",
-    alt: "Immunity drip product bag",
+    alt: "Radiance Drip product bag",
   },
 ];
 
@@ -465,7 +478,7 @@ const ameniaFaqs = [
   {
     question: "What drips are most popular in Amenia?",
     answer:
-      "Rejuvenate, Myers Drip, NAD+, and Immunity drips are popular options for hydration, wellness, and recovery.",
+      "Rejuvenate, Myers Drip, and Radiance Drip are popular options for hydration, wellness, and recovery.",
   },
   {
     question: "Is IV therapy safe in a non-clinic setting?",
@@ -489,8 +502,9 @@ const purchaseProducts = [
     title: "Performance",
     description: "Improves stamina and recovery.",
     price: "$ 275",
-    image: "/homepage/performance-bag.png",
+    image: "/services/iv-therapy/performance-drip.png",
     alt: "Performance drip product bag",
+    href: "/services/performance-drip-iv-therapy",
   },
   {
     title: "Radiance Drip",
@@ -507,11 +521,11 @@ const purchaseProducts = [
     alt: "Energy drip product bag",
   },
   {
-    title: "Immunity Drip",
+    title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
-    image: "/homepage/nyd-bag.png",
-    alt: "Immunity drip product bag",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance Drip product bag",
   },
 ];
 
@@ -545,33 +559,34 @@ const purchaseFaqs = [
 
 const wappingersFallsProducts = [
   {
-    title: "Immunity Drip",
+    title: "Radiance Drip",
     description:
       "Helps strengthen immunity, may support hydration and overall wellness.",
     price: "$ 275",
     image: "/homepage/energy-bag.png",
-    alt: "Immunity drip product bag",
+    alt: "Radiance Drip product bag",
   },
   {
     title: "Rejuvenate Drip",
     description:
       "May hydrate deeply, help boost skin health, and support natural collagen production.",
     price: "$ 275",
-    image: "/homepage/bikini-bag.png",
+    image: "/services/iv-therapy/rejuvenate-drip.png",
     alt: "Rejuvenate drip product bag",
+    href: "/services/rejuvenate-drip-iv-therapy",
   },
   {
-    title: "Hangover Cure Drip",
+    title: "Radiance Drip",
     description: "Helps rehydrate, may restore balance, and support relief from fatigue.",
     price: "$ 275",
-    image: "/homepage/bikini-bag.png",
-    alt: "Hangover cure drip product bag",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance Drip product bag",
   },
   {
     title: "Hydration Drip",
     description:
       "Helps rehydrate your body, support electrolyte balance, and restore natural energy levels.",
-    price: "$ 175",
+    price: "$ 275",
     image: "/homepage/energy-bag.png",
     alt: "Hydration drip product bag",
   },
@@ -607,33 +622,34 @@ const wappingersFallsFaqs = [
 
 const highlandProducts = [
   {
-    title: "Immunity Drip",
+    title: "Radiance Drip",
     description:
       "Helps strengthen immunity, may support hydration and overall wellness.",
     price: "$ 275",
     image: "/homepage/energy-bag.png",
-    alt: "Immunity drip product bag",
+    alt: "Radiance Drip product bag",
   },
   {
     title: "Rejuvenate Drip",
     description:
       "May hydrate deeply, help boost skin health, and support natural collagen production.",
     price: "$ 275",
-    image: "/homepage/bikini-bag.png",
+    image: "/services/iv-therapy/rejuvenate-drip.png",
     alt: "Rejuvenate drip product bag",
+    href: "/services/rejuvenate-drip-iv-therapy",
   },
   {
-    title: "Hangover Cure Drip",
+    title: "Radiance Drip",
     description: "Helps rehydrate, may restore balance, and support relief from fatigue.",
     price: "$ 275",
-    image: "/homepage/bikini-bag.png",
-    alt: "Hangover cure drip product bag",
+    image: "/services/iv-therapy/radiance-drip-new.png",
+    alt: "Radiance Drip product bag",
   },
   {
     title: "Hydration Drip",
     description:
       "Helps rehydrate your body, support electrolyte balance, and restore natural energy levels.",
-    price: "$ 175",
+    price: "$ 275",
     image: "/homepage/energy-bag.png",
     alt: "Hydration drip product bag",
   },
@@ -1825,3 +1841,13 @@ export function getAreaPageBySlug(slug) {
 export function getStaticAreaSlugs() {
   return Object.keys(areaPages);
 }
+
+
+
+
+
+
+
+
+
+
