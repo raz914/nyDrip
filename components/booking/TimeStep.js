@@ -1,5 +1,6 @@
-import { BOOKING_DATES, TIME_SLOTS, formatBookingDate } from "@/components/booking/data";
+import { BOOKING_DATES, formatBookingDate } from "@/components/booking/data";
 import { BookingButton, StepPanel } from "@/components/booking/BookingControls";
+import { getVisibleTimeSlots } from "@/lib/bookingRules";
 
 const calendarDays = Array.from({ length: 35 }, (_, index) => {
   if (index < 2) {
@@ -18,11 +19,21 @@ const calendarDays = Array.from({ length: 35 }, (_, index) => {
 export default function TimeStep({
   selectedDate,
   selectedTime,
+  timeSlots = [],
+  slotAvailability = {},
+  availabilityMessage = "",
   onDateChange,
   onTimeChange,
   onBack,
   onContinue,
 }) {
+  const visibleSlots = getVisibleTimeSlots(timeSlots);
+  const selectedAvailability = selectedTime
+    ? slotAvailability[selectedTime]
+    : null;
+  const canContinue =
+    selectedDate && selectedTime && selectedAvailability?.available !== false;
+
   return (
     <StepPanel
       title="Choose a time that works for you"
@@ -32,7 +43,7 @@ export default function TimeStep({
           <BookingButton variant="secondary" onClick={onBack}>
             Back
           </BookingButton>
-          <BookingButton onClick={onContinue} disabled={!selectedDate || !selectedTime}>
+          <BookingButton onClick={onContinue} disabled={!canContinue}>
             Continue
           </BookingButton>
         </>
@@ -79,22 +90,43 @@ export default function TimeStep({
           </p>
         </section>
 
-        <section className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
-          {TIME_SLOTS.map((slot) => (
-            <button
-              key={slot}
-              type="button"
-              onClick={() => onTimeChange(slot)}
-              className={[
-                "h-8 rounded-[10px] border border-black/12 px-3 text-sm transition",
-                selectedTime === slot
-                  ? "border-[#111111] bg-[#111111] text-white"
-                  : "bg-white text-[#111111] hover:border-[#111111]",
-              ].join(" ")}
-            >
-              {slot}
-            </button>
-          ))}
+        <section>
+          {availabilityMessage ? (
+            <p className="mb-3 text-sm text-[#d83f3f] md:text-base">
+              {availabilityMessage}
+            </p>
+          ) : null}
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
+            {visibleSlots.map((slot) => {
+              const availability = slotAvailability[slot];
+              const isUnavailable = availability?.available === false;
+
+              return (
+                <button
+                  key={slot}
+                  type="button"
+                  disabled={isUnavailable}
+                  title={availability?.reason || undefined}
+                  onClick={() => onTimeChange(slot)}
+                  className={[
+                    "h-8 rounded-[10px] border border-black/12 px-3 text-sm transition disabled:cursor-not-allowed",
+                    selectedTime === slot
+                      ? "border-[#111111] bg-[#111111] text-white"
+                      : isUnavailable
+                        ? "bg-[#f4f4f4] text-[#b3b3b3]"
+                        : "bg-white text-[#111111] hover:border-[#111111]",
+                  ].join(" ")}
+                >
+                  {slot}
+                </button>
+              );
+            })}
+          </div>
+          {selectedAvailability?.available === false ? (
+            <p className="mt-3 text-sm text-[#d83f3f] md:text-base">
+              {selectedAvailability.reason}
+            </p>
+          ) : null}
         </section>
       </div>
     </StepPanel>

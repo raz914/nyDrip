@@ -19,14 +19,15 @@ import {
   TIME_SLOTS,
   calculateBookingTotal,
   calculateSubtotal,
-  calculateTravelFee,
   getDefaultCategory,
   getDefaultService,
   getServiceById,
   getServicesByCategory,
+  getTravelFeeAmount,
   makeCartItem,
 } from "@/components/booking/data";
-import { createUserBooking } from "@/lib/bookings";
+import { createUserBooking, getBookingsForDate } from "@/lib/bookings";
+import { getAvailabilityByTime, getSlotAvailability } from "@/lib/bookingRules";
 import {
   EMPTY_REWARDS,
   calculateDripCredit,
@@ -95,6 +96,13 @@ export default function BookingPage() {
   const [savedBooking, setSavedBooking] = useState(null);
   const [checkoutError, setCheckoutError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [existingBookings, setExistingBookings] = useState([]);
+  const [availabilityMessage, setAvailabilityMessage] = useState("");
+  const [travelFeeState, setTravelFeeState] = useState({
+    status: "idle",
+    result: null,
+    message: "",
+  });
 
   useEffect(() => {
     if (!user) {
@@ -124,14 +132,59 @@ export default function BookingPage() {
     };
   }, [user]);
 
+  useEffect(() => {
+    let isActive = true;
+
+    async function loadExistingBookings() {
+      try {
+        const bookings = await getBookingsForDate(selectedDate);
+
+        if (isActive) {
+          setExistingBookings(bookings);
+          setAvailabilityMessage("");
+        }
+      } catch {
+        if (isActive) {
+          setExistingBookings([]);
+          setAvailabilityMessage(
+            "We could not load live availability. We will recheck this slot before checkout.",
+          );
+        }
+      }
+    }
+
+    loadExistingBookings();
+
+    return () => {
+      isActive = false;
+    };
+  }, [selectedDate]);
+
   const location = getLocation(locationType, details);
   const subtotal = calculateSubtotal(cartItems);
-  const travelFee = calculateTravelFee(locationType, cartItems.length);
+  const travelFee = getTravelFeeAmount(locationType, travelFeeState.result);
   const couponDiscount = MOCK_COUPONS[appliedCouponCode] ?? 0;
   const orderTotal = calculateBookingTotal({
     items: cartItems,
     locationType,
     couponCode: appliedCouponCode,
+    travelFeeResult: travelFeeState.result,
+  });
+  const availabilityByTime = useMemo(
+    () =>
+      getAvailabilityByTime({
+        bookings: existingBookings,
+        date: selectedDate,
+        timeSlots: TIME_SLOTS,
+        locationType,
+      }),
+    [existingBookings, locationType, selectedDate],
+  );
+  const selectedSlotAvailability = getSlotAvailability({
+    bookings: existingBookings,
+    date: selectedDate,
+    time: selectedTime,
+    locationType,
   });
   const maxRedeemableDrips = getMaxRedeemableDrips(
     rewards.availableDrips,
@@ -139,11 +192,7 @@ export default function BookingPage() {
   );
   const selectedDripsToRedeem = Math.min(dripsToRedeem, maxRedeemableDrips);
   const dripCredit = calculateDripCredit(selectedDripsToRedeem);
-  const total = calculateBookingTotal({
-    items: cartItems,
-    locationType,
-    couponCode: appliedCouponCode,
-  }) - dripCredit;
+  const total = Math.max(orderTotal - dripCredit, 0);
   const showCart = cartItems.length > 0 || currentStep > 0;
 
   function addSelectedService() {
@@ -199,6 +248,23 @@ export default function BookingPage() {
       ...currentDetails,
       [field]: value,
     }));
+
+    if (field === "address") {
+      setTravelFeeState({
+        status: "idle",
+        result: null,
+        message: "",
+      });
+    }
+  }
+
+  function changeLocation(nextLocationType) {
+    setLocationType(nextLocationType);
+    setTravelFeeState({
+      status: "idle",
+      result: null,
+      message: "",
+    });
   }
 
   function updatePayment(field, value) {
@@ -229,6 +295,65 @@ export default function BookingPage() {
     setCouponMessage("Try DRIP10 or LOUNGE25 for this mock checkout.");
   }
 
+  async function calculateMobileTravelFee() {
+    if (!details.address.trim()) {
+      setTravelFeeState({
+        status: "error",
+        result: null,
+        message: "Enter a full address so we can calculate your travel fee.",
+      });
+      return;
+    }
+
+    setTravelFeeState({
+      status: "loading",
+      result: null,
+      message: "",
+    });
+
+    try {
+      const response = await fetch("/api/travel-fee", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ address: details.address.trim() }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        setTravelFeeState({
+          status: "error",
+          result,
+          message: result.message || "Travel fee is unavailable for this address.",
+        });
+        return;
+      }
+
+      setTravelFeeState({
+        status: "ready",
+        result,
+        message: "",
+      });
+    } catch (error) {
+      setTravelFeeState({
+        status: "error",
+        result: null,
+        message: error.message || "Travel fee is unavailable for this address.",
+      });
+    }
+  }
+
+  function continueFromDetails() {
+    if (!selectedSlotAvailability.available) {
+      setCheckoutError(selectedSlotAvailability.reason);
+      return;
+    }
+
+    setCheckoutError("");
+    goToStep(3);
+  }
+
   async function submitMockPayment() {
     if (loading) {
       return;
@@ -245,6 +370,22 @@ export default function BookingPage() {
     setCheckoutError("");
 
     try {
+      const latestBookings = await getBookingsForDate(selectedDate);
+      const latestSlotAvailability = getSlotAvailability({
+        bookings: latestBookings,
+        date: selectedDate,
+        time: selectedTime,
+        locationType,
+      });
+
+      if (!latestSlotAvailability.available) {
+        throw new Error(latestSlotAvailability.reason);
+      }
+
+      if (locationType === "mobile" && !travelFeeState.result?.ok) {
+        throw new Error("Please calculate the travel fee before checkout.");
+      }
+
       const booking = await createUserBooking(user, {
         items: cartItems,
         appointmentDate: selectedDate,
@@ -258,6 +399,9 @@ export default function BookingPage() {
         notes: details.notes,
         subtotal,
         travelFee,
+        travelMiles: travelFeeState.result?.miles ?? null,
+        travelBase: travelFeeState.result?.base ?? null,
+        travelFeeSource: travelFeeState.result?.source ?? "none",
         couponCode: appliedCouponCode,
         couponDiscount,
         orderTotal,
@@ -295,6 +439,9 @@ export default function BookingPage() {
         <TimeStep
           selectedDate={selectedDate}
           selectedTime={selectedTime}
+          timeSlots={TIME_SLOTS}
+          slotAvailability={availabilityByTime}
+          availabilityMessage={availabilityMessage}
           onDateChange={setSelectedDate}
           onTimeChange={setSelectedTime}
           onBack={goBack}
@@ -308,10 +455,12 @@ export default function BookingPage() {
         <DetailsStep
           details={details}
           locationType={locationType}
+          travelFeeState={travelFeeState}
           onDetailsChange={updateDetails}
-          onLocationChange={setLocationType}
+          onLocationChange={changeLocation}
+          onCalculateTravelFee={calculateMobileTravelFee}
           onBack={goBack}
-          onContinue={() => goToStep(3)}
+          onContinue={continueFromDetails}
         />
       );
     }
@@ -345,6 +494,7 @@ export default function BookingPage() {
           couponCode={appliedCouponCode}
           couponDiscount={savedBooking?.couponDiscount ?? couponDiscount}
           dripCredit={savedBooking?.dripCredit ?? dripCredit}
+          travelFeeResult={travelFeeState.result}
           dripsEarned={savedBooking?.dripsEarned ?? 0}
           total={savedBooking?.totalPaid ?? total}
         />
@@ -371,6 +521,7 @@ export default function BookingPage() {
             couponCode={appliedCouponCode}
             couponDiscount={couponDiscount}
             dripCredit={dripCredit}
+            travelFeeResult={travelFeeState.result}
             total={total}
             onRemove={removeCartItem}
             onAddMore={() => goToStep(0)}

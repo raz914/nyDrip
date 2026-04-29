@@ -226,13 +226,20 @@ export function calculateSubtotal(items) {
   return items.reduce((total, item) => total + item.price, 0);
 }
 
-export function calculateTravelFee(locationType, visitCount) {
-  return locationType === "mobile" ? visitCount * 4 : 0;
+export function getTravelFeeAmount(locationType, travelFeeResult) {
+  return locationType === "mobile" && travelFeeResult?.ok
+    ? travelFeeResult.fee
+    : 0;
 }
 
-export function calculateBookingTotal({ items, locationType, couponCode }) {
+export function calculateBookingTotal({
+  items,
+  locationType,
+  couponCode,
+  travelFeeResult,
+}) {
   const subtotal = calculateSubtotal(items);
-  const travelFee = calculateTravelFee(locationType, items.length);
+  const travelFee = getTravelFeeAmount(locationType, travelFeeResult);
   const couponDiscount = MOCK_COUPONS[couponCode?.toUpperCase()] ?? 0;
 
   return Math.max(subtotal + travelFee - couponDiscount, 0);

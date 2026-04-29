@@ -1,8 +1,6 @@
 import Image from "next/image";
 
 import {
-  calculateSubtotal,
-  calculateTravelFee,
   formatBookingDate,
   formatCurrency,
 } from "@/components/booking/data";
@@ -53,14 +51,16 @@ export default function BookingCartSummary({
   couponCode = "",
   couponDiscount = 0,
   dripCredit = 0,
+  travelFeeResult = null,
   total,
   onRemove,
   onAddMore,
   onEditLocation,
   readOnly = false,
 }) {
-  const subtotal = calculateSubtotal(items);
-  const travelFee = calculateTravelFee(location.type, items.length);
+  const travelFee = location.type === "mobile" && travelFeeResult?.ok
+    ? travelFeeResult.fee
+    : 0;
 
   return (
     <aside className="bg-[var(--color-light)] text-[#111111]">
@@ -115,9 +115,18 @@ export default function BookingCartSummary({
           <div className="space-y-5 text-sm md:text-base">
             <p>{location.address}</p>
             {travelFee ? (
-              <div className="flex items-center justify-between gap-4">
-                <span>Travel Fee</span>
-                <span>{formatCurrency(4)} × {items.length} visits = {formatCurrency(travelFee)}</span>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between gap-4">
+                  <span>Travel Fee</span>
+                  <span>{formatCurrency(travelFee)}</span>
+                </div>
+                {travelFeeResult?.source === "manhattan-flat-rate" ? (
+                  <p className="text-xs text-[#858585]">Manhattan flat rate</p>
+                ) : travelFeeResult?.miles ? (
+                  <p className="text-xs text-[#858585]">
+                    {travelFeeResult.miles.toFixed(1)} miles from the closest base
+                  </p>
+                ) : null}
               </div>
             ) : null}
             {couponCode && couponDiscount ? (

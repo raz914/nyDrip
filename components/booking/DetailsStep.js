@@ -1,4 +1,4 @@
-import { LOCATION_OPTIONS } from "@/components/booking/data";
+import { LOCATION_OPTIONS, formatCurrency } from "@/components/booking/data";
 import {
   BookingButton,
   StepPanel,
@@ -9,17 +9,21 @@ import {
 export default function DetailsStep({
   details,
   locationType,
+  travelFeeState,
   onDetailsChange,
   onLocationChange,
+  onCalculateTravelFee,
   onBack,
   onContinue,
 }) {
+  const needsTravelFee = locationType === "mobile";
+  const hasReadyTravelFee = travelFeeState?.status === "ready" && travelFeeState.result?.ok;
   const canContinue =
     details.fullName.trim() &&
     details.phone.trim() &&
     details.email.trim() &&
     details.agreeToTerms &&
-    (locationType !== "mobile" || details.address.trim());
+    (!needsTravelFee || (details.address.trim() && hasReadyTravelFee));
 
   return (
     <StepPanel
@@ -73,15 +77,36 @@ export default function DetailsStep({
           }))}
         />
 
-        {locationType === "mobile" ? (
-          <UnderlineInput
-            label="Treatment Address"
-            name="address"
-            value={details.address}
-            onChange={(value) => onDetailsChange("address", value)}
-            placeholder="Write your address here"
-            required
-          />
+        {needsTravelFee ? (
+          <div className="space-y-4">
+            <UnderlineInput
+              label="Treatment Address"
+              name="address"
+              value={details.address}
+              onChange={(value) => onDetailsChange("address", value)}
+              placeholder="Write your address here"
+              required
+            />
+            <div className="flex flex-wrap items-center gap-3">
+              <BookingButton
+                variant="muted"
+                onClick={onCalculateTravelFee}
+                disabled={!details.address.trim() || travelFeeState?.status === "loading"}
+              >
+                {travelFeeState?.status === "loading" ? "Calculating" : "Calculate Travel Fee"}
+              </BookingButton>
+              {hasReadyTravelFee ? (
+                <p className="text-sm text-[var(--color-primary)] md:text-base">
+                  Travel fee: {formatCurrency(travelFeeState.result.fee)}
+                </p>
+              ) : null}
+            </div>
+            {travelFeeState?.message ? (
+              <p className="text-sm text-[#d83f3f] md:text-base">
+                {travelFeeState.message}
+              </p>
+            ) : null}
+          </div>
         ) : null}
 
         <UnderlineInput
