@@ -29,7 +29,7 @@ export const homeNavLinks = [
   },
   { label: "Memberships", href: "/memberships" },
   { label: "About", href: "/about", children: areaDropdownLinks },
-  { label: "Blog", href: "#contact" },
+  { label: "Blog", href: "/blog" },
 ];
 
 export const sharedServiceNavLinks = [
@@ -41,5 +41,5 @@ export const sharedServiceNavLinks = [
   },
   { label: "Memberships", href: "/memberships" },
   { label: "About", href: "/about", children: areaDropdownLinks },
-  { label: "Blog", href: "/#contact" },
+  { label: "Blog", href: "/blog" },
 ];
