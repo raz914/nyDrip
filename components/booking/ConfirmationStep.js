@@ -12,6 +12,7 @@ export default function ConfirmationStep({
   location,
   couponCode,
   couponDiscount = 0,
+  membershipDiscount = 0,
   dripCredit = 0,
   travelFeeResult = null,
   dripsEarned = 0,
@@ -46,6 +47,7 @@ export default function ConfirmationStep({
             showLocation
             couponCode={couponCode}
             couponDiscount={couponDiscount}
+            membershipDiscount={membershipDiscount}
             dripCredit={dripCredit}
             travelFeeResult={travelFeeResult}
             total={total}

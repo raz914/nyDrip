@@ -7,6 +7,8 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import HistoryTable from "@/components/dashboard/HistoryTable";
 import {
+  MembershipCard,
+  MembershipComparisonCard,
   NextAppointmentCard,
   ReferralCard,
   RewardsCard,
@@ -18,6 +20,7 @@ import {
   mapBookingToAppointment,
   mapBookingToHistoryRow,
 } from "@/lib/bookings";
+import { getMembershipSummary, getUserMembership } from "@/lib/memberships";
 import { EMPTY_REWARDS, getRewardLedger, getRewardsSummary, getUserRewards } from "@/lib/rewards";
 
 const EMPTY_REFERRAL_STATS = {
@@ -56,6 +59,7 @@ export default function DashboardPage() {
   const firstName = user?.displayName?.split(" ")[0] || "Name";
   const [dashboardData, setDashboardData] = useState({
     rewards: getRewardsSummary(EMPTY_REWARDS),
+    membership: getMembershipSummary(),
     ledger: [],
     nextAppointment: null,
     historyRows: [],
@@ -82,7 +86,8 @@ export default function DashboardPage() {
       setError("");
 
       try {
-        const [rewards, ledger, bookings] = await Promise.all([
+        const [membership, rewards, ledger, bookings] = await Promise.all([
+          getUserMembership(user.uid),
           getUserRewards(user.uid),
           getRewardLedger(user.uid),
           getUserBookings(user.uid),
@@ -93,7 +98,8 @@ export default function DashboardPage() {
         }
 
         setDashboardData({
-          rewards,
+          rewards: getRewardsSummary(rewards, membership),
+          membership,
           ledger,
           nextAppointment: mapBookingToAppointment(getNextAppointment(bookings)),
           historyRows: bookings.map(mapBookingToHistoryRow),
@@ -140,11 +146,17 @@ export default function DashboardPage() {
 
             <NextAppointmentCard appointment={dashboardData.nextAppointment} />
 
+            <MembershipCard membership={dashboardData.membership} />
+
             <div className="grid gap-6 md:grid-cols-2 md:gap-5">
+              <MembershipComparisonCard membership={dashboardData.membership} />
               <RewardsCard
                 rewards={dashboardData.rewards}
                 ledger={dashboardData.ledger}
               />
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 md:gap-5">
               <ReferralCard
                 referralStats={dashboardData.referralStats}
                 referralLink={getReferralLink(user)}

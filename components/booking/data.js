@@ -1,4 +1,8 @@
 import { treatmentCatalog } from "@/components/pricing/catalog";
+import {
+  getBookableTimeSlots,
+  getRollingWeekdayDates,
+} from "@/lib/bookingRules";
 
 export const BOOKING_STEPS = [
   { id: "service", label: "Service" },
@@ -33,42 +37,8 @@ export const MOCK_COUPONS = {
   LOUNGE25: 25,
 };
 
-export const BOOKING_DATES = [
-  "2026-05-09",
-  "2026-05-10",
-  "2026-05-11",
-  "2026-05-12",
-  "2026-05-13",
-  "2026-05-14",
-];
-
-export const TIME_SLOTS = [
-  "1:15 pm",
-  "1:30 pm",
-  "1:45 pm",
-  "2:00 pm",
-  "2:15 pm",
-  "2:30 pm",
-  "2:45 pm",
-  "3:00 pm",
-  "3:15 pm",
-  "3:30 pm",
-  "3:45 pm",
-  "4:00 pm",
-  "4:15 pm",
-  "4:30 pm",
-  "4:45 pm",
-  "5:00 pm",
-  "5:15 pm",
-  "5:30 pm",
-  "5:45 pm",
-  "6:00 pm",
-  "6:15 pm",
-  "6:30 pm",
-  "6:45 pm",
-  "7:00 pm",
-  "7:15 pm",
-];
+export const BOOKING_DATES = getRollingWeekdayDates();
+export const TIME_SLOTS = getBookableTimeSlots(15);
 
 const imageByBaseName = {
   "Autumn Restore Drip": "/services/iv-therapy/spring-restore-drip.png",

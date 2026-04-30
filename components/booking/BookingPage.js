@@ -26,14 +26,24 @@ import {
   getTravelFeeAmount,
   makeCartItem,
 } from "@/components/booking/data";
-import { createUserBooking, getBookingsForDate } from "@/lib/bookings";
-import { getAvailabilityByTime, getSlotAvailability } from "@/lib/bookingRules";
+import { createUserBooking } from "@/lib/bookings";
+import {
+  getBookableTimeSlots,
+  getCartDurationMinutes,
+  getRollingWeekdayDates,
+} from "@/lib/bookingRules";
 import {
   EMPTY_REWARDS,
   calculateDripCredit,
   getMaxRedeemableDrips,
+  getRewardsSummary,
   getUserRewards,
 } from "@/lib/rewards";
+import {
+  calculateMembershipDiscount,
+  getMembershipSummary,
+  getUserMembership,
+} from "@/lib/memberships";
 
 function getLocation(locationType, details) {
   const option =
@@ -48,6 +58,18 @@ function getLocation(locationType, details) {
   }
 
   return option;
+}
+
+function getBookingReturnUrl(pathname, searchParams, serviceId) {
+  const nextSearchParams = new URLSearchParams(searchParams.toString());
+
+  if (serviceId && !nextSearchParams.has("service")) {
+    nextSearchParams.set("service", serviceId);
+  }
+
+  const queryString = nextSearchParams.toString();
+
+  return queryString ? `${pathname}?${queryString}` : pathname;
 }
 
 export default function BookingPage() {
@@ -93,16 +115,29 @@ export default function BookingPage() {
   const [couponMessage, setCouponMessage] = useState("");
   const [dripsToRedeem, setDripsToRedeem] = useState(0);
   const [rewards, setRewards] = useState(EMPTY_REWARDS);
+  const [membership, setMembership] = useState(getMembershipSummary());
   const [savedBooking, setSavedBooking] = useState(null);
   const [checkoutError, setCheckoutError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [existingBookings, setExistingBookings] = useState([]);
+  const [slotAvailability, setSlotAvailability] = useState({});
+  const [availableTimeSlots, setAvailableTimeSlots] = useState(TIME_SLOTS);
+  const [availabilityStatus, setAvailabilityStatus] = useState("idle");
   const [availabilityMessage, setAvailabilityMessage] = useState("");
   const [travelFeeState, setTravelFeeState] = useState({
     status: "idle",
     result: null,
     message: "",
   });
+
+  useEffect(() => {
+    if (loading || user) {
+      return;
+    }
+
+    const currentUrl = getBookingReturnUrl(pathname, searchParams, serviceId);
+
+    router.replace(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
+  }, [loading, pathname, router, searchParams, serviceId, user]);
 
   useEffect(() => {
     if (!user) {
@@ -113,10 +148,14 @@ export default function BookingPage() {
 
     async function loadRewards() {
       try {
-        const nextRewards = await getUserRewards(user.uid);
+        const [nextMembership, nextRewards] = await Promise.all([
+          getUserMembership(user.uid),
+          getUserRewards(user.uid),
+        ]);
 
         if (isActive) {
-          setRewards(nextRewards);
+          setMembership(nextMembership);
+          setRewards(getRewardsSummary(nextRewards, nextMembership));
         }
       } catch (error) {
         if (isActive) {
@@ -132,60 +171,24 @@ export default function BookingPage() {
     };
   }, [user]);
 
-  useEffect(() => {
-    let isActive = true;
-
-    async function loadExistingBookings() {
-      try {
-        const bookings = await getBookingsForDate(selectedDate);
-
-        if (isActive) {
-          setExistingBookings(bookings);
-          setAvailabilityMessage("");
-        }
-      } catch {
-        if (isActive) {
-          setExistingBookings([]);
-          setAvailabilityMessage(
-            "We could not load live availability. We will recheck this slot before checkout.",
-          );
-        }
-      }
-    }
-
-    loadExistingBookings();
-
-    return () => {
-      isActive = false;
-    };
-  }, [selectedDate]);
-
   const location = getLocation(locationType, details);
   const subtotal = calculateSubtotal(cartItems);
   const travelFee = getTravelFeeAmount(locationType, travelFeeState.result);
   const couponDiscount = MOCK_COUPONS[appliedCouponCode] ?? 0;
-  const orderTotal = calculateBookingTotal({
+  const baseOrderTotal = calculateBookingTotal({
     items: cartItems,
     locationType,
     couponCode: appliedCouponCode,
     travelFeeResult: travelFeeState.result,
   });
-  const availabilityByTime = useMemo(
-    () =>
-      getAvailabilityByTime({
-        bookings: existingBookings,
-        date: selectedDate,
-        timeSlots: TIME_SLOTS,
-        locationType,
-      }),
-    [existingBookings, locationType, selectedDate],
-  );
-  const selectedSlotAvailability = getSlotAvailability({
-    bookings: existingBookings,
-    date: selectedDate,
-    time: selectedTime,
-    locationType,
-  });
+  const membershipDiscount = calculateMembershipDiscount(cartItems, membership);
+  const orderTotal = Math.max(baseOrderTotal - membershipDiscount, 0);
+  const bookingDates = useMemo(() => getRollingWeekdayDates(), []);
+  const bookingDurationMinutes = getCartDurationMinutes(cartItems);
+  const selectedSlotAvailability = slotAvailability[selectedTime] ?? {
+    available: false,
+    reason: availabilityMessage || "Live availability is still loading.",
+  };
   const maxRedeemableDrips = getMaxRedeemableDrips(
     rewards.availableDrips,
     orderTotal,
@@ -194,6 +197,80 @@ export default function BookingPage() {
   const dripCredit = calculateDripCredit(selectedDripsToRedeem);
   const total = Math.max(orderTotal - dripCredit, 0);
   const showCart = cartItems.length > 0 || currentStep > 0;
+
+  useEffect(() => {
+    if (!bookingDates.includes(selectedDate)) {
+      setSelectedDate(bookingDates[0] || "");
+    }
+  }, [bookingDates, selectedDate]);
+
+  useEffect(() => {
+    if (!availableTimeSlots.includes(selectedTime)) {
+      setSelectedTime(availableTimeSlots[0] || "");
+    }
+  }, [availableTimeSlots, selectedTime]);
+
+  useEffect(() => {
+    if (loading) {
+      return undefined;
+    }
+
+    if (!user || !selectedDate || !bookingDurationMinutes) {
+      setSlotAvailability({});
+      setAvailabilityStatus("idle");
+      setAvailabilityMessage("");
+      return undefined;
+    }
+
+    let isActive = true;
+
+    async function loadAvailability() {
+      setAvailabilityStatus("loading");
+      setAvailabilityMessage("");
+
+      try {
+        const token = await user.getIdToken();
+        const params = new URLSearchParams({
+          date: selectedDate,
+          durationMinutes: String(bookingDurationMinutes),
+          locationType,
+        });
+        const response = await fetch(`/api/booking-availability?${params.toString()}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+          throw new Error(result.message || "Live availability is unavailable.");
+        }
+
+        if (isActive) {
+          setAvailableTimeSlots(result.timeSlots || getBookableTimeSlots(bookingDurationMinutes));
+          setSlotAvailability(result.availabilityByTime || {});
+          setAvailabilityStatus("ready");
+          setAvailabilityMessage("");
+        }
+      } catch (error) {
+        if (isActive) {
+          setAvailableTimeSlots(getBookableTimeSlots(bookingDurationMinutes));
+          setSlotAvailability({});
+          setAvailabilityStatus("error");
+          setAvailabilityMessage(
+            error.message ||
+              "We could not load live availability. We will recheck this slot before checkout.",
+          );
+        }
+      }
+    }
+
+    loadAvailability();
+
+    return () => {
+      isActive = false;
+    };
+  }, [bookingDurationMinutes, loading, locationType, selectedDate, user]);
 
   function addSelectedService() {
     const service = getServiceById(serviceId);
@@ -230,6 +307,17 @@ export default function BookingPage() {
   }
 
   function continueFromService() {
+    if (loading) {
+      return;
+    }
+
+    if (!user) {
+      const currentUrl = getBookingReturnUrl(pathname, searchParams, serviceId);
+
+      router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
+      return;
+    }
+
     if (!cartItems.length) {
       const service = getServiceById(serviceId);
 
@@ -360,8 +448,7 @@ export default function BookingPage() {
     }
 
     if (!user) {
-      const queryString = searchParams.toString();
-      const currentUrl = queryString ? `${pathname}?${queryString}` : pathname;
+      const currentUrl = getBookingReturnUrl(pathname, searchParams, serviceId);
       router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
       return;
     }
@@ -370,16 +457,26 @@ export default function BookingPage() {
     setCheckoutError("");
 
     try {
-      const latestBookings = await getBookingsForDate(selectedDate);
-      const latestSlotAvailability = getSlotAvailability({
-        bookings: latestBookings,
-        date: selectedDate,
-        time: selectedTime,
-        locationType,
+      const token = await user.getIdToken();
+      const availabilityResponse = await fetch("/api/booking-availability", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date: selectedDate,
+          time: selectedTime,
+          durationMinutes: bookingDurationMinutes,
+          locationType,
+        }),
       });
+      const availabilityResult = await availabilityResponse.json();
 
-      if (!latestSlotAvailability.available) {
-        throw new Error(latestSlotAvailability.reason);
+      if (!availabilityResponse.ok || !availabilityResult.ok) {
+        throw new Error(
+          availabilityResult.message || "This time slot is no longer available.",
+        );
       }
 
       if (locationType === "mobile" && !travelFeeState.result?.ok) {
@@ -404,12 +501,13 @@ export default function BookingPage() {
         travelFeeSource: travelFeeState.result?.source ?? "none",
         couponCode: appliedCouponCode,
         couponDiscount,
+        membershipDiscount,
         orderTotal,
         dripsToRedeem: selectedDripsToRedeem,
       });
 
       setSavedBooking(booking);
-      setRewards(booking.rewards);
+      setRewards(getRewardsSummary(booking.rewards, membership));
       setIsSubmitting(false);
       goToStep(4);
     } catch (error) {
@@ -437,11 +535,14 @@ export default function BookingPage() {
     if (currentStep === 1) {
       return (
         <TimeStep
+          bookingDates={bookingDates}
           selectedDate={selectedDate}
           selectedTime={selectedTime}
-          timeSlots={TIME_SLOTS}
-          slotAvailability={availabilityByTime}
+          timeSlots={availableTimeSlots}
+          durationMinutes={bookingDurationMinutes}
+          slotAvailability={slotAvailability}
           availabilityMessage={availabilityMessage}
+          availabilityStatus={availabilityStatus}
           onDateChange={setSelectedDate}
           onTimeChange={setSelectedTime}
           onBack={goBack}
@@ -473,6 +574,7 @@ export default function BookingPage() {
         dripsToRedeem={selectedDripsToRedeem}
         maxRedeemableDrips={maxRedeemableDrips}
         dripCredit={dripCredit}
+        membership={membership}
         isSubmitting={isSubmitting}
         onPaymentChange={updatePayment}
         onApplyCoupon={applyCoupon}
@@ -480,6 +582,22 @@ export default function BookingPage() {
         onBack={goBack}
         onSubmit={submitMockPayment}
       />
+    );
+  }
+
+  if (loading || !user) {
+    return (
+      <BookingShell currentStep={0}>
+        <div className="border border-[#111111] bg-white px-5 py-12 text-center text-[#111111]">
+          <h1 className="text-[1.75rem] font-medium leading-none md:text-[2.25rem]">
+            Sign in to book your appointment
+          </h1>
+          <p className="mx-auto mt-4 max-w-[520px] text-base text-[#858585] md:text-lg">
+            We are taking you to login so we can protect your booking details and
+            confirm live availability.
+          </p>
+        </div>
+      </BookingShell>
     );
   }
 
@@ -493,6 +611,7 @@ export default function BookingPage() {
           location={location}
           couponCode={appliedCouponCode}
           couponDiscount={savedBooking?.couponDiscount ?? couponDiscount}
+          membershipDiscount={savedBooking?.membershipDiscount ?? membershipDiscount}
           dripCredit={savedBooking?.dripCredit ?? dripCredit}
           travelFeeResult={travelFeeState.result}
           dripsEarned={savedBooking?.dripsEarned ?? 0}
@@ -520,6 +639,7 @@ export default function BookingPage() {
             showLocation={currentStep >= 3}
             couponCode={appliedCouponCode}
             couponDiscount={couponDiscount}
+            membershipDiscount={membershipDiscount}
             dripCredit={dripCredit}
             travelFeeResult={travelFeeState.result}
             total={total}

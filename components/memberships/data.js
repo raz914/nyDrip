@@ -1,3 +1,5 @@
+import { MEMBERSHIP_TIERS, formatMembershipPrice } from "@/lib/memberships";
+
 export const membershipsHero = {
   title: "Elevate Your Wellness",
   description:
@@ -9,65 +11,21 @@ export const membershipsHero = {
 };
 
 export const membershipsIntro = {
-  title: "Vitamin Drip Memberships",
+  title: "NY Drip Lounge Memberships",
   description:
-    "Boost your wellness while saving every month. Our Vitamin Drip Memberships offer a variety of treatments to support energy, recovery, and overall health.",
+    "Choose a monthly wellness protocol with included credits, member pricing, Drips rewards, and priority access. Every tier starts with a 3-month minimum and renews monthly after the initial term.",
 };
 
-export const membershipPlans = [
-  {
-    name: "Basic Plan",
-    price: "$250",
-    billingPeriod: "/month",
-    ctaLabel: "Get Basic",
-    ctaHref: "#contact",
-    features: [
-      "1 Basic Infusion",
-      "1 Vitamin Injection",
-      "10% Off NAD Treatments",
-      "Complementary Health Consultation",
-    ],
-  },
-  {
-    name: "Premium Plan",
-    price: "$250",
-    billingPeriod: "/month",
-    ctaLabel: "Get Premium",
-    ctaHref: "#contact",
-    featured: true,
-    features: [
-      "2 Basic Infusions",
-      "2 Vitamin Injection",
-      "15% Off NAD Treatments",
-      "Complementary Health Consultation",
-    ],
-  },
-  {
-    name: "Elite Plan",
-    price: "$800",
-    billingPeriod: "/month",
-    ctaLabel: "Get Elite",
-    ctaHref: "#contact",
-    features: [
-      "2 Basic Infusions",
-      "2 Vitamin Injection",
-      "1 Free NAD Infusion",
-      "25% Off Any Additional Infusion",
-      "Complementary Health Consultation",
-    ],
-  },
-  {
-    name: "Platinum Plan",
-    price: "$1200",
-    billingPeriod: "/month",
-    ctaLabel: "Get Platinum",
-    ctaHref: "#contact",
-    features: [
-      "2 Basic Infusions",
-      "2 Vitamin Injection",
-      "2 NAD Treatments",
-      "30% Off Any Additional Infusion",
-      "Complementary Health Consultation",
-    ],
-  },
-];
+export const membershipPlans = MEMBERSHIP_TIERS.map((tier) => ({
+  name: tier.subtitle ? `${tier.name} - ${tier.subtitle}` : tier.name,
+  price: formatMembershipPrice(tier.price),
+  billingPeriod: "/month",
+  ctaLabel: `Get ${tier.name}`,
+  ctaHref: "#contact",
+  featured: tier.featured,
+  features: [
+    `${tier.minimumTermMonths}-month minimum`,
+    ...tier.includedCredits,
+    ...tier.benefits.slice(0, 4),
+  ],
+}));

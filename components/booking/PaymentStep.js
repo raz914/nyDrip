@@ -13,6 +13,7 @@ export default function PaymentStep({
   dripsToRedeem,
   maxRedeemableDrips,
   dripCredit,
+  membership,
   isSubmitting,
   onPaymentChange,
   onApplyCoupon,
@@ -68,6 +69,9 @@ export default function PaymentStep({
               <p className="mt-2 text-sm text-[#858585] md:text-base">
                 You have {Math.round(rewards.availableDrips).toLocaleString("en-US")} Drips.
                 Redeem 100 Drips for $10 credit. One redemption per visit.
+              </p>
+              <p className="mt-1 text-sm text-[#858585] md:text-base">
+                Your {membership.tierName} membership earns {membership.earnRate} Drips per $10 spent.
               </p>
               <p className="mt-1 text-sm text-[#858585] md:text-base">
                 Max available for this booking: {maxRedeemableDrips.toLocaleString("en-US")} Drips.

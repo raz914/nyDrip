@@ -3,6 +3,10 @@ import Link from "next/link";
 import DashboardButton from "@/components/dashboard/DashboardButton";
 import SectionHeader from "@/components/dashboard/SectionHeader";
 import { CrownIcon } from "@/components/dashboard/icons";
+import {
+  MEMBERSHIP_BONUS_ACTIONS,
+  MEMBERSHIP_MARGIN_RULES,
+} from "@/lib/memberships";
 import { formatDrips } from "@/lib/rewards";
 
 export function NextAppointmentCard({ appointment }) {
@@ -49,13 +53,15 @@ function LedgerRow({ entry }) {
 }
 
 export function RewardsCard({ rewards, ledger = [] }) {
+  const bonusActions = MEMBERSHIP_BONUS_ACTIONS.slice(0, 4);
+
   return (
     <section className="bg-[#f0f2f5]">
       <div className="flex min-h-[63px] items-center justify-between border-b border-black/10 px-5 py-5">
         <div className="flex items-center gap-1">
           <CrownIcon />
           <h2 className="text-lg font-medium leading-none md:text-[1.25rem]">
-            {rewards.tierLabel} Member
+            Drips Rewards
           </h2>
         </div>
         <Link href="/dashboard" className="text-sm text-[#858585] underline underline-offset-2 md:text-base">
@@ -70,7 +76,7 @@ export function RewardsCard({ rewards, ledger = [] }) {
           </p>
           <p className="text-sm text-[#858585] md:text-base">
             {rewards.nextTier
-              ? `${formatDrips(rewards.dripsToNextTier)} to ${rewards.nextTier.label} Member`
+              ? `${rewards.earnRate}x earn rate as a ${rewards.tierLabel} member`
               : "Top tier unlocked"}
           </p>
         </div>
@@ -83,8 +89,23 @@ export function RewardsCard({ rewards, ledger = [] }) {
         </div>
 
         <p className="mt-4 text-sm leading-5 text-[#111111] md:text-base md:leading-6">
-          Redeem 100 Drips for $10 credit toward eligible services. One redemption per visit.
+          Redeem 100 Drips for $10 credit toward eligible services. One redemption
+          per visit, no cash value, and Drips cannot be applied to membership fees.
         </p>
+
+        <div className="mt-5 grid gap-2 text-sm text-[#111111] md:text-base">
+          {bonusActions.map((action) => (
+            <div
+              key={action.label}
+              className="flex items-center justify-between gap-3 border-t border-black/10 pt-2"
+            >
+              <span>{action.label}</span>
+              <span className="text-[var(--color-primary)]">
+                +{formatDrips(action.drips)}
+              </span>
+            </div>
+          ))}
+        </div>
 
         <div className="mt-9 flex items-end justify-between gap-4 md:mt-[38px]">
           <div className="flex items-start gap-2">
@@ -107,6 +128,102 @@ export function RewardsCard({ rewards, ledger = [] }) {
             ))}
           </div>
         ) : null}
+      </div>
+    </section>
+  );
+}
+
+export function MembershipCard({ membership }) {
+  const { plan } = membership;
+
+  return (
+    <section className="border border-[var(--color-primary)] bg-white">
+      <SectionHeader
+        title={`${plan.name} Membership`}
+        action={{ label: "Upgrade", href: "/memberships#plans" }}
+      />
+      <div className="grid gap-6 px-5 py-7 md:grid-cols-[1fr_1fr] md:py-8">
+        <div>
+          <p className="text-[2.5rem] font-medium leading-none text-[var(--color-primary)]">
+            {membership.priceLabel}
+            <span className="ml-1 text-base text-[#858585]">/month</span>
+          </p>
+          <p className="mt-3 text-sm text-[#858585] md:text-base">
+            {plan.minimumTermMonths}-month minimum, then auto-renews monthly.
+          </p>
+          <p className="mt-4 text-sm leading-5 text-[#111111] md:text-base md:leading-6">
+            {plan.headline}. Earn {plan.earnRate} Drip
+            {plan.earnRate === 1 ? "" : "s"} per $10 spent beyond your
+            subscription plan.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-base font-medium md:text-xl">Included this month</h3>
+          <ul className="mt-4 space-y-3 text-sm text-[#111111] md:text-base">
+            {plan.includedCredits.map((credit) => (
+              <li key={credit} className="border-t border-black/10 pt-3">
+                {credit}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function MembershipComparisonCard({ membership }) {
+  const { plan, nextPlan } = membership;
+  const discountRows = [
+    ["Standard drips", plan.discounts.standardDrips, nextPlan?.discounts.standardDrips],
+    ["NAD+ and Niagen", plan.discounts.nad, nextPlan?.discounts.nad],
+    ["Peptide programs", plan.discounts.peptides, nextPlan?.discounts.peptides],
+    ["Botox/aesthetics", plan.discounts.botox, nextPlan?.discounts.botox],
+  ];
+
+  return (
+    <section className="bg-[#f0f2f5]">
+      <div className="border-b border-black/10 px-5 py-5">
+        <h2 className="text-lg font-medium leading-none md:text-[1.25rem]">
+          {nextPlan ? `${plan.name} vs ${nextPlan.name}` : "Diamond Benefits"}
+        </h2>
+      </div>
+
+      <div className="px-5 py-6">
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <p className="text-sm text-[#858585] md:text-base">Current earn rate</p>
+            <p className="mt-1 text-2xl font-medium text-[var(--color-primary)]">
+              {plan.earnRate} Drips / $10
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-[#858585] md:text-base">
+              {nextPlan ? "Next tier earn rate" : "Top tier status"}
+            </p>
+            <p className="mt-1 text-2xl font-medium text-[#111111]">
+              {nextPlan ? `${nextPlan.earnRate} Drips / $10` : "Unlocked"}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 divide-y divide-black/10 text-sm md:text-base">
+          {discountRows.map(([label, current, next]) => (
+            <div key={label} className="flex items-center justify-between gap-3 py-3">
+              <span>{label}</span>
+              <span className="text-[#858585]">
+                {current}%{nextPlan ? ` -> ${next}%` : ""}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-5 text-sm leading-5 text-[#858585] md:text-base md:leading-6">
+          {MEMBERSHIP_MARGIN_RULES.slice(0, 2).map((rule) => (
+            <p key={rule}>{rule}</p>
+          ))}
+        </div>
       </div>
     </section>
   );

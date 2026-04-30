@@ -50,6 +50,7 @@ export default function BookingCartSummary({
   showLocation = false,
   couponCode = "",
   couponDiscount = 0,
+  membershipDiscount = 0,
   dripCredit = 0,
   travelFeeResult = null,
   total,
@@ -139,6 +140,12 @@ export default function BookingCartSummary({
               <div className="flex items-center justify-between gap-4 text-[var(--color-primary)]">
                 <span>Drips Credit</span>
                 <span>-{formatCurrency(dripCredit)}</span>
+              </div>
+            ) : null}
+            {membershipDiscount ? (
+              <div className="flex items-center justify-between gap-4 text-[var(--color-primary)]">
+                <span>Member Savings</span>
+                <span>-{formatCurrency(membershipDiscount)}</span>
               </div>
             ) : null}
           </div>
