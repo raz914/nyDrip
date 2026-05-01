@@ -28,17 +28,19 @@ export const serviceItems = [
     title: "PEPTIDE WELLNESS",
     description:
       "Support recovery, fat loss, sleep, and overall vitality with advanced peptide protocols like BPC-157, CJC-1295 + Ipamorelin, Retatrutide, GHK-Cu, and Melanotan II. Whether you're focused on healing, hormone support, or body composition, our expert-guided treatments offer personalized, results-driven solutions for optimal performance and longevity.",
-    image: "/services/peptide-wellness.png",
-    alt: "Peptide wellness bottles on a blue background",
-    imageClassName: "object-cover object-center",
+    image: "/services/peptide-wellness/wolverine-stack.png",
+    alt: "Peptide wellness vial",
+    imageClassName: "object-contain bg-[#f0f2f5] p-6",
+    href: "/services/peptide-wellness",
   },
   {
     title: "INJECTIONS & BOOSTERS",
     description:
       "Fuel your body with quick, effective vitamin injections like B12, B Complex, Biotin, Glutathione, and Vitamin C. These powerful boosters support energy, detox, immune health, and beauty, making them the perfect complement to any wellness routine for busy, health-conscious individuals.",
-    image: "/services/injections-boosters.png",
-    alt: "Wellness injections and booster vials",
-    imageClassName: "object-cover object-center",
+    image: "/services/injections-boosters/vitamin-b12-injection.png",
+    alt: "Vitamin injection booster vial",
+    imageClassName: "object-contain bg-[#f0f2f5] p-6",
+    href: "/services/injections-boosters",
   },
   {
     title: "TESTOSTERONE REPLACEMENT",

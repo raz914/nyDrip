@@ -43,17 +43,26 @@ export const TIME_SLOTS = getBookableTimeSlots(15);
 const imageByBaseName = {
   "Autumn Restore Drip": "/services/iv-therapy/spring-restore-drip.png",
   "Bikini Blitz Drip": "/services/iv-therapy/detox-drip.png",
+  "BPC-157 Therapy": "/services/peptide-wellness/bpc-157.png",
+  "CJC-1295 + Ipamorelin": "/services/peptide-wellness/cjc-1295-ipamorelin.png",
   "Energy Drip": "/services/iv-therapy/energy-drip.png",
+  "Glutathione Injection": "/services/injections-boosters/glutathione-injection.png",
+  "GHK-Cu Therapy": "/services/peptide-wellness/ghk-cu.png",
   "Glutathione IV Drip": "/services/iv-therapy/glutathione-iv-drip.png",
   "Glutathione IV Drip (100mL)": "/services/iv-therapy/glutathione-iv-drip.png",
   "Hangover Cure Drip": "/services/iv-therapy/hangover-cure-drip.png",
   "Immunity Drip": "/services/iv-therapy/immunity-drip.png",
+  "Melanotan II": "/services/peptide-wellness/melanotan-ii.png",
   "Migraine Drip": "/services/iv-therapy/migraine-drip.png",
   "Myers Drip": "/services/iv-therapy/myers-drip.png",
   "Nad+ Drip": "/services/iv-therapy/nad-drip.png",
   "Performance Drip": "/services/iv-therapy/performance-drip.png",
   "Radiance Drip": "/services/iv-therapy/radiance-drip-new.png",
   "Rejuvenate Drip": "/services/iv-therapy/rejuvenate-drip.png",
+  "Vitamin B12 Injection": "/services/injections-boosters/vitamin-b12-injection.png",
+  "Vitamin B Complex Injection": "/services/injections-boosters/vitamin-b-complex-injection.png",
+  "Vitamin C Injection": "/services/injections-boosters/vitamin-c-injection.png",
+  "Wolverine Stack": "/services/peptide-wellness/wolverine-stack.png",
 };
 
 function slugify(value) {
@@ -105,6 +114,10 @@ function getSizeSlug(name) {
 }
 
 function getServiceId(name) {
+  if (name.startsWith("Wolverine Stack")) {
+    return "wolverine-stack-bpc-157-tb-500-kpv-mgf";
+  }
+
   const baseName = getBaseName(name);
   const size = getSizeSlug(name);
 
@@ -163,6 +176,7 @@ const productTitleServiceMap = {
   "Autumn Restore": "autumn-restore-drip-large",
   "Detox Drip": "bikini-blitz-drip-large",
   "Energy Drip": "energy-drip-large",
+  "Glutathione Injection": "glutathione-injection",
   "Glutathione IV Therapy": "glutathione-iv-drip-100ml",
   "Hangover Cure Drip": "hangover-cure-drip-large",
   "Immunity Drip": "immunity-drip-large",
@@ -175,7 +189,18 @@ const productTitleServiceMap = {
   "Radiance Drip": "radiance-drip-large",
   "Rejuvenate Drip": "rejuvenate-drip-large",
   "Spring Restore Drip": "autumn-restore-drip-large",
+  "The Total Body Repair": "wolverine-stack-bpc-157-tb-500-kpv-mgf",
+  "The Healing Peptide": "bpc-157-therapy",
+  "BPC-157 Therapy": "bpc-157-therapy",
+  "The Skin & Hair Rejuvenator Peptide": "ghk-cu-therapy",
+  "GHK-Cu Therapy": "ghk-cu-therapy",
+  "CJC-1295 + Ipamorelin": "cjc-1295-ipamorelin",
+  "Melanotan II": "melanotan-ii",
   "Testosterone Replacement Therapy (TRT)": "testosterone-replacement-therapy-trt",
+  "Vitamin B12 Injection": "vitamin-b12-injection",
+  "Vitamin B Complex Injection": "vitamin-b-complex-injection",
+  "Vitamin C Injection": "vitamin-c-injection",
+  "Wolverine Stack": "wolverine-stack-bpc-157-tb-500-kpv-mgf",
 };
 
 export function getBookingHrefForServiceId(serviceId) {

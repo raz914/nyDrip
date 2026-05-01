@@ -1,5 +1,7 @@
 export const serviceDropdownLinks = [
   { label: "IV Therapy", href: "/services/iv-therapy" },
+  { label: "Peptide Wellness", href: "/services/peptide-wellness" },
+  { label: "Injections & Boosters", href: "/services/injections-boosters" },
   { label: "NAD+ Injection Kit", href: "/services/nad-injection-kit" },
   { label: "Testosterone Replacement", href: "/services/testosterone-replacement" },
   { label: "Corporate Partnership", href: "/services/corporate-partnership" },
