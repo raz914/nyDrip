@@ -54,6 +54,10 @@ function LedgerRow({ entry }) {
 
 export function RewardsCard({ rewards, ledger = [] }) {
   const bonusActions = MEMBERSHIP_BONUS_ACTIONS.slice(0, 4);
+  const earnRateLabel =
+    rewards.tier === "non_member"
+      ? `${rewards.earnRate}x base earn rate as a non-member`
+      : `${rewards.earnRate}x earn rate as a ${rewards.tierLabel} member`;
 
   return (
     <section className="bg-[#f0f2f5]">
@@ -75,9 +79,7 @@ export function RewardsCard({ rewards, ledger = [] }) {
             {formatDrips(rewards.availableDrips)}
           </p>
           <p className="text-sm text-[#858585] md:text-base">
-            {rewards.nextTier
-              ? `${rewards.earnRate}x earn rate as a ${rewards.tierLabel} member`
-              : "Top tier unlocked"}
+            {rewards.nextTier ? earnRateLabel : "Top tier unlocked"}
           </p>
         </div>
 
@@ -135,35 +137,46 @@ export function RewardsCard({ rewards, ledger = [] }) {
 
 export function MembershipCard({ membership }) {
   const { plan } = membership;
+  const isNonMember = plan.id === "non_member";
 
   return (
     <section className="border border-[var(--color-primary)] bg-white">
       <SectionHeader
-        title={`${plan.name} Membership`}
+        title={isNonMember ? "Non-Member Account" : `${plan.name} Membership`}
         action={{ label: "Upgrade", href: "/memberships#plans" }}
       />
       <div className="grid gap-6 px-5 py-7 md:grid-cols-[1fr_1fr] md:py-8">
         <div>
-          <p className="text-[2.5rem] font-medium leading-none text-[var(--color-primary)]">
-            {membership.priceLabel}
-            <span className="ml-1 text-base text-[#858585]">/month</span>
-          </p>
-          <p className="mt-3 text-sm text-[#858585] md:text-base">
-            {plan.minimumTermMonths}-month minimum, then auto-renews monthly.
-          </p>
+          {isNonMember ? (
+            <p className="text-[2.5rem] font-medium leading-none text-[var(--color-primary)]">
+              Free
+            </p>
+          ) : (
+            <>
+              <p className="text-[2.5rem] font-medium leading-none text-[var(--color-primary)]">
+                {membership.priceLabel}
+                <span className="ml-1 text-base text-[#858585]">/month</span>
+              </p>
+              <p className="mt-3 text-sm text-[#858585] md:text-base">
+                {plan.minimumTermMonths}-month minimum, then auto-renews monthly.
+              </p>
+            </>
+          )}
           <p className="mt-4 text-sm leading-5 text-[#111111] md:text-base md:leading-6">
-            {plan.headline}. Earn {plan.earnRate} Drip
-            {plan.earnRate === 1 ? "" : "s"} per $10 spent beyond your
-            subscription plan.
+            {isNonMember
+              ? "Earn 1 Drip per $10 spent. Upgrade anytime to unlock monthly credits, member savings, and higher tier perks."
+              : `${plan.headline}. Earn ${plan.earnRate} Drip${plan.earnRate === 1 ? "" : "s"} per $10 spent beyond your subscription plan.`}
           </p>
         </div>
 
         <div>
-          <h3 className="text-base font-medium md:text-xl">Included this month</h3>
+          <h3 className="text-base font-medium md:text-xl">
+            {isNonMember ? "Membership benefits" : "Included this month"}
+          </h3>
           <ul className="mt-4 space-y-3 text-sm text-[#111111] md:text-base">
-            {plan.includedCredits.map((credit) => (
-              <li key={credit} className="border-t border-black/10 pt-3">
-                {credit}
+            {(isNonMember ? plan.benefits : plan.includedCredits).map((item) => (
+              <li key={item} className="border-t border-black/10 pt-3">
+                {item}
               </li>
             ))}
           </ul>

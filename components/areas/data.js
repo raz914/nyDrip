@@ -17,7 +17,7 @@ const middletownProducts = [
     title: "Energy Drip",
     description: "Boosts energy and fights fatigue.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/energy-drip.png",
     alt: "Energy drip product bag",
   },
   {
@@ -79,14 +79,14 @@ const peekskillProducts = [
     title: "Energy Drip",
     description: "Boosts energy and fights fatigue.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/energy-drip.png",
     alt: "Energy drip product bag",
   },
   {
     title: "Radiance Drip",
     description: "Enhances skin glow and beauty.",
     price: "$ 275",
-    image: "/homepage/radiance-bag.png",
+    image: "/services/iv-therapy/radiance-drip-new.png",
     alt: "Radiance drip product bag",
   },
   {
@@ -139,14 +139,14 @@ const sloatsburgProducts = [
     title: "Hangover",
     description: "Fast relief from hangover symptoms.",
     price: "$ 275",
-    image: "/homepage/bikini-bag.png",
+    image: "/services/iv-therapy/hangover-cure-drip.png",
     alt: "Hangover drip product bag",
   },
   {
     title: "Radiance Drip",
     description: "Enhances skin glow and beauty.",
     price: "$ 275",
-    image: "/homepage/radiance-bag.png",
+    image: "/services/iv-therapy/radiance-drip-new.png",
     alt: "Radiance drip product bag",
   },
   {
@@ -161,7 +161,7 @@ const sloatsburgProducts = [
     title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/immunity-drip.png",
     alt: "Radiance Drip product bag",
   },
 ];
@@ -199,14 +199,14 @@ const washingtonvilleProducts = [
     title: "Hangover",
     description: "Fast relief from hangover symptoms.",
     price: "$ 275",
-    image: "/homepage/bikini-bag.png",
+    image: "/services/iv-therapy/hangover-cure-drip.png",
     alt: "Hangover drip product bag",
   },
   {
     title: "Radiance Drip",
     description: "Enhances skin glow and beauty.",
     price: "$ 275",
-    image: "/homepage/radiance-bag.png",
+    image: "/services/iv-therapy/radiance-drip-new.png",
     alt: "Radiance drip product bag",
   },
   {
@@ -221,7 +221,7 @@ const washingtonvilleProducts = [
     title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/immunity-drip.png",
     alt: "Radiance Drip product bag",
   },
 ];
@@ -259,14 +259,14 @@ const rhinebeckProducts = [
     title: "Energy Drip",
     description: "Boosts energy and fights fatigue.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/energy-drip.png",
     alt: "Energy drip product bag",
   },
   {
     title: "Radiance Drip",
     description: "Enhances skin glow and beauty.",
     price: "$ 275",
-    image: "/homepage/radiance-bag.png",
+    image: "/services/iv-therapy/radiance-drip-new.png",
     alt: "Radiance drip product bag",
   },
   {
@@ -320,14 +320,14 @@ const scarsdaleProducts = [
     title: "Energy Drip",
     description: "Boosts energy and fights fatigue.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/energy-drip.png",
     alt: "Energy drip product bag",
   },
   {
     title: "Radiance Drip",
     description: "Enhances skin glow and beauty.",
     price: "$ 275",
-    image: "/homepage/radiance-bag.png",
+    image: "/services/iv-therapy/radiance-drip-new.png",
     alt: "Radiance drip product bag",
   },
   {
@@ -342,7 +342,7 @@ const scarsdaleProducts = [
     title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/immunity-drip.png",
     alt: "Radiance Drip product bag",
   },
 ];
@@ -380,14 +380,14 @@ const westchesterProducts = [
     title: "Hangover Drip",
     description: "Fast relief from hangover symptoms.",
     price: "$ 275",
-    image: "/homepage/bikini-bag.png",
+    image: "/services/iv-therapy/hangover-cure-drip.png",
     alt: "Hangover drip product bag",
   },
   {
     title: "Radiance Drip",
     description: "Enhances skin glow and beauty.",
     price: "$ 275",
-    image: "/homepage/radiance-bag.png",
+    image: "/services/iv-therapy/radiance-drip-new.png",
     alt: "Radiance drip product bag",
   },
   {
@@ -402,7 +402,7 @@ const westchesterProducts = [
     title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/immunity-drip.png",
     alt: "Radiance Drip product bag",
   },
 ];
@@ -464,7 +464,7 @@ const ameniaProducts = [
     title: "Radiance Drip",
     description: "Strengthens immune defenses.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/immunity-drip.png",
     alt: "Radiance Drip product bag",
   },
 ];
@@ -510,14 +510,14 @@ const purchaseProducts = [
     title: "Radiance Drip",
     description: "Enhances skin glow and beauty.",
     price: "$ 275",
-    image: "/homepage/radiance-bag.png",
+    image: "/services/iv-therapy/radiance-drip-new.png",
     alt: "Radiance drip product bag",
   },
   {
     title: "Energy Drip",
     description: "Boosts energy and fights fatigue.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/energy-drip.png",
     alt: "Energy drip product bag",
   },
   {
@@ -563,7 +563,7 @@ const wappingersFallsProducts = [
     description:
       "Helps strengthen immunity, may support hydration and overall wellness.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/immunity-drip.png",
     alt: "Radiance Drip product bag",
   },
   {
@@ -587,7 +587,7 @@ const wappingersFallsProducts = [
     description:
       "Helps rehydrate your body, support electrolyte balance, and restore natural energy levels.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/hydration-drip.png",
     alt: "Hydration drip product bag",
   },
 ];
@@ -626,7 +626,7 @@ const highlandProducts = [
     description:
       "Helps strengthen immunity, may support hydration and overall wellness.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/immunity-drip.png",
     alt: "Radiance Drip product bag",
   },
   {
@@ -650,7 +650,7 @@ const highlandProducts = [
     description:
       "Helps rehydrate your body, support electrolyte balance, and restore natural energy levels.",
     price: "$ 275",
-    image: "/homepage/energy-bag.png",
+    image: "/services/iv-therapy/hydration-drip.png",
     alt: "Hydration drip product bag",
   },
 ];

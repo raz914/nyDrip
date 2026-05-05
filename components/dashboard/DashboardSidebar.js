@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
 import { ArrowIcon, LinkIcon } from "@/components/dashboard/icons";
@@ -19,6 +22,32 @@ function SidebarBlock({ title, children, highlighted = false }) {
 }
 
 export default function DashboardSidebar({ referralLink = "/booking" }) {
+  const [copyStatus, setCopyStatus] = useState("idle");
+
+  async function copyReferralLink() {
+    try {
+      if (navigator.clipboard?.writeText && window.isSecureContext) {
+        await navigator.clipboard.writeText(referralLink);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = referralLink;
+        textArea.setAttribute("readonly", "");
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+
+      setCopyStatus("copied");
+    } catch {
+      setCopyStatus("failed");
+    } finally {
+      window.setTimeout(() => setCopyStatus("idle"), 2000);
+    }
+  }
+
   return (
     <aside className="bg-[#111111] px-5 py-8 text-white md:fixed md:inset-y-0 md:left-0 md:w-[484px] md:px-10 md:py-10">
       <div className="md:flex md:min-h-full md:flex-col">
@@ -49,13 +78,26 @@ export default function DashboardSidebar({ referralLink = "/booking" }) {
               <span className="truncate text-[#858585]">{referralLink}</span>
               <button
                 type="button"
-                onClick={() => navigator.clipboard?.writeText(referralLink)}
+                onClick={copyReferralLink}
                 className="flex h-10 w-10 flex-none items-center justify-center text-[#858585] transition-colors hover:text-white"
               >
                 <span className="sr-only">Copy referral link</span>
                 <LinkIcon />
               </button>
             </div>
+            <p
+              className={[
+                "mt-2 text-xs",
+                copyStatus === "failed" ? "text-[#ff8a8a]" : "text-[#858585]",
+              ].join(" ")}
+              aria-live="polite"
+            >
+              {copyStatus === "copied"
+                ? "Copied referral link"
+                : copyStatus === "failed"
+                  ? "Copy failed. Select and copy the link manually."
+                  : "Click the link icon to copy."}
+            </p>
           </SidebarBlock>
         </div>
 

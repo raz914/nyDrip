@@ -1,7 +1,7 @@
 import {
-  bookingCategories,
-  getServicesByCategory,
   formatCurrency,
+  getBookingCategories,
+  getServicesByCategory,
 } from "@/components/booking/data";
 import {
   BookingButton,
@@ -10,6 +10,7 @@ import {
 } from "@/components/booking/BookingControls";
 
 export default function ServiceStep({
+  catalog,
   category,
   serviceId,
   cartItems,
@@ -19,7 +20,8 @@ export default function ServiceStep({
   onBack,
   onContinue,
 }) {
-  const services = getServicesByCategory(category);
+  const bookingCategories = getBookingCategories(catalog);
+  const services = getServicesByCategory(category, catalog);
   const selectedService = services.find((service) => service.id === serviceId);
 
   return (

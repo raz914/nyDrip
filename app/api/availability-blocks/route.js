@@ -5,7 +5,19 @@ import {
   formatMinutesToTime,
   parseTimeToMinutes,
 } from "@/lib/bookingRules";
-import { getAdminDb, requireAuthenticatedRequest } from "@/lib/firebaseAdmin";
+import { getAdminDb, requireAdminRequest } from "@/lib/firebaseAdmin";
+
+function errorStatus(message) {
+  if (message === "Sign in is required.") {
+    return 401;
+  }
+
+  if (message === "Admin access is required.") {
+    return 403;
+  }
+
+  return 503;
+}
 
 function mapBlock(doc) {
   const data = doc.data();
@@ -24,7 +36,7 @@ function mapBlock(doc) {
 
 export async function GET(request) {
   try {
-    await requireAuthenticatedRequest(request);
+    await requireAdminRequest(request);
 
     const { searchParams } = new URL(request.url);
     const date = searchParams.get("date");
@@ -46,14 +58,14 @@ export async function GET(request) {
         ok: false,
         message: error.message || "Unavailable blocks could not be loaded.",
       },
-      { status: error.message === "Sign in is required." ? 401 : 503 },
+      { status: errorStatus(error.message) },
     );
   }
 }
 
 export async function POST(request) {
   try {
-    const user = await requireAuthenticatedRequest(request);
+    const user = await requireAdminRequest(request);
     const body = await request.json().catch(() => ({}));
     const date = String(body.date || "").trim();
     const hasStartMinutes = body.startMinutes !== undefined && body.startMinutes !== "";
@@ -103,14 +115,14 @@ export async function POST(request) {
         ok: false,
         message: error.message || "Unavailable block could not be saved.",
       },
-      { status: error.message === "Sign in is required." ? 401 : 503 },
+      { status: errorStatus(error.message) },
     );
   }
 }
 
 export async function DELETE(request) {
   try {
-    await requireAuthenticatedRequest(request);
+    await requireAdminRequest(request);
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -131,7 +143,7 @@ export async function DELETE(request) {
         ok: false,
         message: error.message || "Unavailable block could not be deleted.",
       },
-      { status: error.message === "Sign in is required." ? 401 : 503 },
+      { status: errorStatus(error.message) },
     );
   }
 }

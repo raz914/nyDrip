@@ -16,16 +16,16 @@ export const featuredDrips = [
     overlay: false,
   },
   {
-    title: "Autumn Restore",
+    title: "Spring Restore",
     subtitle: "Seasonal Balance from the Inside Out",
     description:
-      "The Autumn Restore IV Drip may help you glide through seasonal changes with ease. With hydration, high-dose Vitamin C, B-Complex, zinc, glutathione, and a touch of NAD+, it is designed to support immunity, brighten skin, and boost energy.",
+      "The Spring Restore IV Drip may help you glide through seasonal changes with ease. With hydration, high-dose Vitamin C, B-Complex, zinc, glutathione, and a touch of NAD+, it is designed to support immunity, brighten skin, and boost energy.",
     price: "$ 350",
     icon: "drop",
-    backgroundImage: "/homepage/autumn-bg.jpg",
-    backgroundAlt: "Warm autumn-inspired texture behind the restore drip",
-    productImage: "/homepage/autumn-bag.png",
-    productAlt: "Autumn restore product bag",
+    backgroundImage: "/homepage/spring-bg.jpg",
+    backgroundAlt: "Fresh spring-inspired texture behind the restore drip",
+    productImage: "/services/iv-therapy/spring-restore-drip.png",
+    productAlt: "Spring restore product bag",
     overlay: true,
   },
   {
@@ -45,6 +45,15 @@ export const featuredDrips = [
 ];
 
 export const serviceCards = [
+  {
+    title: "Niagen Plus Drip",
+    description:
+      "Mitochondria Formula IV support for cellular energy, recovery, focus, and longevity pathways.",
+    price: "$ 800",
+    image: "/services/iv-therapy/niagen-plus-drip.png",
+    alt: "Niagen Plus drip bag",
+    href: "/services/niagen-plus-drip-iv-therapy",
+  },
   {
     title: "Migraine Drip",
     description:

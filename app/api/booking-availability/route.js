@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { getServiceById } from "@/components/booking/data";
+import { getStaticBookableServices } from "@/lib/bookingCatalog";
+import { getResolvedBookableServices } from "@/lib/serverPricing";
 import {
   BOOKING_LIMITS,
   getAvailabilityByTime,
@@ -9,15 +10,24 @@ import {
 } from "@/lib/bookingRules";
 import { getAdminDb, requireAuthenticatedRequest } from "@/lib/firebaseAdmin";
 
-function getDurationMinutes(searchParams) {
-  const service = getServiceById(searchParams.get("serviceId"));
+function getDurationMinutes(searchParams, servicesList) {
+  const serviceId = searchParams.get("serviceId");
   const durationParam = Number(searchParams.get("durationMinutes"));
 
   if (Number.isFinite(durationParam) && durationParam > 0) {
     return durationParam;
   }
 
+  const service = servicesList.find((s) => s.id === serviceId);
   return parseDurationToMinutes(service?.duration);
+}
+
+async function resolveServicesList() {
+  try {
+    return await getResolvedBookableServices();
+  } catch {
+    return getStaticBookableServices();
+  }
 }
 
 function toJsonDoc(doc) {
@@ -30,7 +40,8 @@ function toJsonDoc(doc) {
 async function getAvailabilityPayload(searchParams) {
   const date = searchParams.get("date");
   const locationType = searchParams.get("locationType") || "clinic";
-  const durationMinutes = getDurationMinutes(searchParams);
+  const servicesList = await resolveServicesList();
+  const durationMinutes = getDurationMinutes(searchParams, servicesList);
 
   if (!date) {
     return {

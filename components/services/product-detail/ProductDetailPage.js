@@ -12,11 +12,26 @@ import {
   getBookingHrefForServiceId,
 } from "@/components/booking/data";
 
+function resolveProductCtaHref(cta, fallbackTitle) {
+  if (cta?.serviceId) {
+    return getBookingHrefForServiceId(cta.serviceId);
+  }
+
+  if (cta?.productTitle) {
+    return getBookingHrefForProductTitle(cta.productTitle);
+  }
+
+  if (cta?.href && cta.href !== "#contact") {
+    return cta.href;
+  }
+
+  return getBookingHrefForProductTitle(fallbackTitle);
+}
+
 function ProductIntroSection({ hero, benefits }) {
-  const ctaHref =
-    hero.ctaHref === "#contact"
-      ? getBookingHrefForProductTitle(hero.title)
-      : hero.ctaHref;
+  const ctas = hero.ctas?.length
+    ? hero.ctas
+    : [{ label: hero.ctaLabel, href: hero.ctaHref }];
 
   return (
     <section className="border-b border-black/10 px-5 py-12 md:px-10 md:py-16">
@@ -71,7 +86,16 @@ function ProductIntroSection({ hero, benefits }) {
               />
             ) : null}
 
-            <PrimaryLink href={ctaHref}>{hero.ctaLabel}</PrimaryLink>
+            <div className="flex flex-wrap gap-3">
+              {ctas.map((cta) => (
+                <PrimaryLink
+                  key={cta.label}
+                  href={resolveProductCtaHref(cta, hero.title)}
+                >
+                  {cta.label}
+                </PrimaryLink>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-6">
@@ -147,6 +171,81 @@ function ProductProofSection({ section }) {
             </p>
           ) : null}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function ProductDetailSections({ sections }) {
+  if (!sections?.length) {
+    return null;
+  }
+
+  return (
+    <section className="bg-[#f0f2f5] px-5 py-20 md:px-10 md:py-24">
+      <div className="mx-auto max-w-[1512px] space-y-8">
+        {sections.map((section) => (
+          <article
+            key={section.title}
+            className="grid gap-8 border border-black/10 bg-white p-6 md:p-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start"
+          >
+            <div className="space-y-5">
+              {section.eyebrow ? (
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--color-primary)]">
+                  {section.eyebrow}
+                </p>
+              ) : null}
+              <div className="space-y-3">
+                <h2 className="text-[2rem] font-medium leading-tight md:text-[2.75rem]">
+                  {section.title}
+                </h2>
+                {section.description?.map((paragraph) => (
+                  <p
+                    key={paragraph}
+                    className="text-sm leading-7 text-[#2c2c2e] md:text-base md:leading-8"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+
+              {section.bullets?.length ? (
+                <ul className="grid gap-2 text-sm leading-6 text-[#2c2c2e] md:grid-cols-2 md:text-base">
+                  {section.bullets.map((bullet) => (
+                    <li key={bullet} className="border-t border-black/10 pt-3">
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+
+              {section.items?.length ? (
+                <div className="grid gap-4 md:grid-cols-2">
+                  {section.items.map((item) => (
+                    <div key={item.title} className="border border-black/10 p-4">
+                      <h3 className="text-base font-semibold">{item.title}</h3>
+                      <p className="mt-2 text-sm leading-6 text-[#2c2c2e]">
+                        {item.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+
+            {section.image ? (
+              <div className="relative aspect-[4/3] overflow-hidden bg-[#eef0f3]">
+                <Image
+                  src={section.image}
+                  alt={section.imageAlt}
+                  fill
+                  sizes="(min-width: 1024px) 360px, 100vw"
+                  className={section.imageClassName ?? "object-cover"}
+                />
+              </div>
+            ) : null}
+          </article>
+        ))}
       </div>
     </section>
   );
@@ -267,6 +366,7 @@ export default function ProductDetailPage({ product }) {
       <main className="bg-white text-[#111111]">
         <ProductIntroSection hero={product.hero} benefits={product.benefits} />
         <HowItWorksSection />
+        <ProductDetailSections sections={product.detailSections} />
         <ProductProofSection section={product.proof} />
         <ProductAddOnsSection section={product.addOns} />
         <ProductConsultationSection section={product.consultation} />

@@ -17,6 +17,7 @@ import {
   LOCATION_OPTIONS,
   MOCK_COUPONS,
   TIME_SLOTS,
+  bookableServices,
   calculateBookingTotal,
   calculateSubtotal,
   getDefaultCategory,
@@ -77,16 +78,18 @@ export default function BookingPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [serviceCatalog, setServiceCatalog] = useState(bookableServices);
+
   const initialService = useMemo(() => {
     const serviceParam = searchParams.get("service");
 
-    return getServiceById(serviceParam) ?? null;
-  }, [searchParams]);
+    return getServiceById(serviceParam, serviceCatalog) ?? null;
+  }, [searchParams, serviceCatalog]);
 
-  const fallbackService = getDefaultService();
+  const fallbackService = useMemo(() => getDefaultService(serviceCatalog), [serviceCatalog]);
   const [currentStep, setCurrentStep] = useState(0);
   const [category, setCategory] = useState(
-    initialService?.category ?? getDefaultCategory(),
+    initialService?.category ?? getDefaultCategory(serviceCatalog),
   );
   const [serviceId, setServiceId] = useState(
     initialService?.id ?? fallbackService.id,
@@ -128,6 +131,44 @@ export default function BookingPage() {
     result: null,
     message: "",
   });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch("/api/pricing")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.ok && Array.isArray(data.services)) {
+          setServiceCatalog(data.services);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    setCartItems((items) =>
+      items.map((item) => {
+        const fresh = getServiceById(item.id, serviceCatalog);
+        if (!fresh) {
+          return item;
+        }
+        return { ...item, ...fresh };
+      }),
+    );
+  }, [serviceCatalog]);
+
+  useEffect(() => {
+    if (getServiceById(serviceId, serviceCatalog)) {
+      return;
+    }
+    const next = getDefaultService(serviceCatalog);
+    setServiceId(next.id);
+    setCategory(next.category);
+  }, [serviceCatalog, serviceId]);
 
   useEffect(() => {
     if (loading || user) {
@@ -234,6 +275,7 @@ export default function BookingPage() {
           date: selectedDate,
           durationMinutes: String(bookingDurationMinutes),
           locationType,
+          serviceId,
         });
         const response = await fetch(`/api/booking-availability?${params.toString()}`, {
           headers: {
@@ -270,10 +312,10 @@ export default function BookingPage() {
     return () => {
       isActive = false;
     };
-  }, [bookingDurationMinutes, loading, locationType, selectedDate, user]);
+  }, [bookingDurationMinutes, loading, locationType, selectedDate, serviceId, user]);
 
   function addSelectedService() {
-    const service = getServiceById(serviceId);
+    const service = getServiceById(serviceId, serviceCatalog);
 
     if (!service) {
       return;
@@ -283,7 +325,7 @@ export default function BookingPage() {
   }
 
   function changeCategory(nextCategory) {
-    const services = getServicesByCategory(nextCategory);
+    const services = getServicesByCategory(nextCategory, serviceCatalog);
 
     setCategory(nextCategory);
     setServiceId(services[0]?.id ?? fallbackService.id);
@@ -319,7 +361,7 @@ export default function BookingPage() {
     }
 
     if (!cartItems.length) {
-      const service = getServiceById(serviceId);
+      const service = getServiceById(serviceId, serviceCatalog);
 
       if (!service) {
         return;
@@ -520,6 +562,7 @@ export default function BookingPage() {
     if (currentStep === 0) {
       return (
         <ServiceStep
+          catalog={serviceCatalog}
           category={category}
           serviceId={serviceId}
           cartItems={cartItems}

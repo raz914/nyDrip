@@ -22,7 +22,7 @@ export const appointmentRows = [
   },
   {
     date: "Nov 26, 2025 10:45",
-    service: "Autumn Restore",
+    service: "Spring Restore",
     duration: "1h",
     points: "120 Drips",
     status: "Approved",
@@ -50,14 +50,14 @@ export const appointmentRows = [
   },
   {
     date: "Oct 05, 2025 4:00 pm",
-    service: "Autumn Restore",
+    service: "Spring Restore",
     duration: "1h",
     points: "120 Drips",
     status: "Approved",
   },
   {
     date: "Oct 01, 2025 4:00 pm",
-    service: "Autumn Restore",
+    service: "Spring Restore",
     duration: "1h",
     points: "120 Drips",
     status: "Approved",

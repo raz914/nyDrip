@@ -4,7 +4,7 @@ export const treatmentCatalog = [
   { name: "Nad+ Drip - Large Bag (750mg)", category: "IV Therapy", duration: "1 h", price: "$800.00" },
   { name: "Nad+ Drip - Medium Bag (500mg)", category: "IV Therapy", duration: "1 h", price: "$685.00" },
   { name: "Nad+ Drip - Small Bag (250mg)", category: "IV Therapy", duration: "1 h", price: "$545.00" },
-  { name: "Autumn Restore Drip - Large Bag (1000mL)", category: "IV Therapy", duration: "1 h", price: "$350.00" },
+  { name: "Spring Restore Drip - Large Bag (1000mL)", category: "IV Therapy", duration: "1 h", price: "$350.00" },
   { name: "Migraine Drip - Large Bag (1000mL)", category: "IV Therapy", duration: "1 h", price: "$335.00" },
   { name: "Migraine Drip - Small Bag (500mL)", category: "IV Therapy", duration: "1 h", price: "$275.00" },
   { name: "Radiance Drip - Large Bag (1000mL)", category: "IV Therapy", duration: "1 h", price: "$335.00" },
@@ -45,11 +45,11 @@ export const treatmentCatalog = [
   { name: "Glutathione IV Drip (100mL)", category: "IV Therapy", duration: "45 min", price: "$175.00" },
 ];
 
-const areaProductPriceMap = {
+export const areaProductPriceMap = {
   "Niagen Plus Drip": "$800.00",
   "NAD+": "$545.00",
   "NAD+ Drip": "$545.00",
-  "Autumn Restore": "$350.00",
+  "Spring Restore": "$350.00",
   "Migraine Drip": "$275.00",
   "Radiance Drip": "$275.00",
   "Energy Drip": "$275.00",

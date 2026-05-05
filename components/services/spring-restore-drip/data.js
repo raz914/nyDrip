@@ -12,7 +12,7 @@ function getPriceLine(name) {
     return null;
   }
 
-  return `${treatment.name.replace("Autumn Restore Drip - ", "")} - ${compactPrice(treatment.price)}`;
+  return `${treatment.name.replace("Spring Restore Drip - ", "")} - ${compactPrice(treatment.price)}`;
 }
 
 export const springRestoreDripData = {
@@ -21,7 +21,7 @@ export const springRestoreDripData = {
     title: "Spring Restore Drip",
     subtitle: "Seasonal Balance from the Inside Out",
     priceLines: [
-      getPriceLine("Autumn Restore Drip - Large Bag (1000mL)"),
+      getPriceLine("Spring Restore Drip - Large Bag (1000mL)"),
       "Cancellations or reschedules must be made at least 24 hours in advance or the full amount will be forfeited.",
     ].filter(Boolean),
     description:

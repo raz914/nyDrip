@@ -38,6 +38,12 @@ function getReferralLink(user) {
   return code ? `/booking?ref=${code}` : "/booking";
 }
 
+function getAbsoluteReferralLink(user, origin) {
+  const referralLink = getReferralLink(user);
+
+  return origin ? `${origin}${referralLink}` : referralLink;
+}
+
 function getReferralStats(ledger) {
   const referralEntries = ledger.filter(
     (entry) => entry.type === "bonus" && /referral/i.test(entry.note ?? ""),
@@ -67,12 +73,18 @@ export default function DashboardPage() {
   });
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [error, setError] = useState("");
+  const [siteOrigin, setSiteOrigin] = useState("");
+  const referralLink = getAbsoluteReferralLink(user, siteOrigin);
 
   useEffect(() => {
     if (!loading && !user) {
       router.replace("/login?returnTo=/dashboard");
     }
   }, [loading, router, user]);
+
+  useEffect(() => {
+    setSiteOrigin(window.location.origin);
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -125,7 +137,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-white text-[#111111]">
-      <DashboardSidebar referralLink={getReferralLink(user)} />
+      <DashboardSidebar referralLink={referralLink} />
 
       <section className="px-5 py-8 md:ml-[484px] md:px-10 md:py-10">
         <div className="mx-auto max-w-[948px]">
@@ -159,7 +171,7 @@ export default function DashboardPage() {
             <div className="grid gap-6 md:grid-cols-2 md:gap-5">
               <ReferralCard
                 referralStats={dashboardData.referralStats}
-                referralLink={getReferralLink(user)}
+                referralLink={referralLink}
               />
             </div>
 

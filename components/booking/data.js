@@ -1,4 +1,5 @@
 import { treatmentCatalog } from "@/components/pricing/catalog";
+import { getStaticBookableServices } from "@/lib/bookingCatalog";
 import {
   getBookableTimeSlots,
   getRollingWeekdayDates,
@@ -40,95 +41,10 @@ export const MOCK_COUPONS = {
 export const BOOKING_DATES = getRollingWeekdayDates();
 export const TIME_SLOTS = getBookableTimeSlots(15);
 
-const imageByBaseName = {
-  "Autumn Restore Drip": "/services/iv-therapy/spring-restore-drip.png",
-  "Bikini Blitz Drip": "/services/iv-therapy/detox-drip.png",
-  "BPC-157 Therapy": "/services/peptide-wellness/bpc-157.png",
-  "CJC-1295 + Ipamorelin": "/services/peptide-wellness/cjc-1295-ipamorelin.png",
-  "Energy Drip": "/services/iv-therapy/energy-drip.png",
-  "Glutathione Injection": "/services/injections-boosters/glutathione-injection.png",
-  "GHK-Cu Therapy": "/services/peptide-wellness/ghk-cu.png",
-  "Glutathione IV Drip": "/services/iv-therapy/glutathione-iv-drip.png",
-  "Glutathione IV Drip (100mL)": "/services/iv-therapy/glutathione-iv-drip.png",
-  "Hangover Cure Drip": "/services/iv-therapy/hangover-cure-drip.png",
-  "Immunity Drip": "/services/iv-therapy/immunity-drip.png",
-  "Melanotan II": "/services/peptide-wellness/melanotan-ii.png",
-  "Migraine Drip": "/services/iv-therapy/migraine-drip.png",
-  "Myers Drip": "/services/iv-therapy/myers-drip.png",
-  "Nad+ Drip": "/services/iv-therapy/nad-drip.png",
-  "Performance Drip": "/services/iv-therapy/performance-drip.png",
-  "Radiance Drip": "/services/iv-therapy/radiance-drip-new.png",
-  "Rejuvenate Drip": "/services/iv-therapy/rejuvenate-drip.png",
-  "Vitamin B12 Injection": "/services/injections-boosters/vitamin-b12-injection.png",
-  "Vitamin B Complex Injection": "/services/injections-boosters/vitamin-b-complex-injection.png",
-  "Vitamin C Injection": "/services/injections-boosters/vitamin-c-injection.png",
-  "Wolverine Stack": "/services/peptide-wellness/wolverine-stack.png",
-};
+export const bookableServices = getStaticBookableServices();
 
-function slugify(value) {
-  return value
-    .toLowerCase()
-    .replace(/\+/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function parsePrice(price) {
-  return Number(price.replace(/[^0-9.]/g, ""));
-}
-
-function getBaseName(name) {
-  return name.split(" - ")[0];
-}
-
-function getSizeLabel(name) {
-  if (/large/i.test(name)) {
-    return "L";
-  }
-
-  if (/medium/i.test(name)) {
-    return "M";
-  }
-
-  if (/small/i.test(name)) {
-    return "S";
-  }
-
-  return null;
-}
-
-function getSizeSlug(name) {
-  if (/large/i.test(name)) {
-    return "large";
-  }
-
-  if (/medium/i.test(name)) {
-    return "medium";
-  }
-
-  if (/small/i.test(name)) {
-    return "small";
-  }
-
-  return null;
-}
-
-function getServiceId(name) {
-  if (name.startsWith("Wolverine Stack")) {
-    return "wolverine-stack-bpc-157-tb-500-kpv-mgf";
-  }
-
-  const baseName = getBaseName(name);
-  const size = getSizeSlug(name);
-
-  return [slugify(baseName), size].filter(Boolean).join("-");
-}
-
-function getDisplayName(name) {
-  const baseName = getBaseName(name);
-  const size = getSizeLabel(name);
-
-  return size ? `${baseName} (${size})` : baseName;
+export function getBookingCategories(services = bookableServices) {
+  return Array.from(new Set(services.map((service) => service.category)));
 }
 
 export function formatCurrency(value) {
@@ -139,41 +55,22 @@ export function formatCurrency(value) {
   }).format(value);
 }
 
-export const bookableServices = treatmentCatalog.map((treatment) => {
-  const baseName = getBaseName(treatment.name);
-  const id = getServiceId(treatment.name);
+export const bookingCategories = getBookingCategories(bookableServices);
 
-  return {
-    id,
-    name: treatment.name,
-    displayName: getDisplayName(treatment.name),
-    baseName,
-    category: treatment.category,
-    duration: treatment.duration,
-    price: parsePrice(treatment.price),
-    priceLabel: treatment.price.replace(".00", ""),
-    image: imageByBaseName[baseName] ?? "/auth/login-hero.jpg",
-  };
-});
-
-export const bookingCategories = Array.from(
-  new Set(bookableServices.map((service) => service.category)),
-);
-
-export function getServicesByCategory(category) {
-  return bookableServices.filter((service) => service.category === category);
+export function getServicesByCategory(category, services = bookableServices) {
+  return services.filter((service) => service.category === category);
 }
 
-export function getServiceById(id) {
-  return bookableServices.find((service) => service.id === id);
+export function getServiceById(id, services = bookableServices) {
+  return services.find((service) => service.id === id);
 }
 
-export function getDefaultService() {
-  return getServiceById("energy-drip-large") ?? bookableServices[0];
+export function getDefaultService(services = bookableServices) {
+  return getServiceById("energy-drip-large", services) ?? services[0];
 }
 
 const productTitleServiceMap = {
-  "Autumn Restore": "autumn-restore-drip-large",
+  "Spring Restore": "spring-restore-drip-large",
   "Detox Drip": "bikini-blitz-drip-large",
   "Energy Drip": "energy-drip-large",
   "Glutathione Injection": "glutathione-injection",
@@ -183,12 +80,15 @@ const productTitleServiceMap = {
   "Migraine Drip": "migraine-drip-large",
   "Myers Drip": "myers-drip-large",
   "NAD+ Drip": "nad-drip-large",
+  "Niagen Plus Drip": "niagen-plus-drip-medium",
+  "Niagen Plus Drip - Medium Bag": "niagen-plus-drip-medium",
+  "Niagen Plus Drip - Small Bag": "niagen-plus-drip-small",
   "NYD+ Drip": "niagen-plus-drip-medium",
   "NAD+ Home Kit": "nad-injection-50mg",
   "Performance Drip": "performance-drip-large",
   "Radiance Drip": "radiance-drip-large",
   "Rejuvenate Drip": "rejuvenate-drip-large",
-  "Spring Restore Drip": "autumn-restore-drip-large",
+  "Spring Restore Drip": "spring-restore-drip-large",
   "The Total Body Repair": "wolverine-stack-bpc-157-tb-500-kpv-mgf",
   "The Healing Peptide": "bpc-157-therapy",
   "BPC-157 Therapy": "bpc-157-therapy",
@@ -203,18 +103,19 @@ const productTitleServiceMap = {
   "Wolverine Stack": "wolverine-stack-bpc-157-tb-500-kpv-mgf",
 };
 
-export function getBookingHrefForServiceId(serviceId) {
-  return getServiceById(serviceId) ? `/booking?service=${serviceId}` : "/booking";
+export function getBookingHrefForServiceId(serviceId, services = bookableServices) {
+  return getServiceById(serviceId, services) ? `/booking?service=${serviceId}` : "/booking";
 }
 
-export function getBookingHrefForProductTitle(title) {
+export function getBookingHrefForProductTitle(title, services = bookableServices) {
   const serviceId = productTitleServiceMap[title];
 
-  return serviceId ? getBookingHrefForServiceId(serviceId) : "/booking";
+  return serviceId ? getBookingHrefForServiceId(serviceId, services) : "/booking";
 }
 
-export function getDefaultCategory() {
-  return getDefaultService()?.category ?? bookingCategories[0];
+export function getDefaultCategory(services = bookableServices) {
+  const categories = getBookingCategories(services);
+  return getDefaultService(services)?.category ?? categories[0];
 }
 
 export function calculateSubtotal(items) {
@@ -222,9 +123,7 @@ export function calculateSubtotal(items) {
 }
 
 export function getTravelFeeAmount(locationType, travelFeeResult) {
-  return locationType === "mobile" && travelFeeResult?.ok
-    ? travelFeeResult.fee
-    : 0;
+  return locationType === "mobile" && travelFeeResult?.ok ? travelFeeResult.fee : 0;
 }
 
 export function calculateBookingTotal({

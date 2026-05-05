@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 
-import { useAuth } from "@/components/auth/AuthProvider";
+import { useAdminGate } from "@/hooks/useAdminGate";
+import { getAdminRequestHeaders } from "@/lib/adminRequestHeaders";
 import { getRollingWeekdayDates } from "@/lib/bookingRules";
 
 function formatMinutesToTime(totalMinutes) {
@@ -29,8 +29,7 @@ function getTimeOptions() {
 }
 
 export default function AvailabilityAdminPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { user } = useAdminGate("/admin/availability");
   const dates = useMemo(() => getRollingWeekdayDates(), []);
   const timeOptions = useMemo(() => getTimeOptions(), []);
   const [form, setForm] = useState({
@@ -44,29 +43,15 @@ export default function AvailabilityAdminPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.replace(
-        `/login?returnTo=${encodeURIComponent("/admin/availability")}`,
-      );
-    }
-  }, [loading, router, user]);
-
-  useEffect(() => {
-    if (!user) {
-      return undefined;
-    }
-
     let isActive = true;
 
     async function loadBlocks() {
       setError("");
 
       try {
-        const token = await user.getIdToken();
+        const headers = await getAdminRequestHeaders(user);
         const response = await fetch("/api/availability-blocks", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
         });
         const result = await response.json();
 
@@ -112,11 +97,11 @@ export default function AvailabilityAdminPage() {
     setError("");
 
     try {
-      const token = await user.getIdToken();
+      const headers = await getAdminRequestHeaders(user);
       const response = await fetch("/api/availability-blocks", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          ...headers,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(form),
@@ -143,12 +128,10 @@ export default function AvailabilityAdminPage() {
     setError("");
 
     try {
-      const token = await user.getIdToken();
+      const headers = await getAdminRequestHeaders(user);
       const response = await fetch(`/api/availability-blocks?id=${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       });
       const result = await response.json();
 
@@ -163,19 +146,11 @@ export default function AvailabilityAdminPage() {
     }
   }
 
-  if (loading || !user) {
-    return (
-      <main className="mx-auto max-w-5xl px-5 py-12">
-        <p className="text-[#858585]">Checking access...</p>
-      </main>
-    );
-  }
-
   return (
     <main className="mx-auto max-w-5xl px-5 py-12 text-[#111111]">
       <div className="mb-8">
         <p className="text-sm uppercase tracking-[0.18em] text-[#858585]">
-          Temporary signed-in admin
+          Availability management
         </p>
         <h1 className="mt-2 text-4xl font-medium">Availability Blocks</h1>
         <p className="mt-3 max-w-2xl text-[#858585]">

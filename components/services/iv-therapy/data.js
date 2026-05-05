@@ -11,6 +11,15 @@ export const ivTherapyHero = {
 
 export const ivTherapyProducts = [
   {
+    title: "Niagen Plus Drip",
+    description:
+      "Mitochondria Formula IV support for cellular energy, recovery, focus, and longevity pathways.",
+    price: "$ 800",
+    image: "/services/iv-therapy/niagen-plus-drip.png",
+    alt: "Niagen Plus IV infusion bag",
+    href: "/services/niagen-plus-drip-iv-therapy",
+  },
+  {
     title: "Migraine Drip",
     description:
       "May help ease migraine symptoms with hydration, electrolytes, magnesium, and B vitamins.",

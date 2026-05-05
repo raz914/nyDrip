@@ -16,7 +16,9 @@ export const membershipsIntro = {
     "Choose a monthly wellness protocol with included credits, member pricing, Drips rewards, and priority access. Every tier starts with a 3-month minimum and renews monthly after the initial term.",
 };
 
-export const membershipPlans = MEMBERSHIP_TIERS.map((tier) => ({
+export const membershipPlans = MEMBERSHIP_TIERS.filter(
+  (tier) => tier.id !== "non_member",
+).map((tier) => ({
   name: tier.subtitle ? `${tier.name} - ${tier.subtitle}` : tier.name,
   price: formatMembershipPrice(tier.price),
   billingPeriod: "/month",
