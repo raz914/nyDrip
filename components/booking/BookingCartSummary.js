@@ -50,9 +50,12 @@ export default function BookingCartSummary({
   showLocation = false,
   couponCode = "",
   couponDiscount = 0,
+  membershipCreditApplied = 0,
   membershipDiscount = 0,
+  membershipAppliedBenefits = [],
   dripCredit = 0,
   travelFeeResult = null,
+  travelFeeWaived = 0,
   total,
   onRemove,
   onAddMore,
@@ -62,6 +65,7 @@ export default function BookingCartSummary({
   const travelFee = location.type === "mobile" && travelFeeResult?.ok
     ? travelFeeResult.fee
     : 0;
+  const effectiveTravelFee = Math.max(travelFee - travelFeeWaived, 0);
 
   return (
     <aside className="bg-[var(--color-light)] text-[#111111]">
@@ -119,8 +123,14 @@ export default function BookingCartSummary({
               <div className="space-y-1">
                 <div className="flex items-center justify-between gap-4">
                   <span>Travel Fee</span>
-                  <span>{formatCurrency(travelFee)}</span>
+                  <span>{formatCurrency(effectiveTravelFee)}</span>
                 </div>
+                {travelFeeWaived ? (
+                  <div className="flex items-center justify-between gap-4 text-[var(--color-primary)]">
+                    <span>Member Travel Waiver</span>
+                    <span>-{formatCurrency(travelFeeWaived)}</span>
+                  </div>
+                ) : null}
                 {travelFeeResult?.source === "manhattan-flat-rate" ? (
                   <p className="text-xs text-[#858585]">Manhattan flat rate</p>
                 ) : travelFeeResult?.miles ? (
@@ -142,10 +152,26 @@ export default function BookingCartSummary({
                 <span>-{formatCurrency(dripCredit)}</span>
               </div>
             ) : null}
+            {membershipCreditApplied ? (
+              <div className="flex items-center justify-between gap-4 text-[var(--color-primary)]">
+                <span>Included Member Credits</span>
+                <span>-{formatCurrency(membershipCreditApplied)}</span>
+              </div>
+            ) : null}
             {membershipDiscount ? (
               <div className="flex items-center justify-between gap-4 text-[var(--color-primary)]">
                 <span>Member Savings</span>
                 <span>-{formatCurrency(membershipDiscount)}</span>
+              </div>
+            ) : null}
+            {membershipAppliedBenefits.length ? (
+              <div className="space-y-2 border-t border-black/10 pt-3 text-xs text-[#858585]">
+                {membershipAppliedBenefits.map((benefit, index) => (
+                  <div key={`${benefit.code}-${index}`} className="flex items-center justify-between gap-3">
+                    <span>{benefit.label}</span>
+                    <span>-{formatCurrency(benefit.amountApplied)}</span>
+                  </div>
+                ))}
               </div>
             ) : null}
           </div>

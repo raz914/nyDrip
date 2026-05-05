@@ -9,6 +9,7 @@ import HistoryTable from "@/components/dashboard/HistoryTable";
 import {
   MembershipCard,
   MembershipComparisonCard,
+  MembershipManagerCard,
   NextAppointmentCard,
   ReferralCard,
   RewardsCard,
@@ -21,6 +22,7 @@ import {
   mapBookingToHistoryRow,
 } from "@/lib/bookings";
 import { getMembershipSummary, getUserMembership } from "@/lib/memberships";
+import { manageMembership } from "@/lib/membershipApi";
 import { EMPTY_REWARDS, getRewardLedger, getRewardsSummary, getUserRewards } from "@/lib/rewards";
 
 const EMPTY_REFERRAL_STATS = {
@@ -28,6 +30,10 @@ const EMPTY_REFERRAL_STATS = {
   successfulReferrals: 0,
   dripsEarned: 0,
 };
+
+function getSettledValue(result, fallback) {
+  return result.status === "fulfilled" ? result.value : fallback;
+}
 
 function getReferralCode(user) {
   return user?.uid ? `DL-${user.uid.slice(0, 8).toUpperCase()}` : "";
@@ -73,6 +79,9 @@ export default function DashboardPage() {
   });
   const [dashboardLoading, setDashboardLoading] = useState(true);
   const [error, setError] = useState("");
+  const [manageMessage, setManageMessage] = useState("");
+  const [manageLoading, setManageLoading] = useState(false);
+  const [selectedTier, setSelectedTier] = useState("gold");
   const [siteOrigin, setSiteOrigin] = useState("");
   const referralLink = getAbsoluteReferralLink(user, siteOrigin);
 
@@ -98,12 +107,26 @@ export default function DashboardPage() {
       setError("");
 
       try {
-        const [membership, rewards, ledger, bookings] = await Promise.all([
+        const [membershipResult, rewardsResult, ledgerResult, bookingsResult] =
+          await Promise.allSettled([
           getUserMembership(user.uid),
           getUserRewards(user.uid),
           getRewardLedger(user.uid),
           getUserBookings(user.uid),
         ]);
+        const membership = getSettledValue(
+          membershipResult,
+          getMembershipSummary(),
+        );
+        const rewards = getSettledValue(rewardsResult, EMPTY_REWARDS);
+        const ledger = getSettledValue(ledgerResult, []);
+        const bookings = getSettledValue(bookingsResult, []);
+        const failures = [
+          membershipResult,
+          rewardsResult,
+          ledgerResult,
+          bookingsResult,
+        ].filter((result) => result.status === "rejected");
 
         if (!isActive) {
           return;
@@ -117,6 +140,12 @@ export default function DashboardPage() {
           historyRows: bookings.map(mapBookingToHistoryRow),
           referralStats: getReferralStats(ledger),
         });
+        setSelectedTier(membership.pendingTierPlan?.id ?? membership.nextPlan?.id ?? membership.tier);
+        if (failures.length) {
+          setError(
+            "Some dashboard history could not be loaded because of Firestore permissions.",
+          );
+        }
       } catch (nextError) {
         if (isActive) {
           setError(nextError.message);
@@ -134,6 +163,33 @@ export default function DashboardPage() {
       isActive = false;
     };
   }, [user]);
+
+  async function handleMembershipAction(payload) {
+    if (!user) {
+      return;
+    }
+
+    setManageLoading(true);
+    setManageMessage("");
+    setError("");
+
+    try {
+      await manageMembership(user, payload);
+      const nextMembership = await getUserMembership(user.uid);
+
+      setDashboardData((current) => ({
+        ...current,
+        membership: nextMembership,
+        rewards: getRewardsSummary(current.rewards, nextMembership),
+      }));
+      setSelectedTier(nextMembership.pendingTierPlan?.id ?? nextMembership.nextPlan?.id ?? nextMembership.tier);
+      setManageMessage("Membership updated.");
+    } catch (nextError) {
+      setError(nextError.message);
+    } finally {
+      setManageLoading(false);
+    }
+  }
 
   return (
     <main className="min-h-screen bg-white text-[#111111]">
@@ -169,6 +225,25 @@ export default function DashboardPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 md:gap-5">
+              <MembershipManagerCard
+                membership={dashboardData.membership}
+                selectedTier={selectedTier}
+                onTierSelect={setSelectedTier}
+                onScheduleTierChange={() =>
+                  handleMembershipAction({
+                    action: "schedule_tier_change",
+                    tierId: selectedTier,
+                  })
+                }
+                onCancelAtPeriodEnd={() =>
+                  handleMembershipAction({ action: "cancel_at_period_end" })
+                }
+                onResumeAutoRenew={() =>
+                  handleMembershipAction({ action: "resume_auto_renew" })
+                }
+                isSubmitting={manageLoading}
+                message={manageMessage}
+              />
               <ReferralCard
                 referralStats={dashboardData.referralStats}
                 referralLink={referralLink}

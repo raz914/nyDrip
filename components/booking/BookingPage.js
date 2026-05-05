@@ -27,7 +27,6 @@ import {
   getTravelFeeAmount,
   makeCartItem,
 } from "@/components/booking/data";
-import { createUserBooking } from "@/lib/bookings";
 import {
   getBookableTimeSlots,
   getCartDurationMinutes,
@@ -41,7 +40,7 @@ import {
   getUserRewards,
 } from "@/lib/rewards";
 import {
-  calculateMembershipDiscount,
+  getMembershipPricing,
   getMembershipSummary,
   getUserMembership,
 } from "@/lib/memberships";
@@ -222,8 +221,20 @@ export default function BookingPage() {
     couponCode: appliedCouponCode,
     travelFeeResult: travelFeeState.result,
   });
-  const membershipDiscount = calculateMembershipDiscount(cartItems, membership);
-  const orderTotal = Math.max(baseOrderTotal - membershipDiscount, 0);
+  const membershipPricing = getMembershipPricing({
+    items: cartItems,
+    membership,
+    benefits: membership.benefits,
+    locationType,
+    travelFee,
+  });
+  const membershipCreditApplied = membershipPricing.membershipCreditApplied;
+  const membershipDiscount = membershipPricing.membershipDiscount;
+  const travelFeeWaived = membershipPricing.travelFeeWaived;
+  const orderTotal = Math.max(
+    baseOrderTotal - membershipCreditApplied - membershipDiscount - travelFeeWaived,
+    0,
+  );
   const bookingDates = useMemo(() => getRollingWeekdayDates(), []);
   const bookingDurationMinutes = getCartDurationMinutes(cartItems);
   const selectedSlotAvailability = slotAvailability[selectedTime] ?? {
@@ -525,28 +536,45 @@ export default function BookingPage() {
         throw new Error("Please calculate the travel fee before checkout.");
       }
 
-      const booking = await createUserBooking(user, {
-        items: cartItems,
-        appointmentDate: selectedDate,
-        appointmentTime: selectedTime,
-        location,
-        customer: {
-          fullName: details.fullName,
-          phone: details.phone,
-          email: details.email,
+      const bookingResponse = await fetch("/api/bookings/confirm", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        notes: details.notes,
-        subtotal,
-        travelFee,
-        travelMiles: travelFeeState.result?.miles ?? null,
-        travelBase: travelFeeState.result?.base ?? null,
-        travelFeeSource: travelFeeState.result?.source ?? "none",
-        couponCode: appliedCouponCode,
-        couponDiscount,
-        membershipDiscount,
-        orderTotal,
-        dripsToRedeem: selectedDripsToRedeem,
+        body: JSON.stringify({
+          items: cartItems,
+          appointmentDate: selectedDate,
+          appointmentTime: selectedTime,
+          location,
+          customer: {
+            fullName: details.fullName,
+            phone: details.phone,
+            email: details.email,
+          },
+          notes: details.notes,
+          subtotal,
+          travelFee,
+          travelMiles: travelFeeState.result?.miles ?? null,
+          travelBase: travelFeeState.result?.base ?? null,
+          travelFeeSource: travelFeeState.result?.source ?? "none",
+          couponCode: appliedCouponCode,
+          couponDiscount,
+          membershipCreditApplied,
+          membershipDiscount,
+          travelFeeWaived,
+          orderTotal,
+          dripsToRedeem: selectedDripsToRedeem,
+          payment,
+        }),
       });
+      const bookingResult = await bookingResponse.json();
+
+      if (!bookingResponse.ok || !bookingResult.ok) {
+        throw new Error(bookingResult.message || "Could not confirm booking.");
+      }
+
+      const booking = bookingResult.booking;
 
       setSavedBooking(booking);
       setRewards(getRewardsSummary(booking.rewards, membership));
@@ -618,6 +646,7 @@ export default function BookingPage() {
         maxRedeemableDrips={maxRedeemableDrips}
         dripCredit={dripCredit}
         membership={membership}
+        membershipPricing={membershipPricing}
         isSubmitting={isSubmitting}
         onPaymentChange={updatePayment}
         onApplyCoupon={applyCoupon}
@@ -654,9 +683,16 @@ export default function BookingPage() {
           location={location}
           couponCode={appliedCouponCode}
           couponDiscount={savedBooking?.couponDiscount ?? couponDiscount}
+          membershipCreditApplied={
+            savedBooking?.membershipCreditApplied ?? membershipCreditApplied
+          }
           membershipDiscount={savedBooking?.membershipDiscount ?? membershipDiscount}
+          membershipAppliedBenefits={
+            savedBooking?.membershipAppliedBenefits ?? membershipPricing.appliedBenefits
+          }
           dripCredit={savedBooking?.dripCredit ?? dripCredit}
           travelFeeResult={travelFeeState.result}
+          travelFeeWaived={savedBooking?.travelFeeWaived ?? travelFeeWaived}
           dripsEarned={savedBooking?.dripsEarned ?? 0}
           total={savedBooking?.totalPaid ?? total}
         />
@@ -682,9 +718,12 @@ export default function BookingPage() {
             showLocation={currentStep >= 3}
             couponCode={appliedCouponCode}
             couponDiscount={couponDiscount}
+            membershipCreditApplied={membershipCreditApplied}
             membershipDiscount={membershipDiscount}
+            membershipAppliedBenefits={membershipPricing.appliedBenefits}
             dripCredit={dripCredit}
             travelFeeResult={travelFeeState.result}
+            travelFeeWaived={travelFeeWaived}
             total={total}
             onRemove={removeCartItem}
             onAddMore={() => goToStep(0)}

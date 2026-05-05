@@ -4,8 +4,8 @@ export const membershipsHero = {
   title: "Elevate Your Wellness",
   description:
     "Enjoy exclusive pricing, priority booking, and consistent wellness support with custom IV therapy tailored to your health goals. Whether you’re focused on boosting immunity, improving energy, enhancing recovery, or supporting beauty from within, our membership keeps your body performing at its best. Join now to elevate your wellness routine and experience the long-term benefits of regular IV therapy.",
-  ctaLabel: "Join Now",
-  ctaHref: "#contact",
+  ctaLabel: "View Memberships",
+  ctaHref: "#plans",
   image: "/memberships/hero-image.jpg",
   imageAlt: "Woman stretching outdoors before an IV wellness session",
 };
@@ -19,11 +19,12 @@ export const membershipsIntro = {
 export const membershipPlans = MEMBERSHIP_TIERS.filter(
   (tier) => tier.id !== "non_member",
 ).map((tier) => ({
+  id: tier.id,
   name: tier.subtitle ? `${tier.name} - ${tier.subtitle}` : tier.name,
   price: formatMembershipPrice(tier.price),
   billingPeriod: "/month",
   ctaLabel: `Get ${tier.name}`,
-  ctaHref: "#contact",
+  ctaHref: `/memberships?plan=${tier.id}#checkout`,
   featured: tier.featured,
   features: [
     `${tier.minimumTermMonths}-month minimum`,

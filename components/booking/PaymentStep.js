@@ -14,6 +14,7 @@ export default function PaymentStep({
   maxRedeemableDrips,
   dripCredit,
   membership,
+  membershipPricing,
   isSubmitting,
   onPaymentChange,
   onApplyCoupon,
@@ -63,6 +64,26 @@ export default function PaymentStep({
         ) : null}
 
         <section className="border-t border-black/10 pt-6">
+          {membershipPricing.appliedBenefits.length ? (
+            <div className="mb-5 space-y-2 border border-[var(--color-primary)]/20 bg-[var(--color-primary)]/5 p-4">
+              <h2 className="text-base font-medium md:text-xl">Membership benefits applied</h2>
+              {membershipPricing.appliedBenefits.map((benefit, index) => (
+                <div
+                  key={`${benefit.code}-${index}`}
+                  className="flex items-center justify-between gap-4 text-sm text-[#1b2f55] md:text-base"
+                >
+                  <span>{benefit.label}</span>
+                  <span>-${benefit.amountApplied.toFixed(2)}</span>
+                </div>
+              ))}
+              {membershipPricing.travelFeeWaived ? (
+                <div className="flex items-center justify-between gap-4 text-sm text-[#1b2f55] md:text-base">
+                  <span>Travel fee waiver</span>
+                  <span>-${membershipPricing.travelFeeWaived.toFixed(2)}</span>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
           <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
             <div>
               <h2 className="text-base font-medium md:text-xl">Redeem Drips</h2>

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { faqs } from "@/components/home/data";
 import { FaqItem } from "@/components/home/primitives";
 import { ArrowRightIcon, ChevronDownIcon } from "@/components/home/icons";
+import MembershipCheckoutSection from "@/components/memberships/MembershipCheckoutSection";
 import {
   membershipPlans,
   membershipsHero,
@@ -195,6 +196,7 @@ export default function MembershipsPage() {
       <main className="bg-white text-[#111111]">
         <MembershipHeroSection />
         <MembershipPricingSection />
+        <MembershipCheckoutSection />
 
         <section className="bg-[#111111] text-white">
           <div className="mx-auto max-w-[1512px] px-5 py-24 md:px-10">

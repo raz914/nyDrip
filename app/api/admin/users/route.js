@@ -21,7 +21,7 @@ export async function GET(request) {
     const maxResultsRaw = Number(searchParams.get("maxResults")) || 50;
     const maxResults = Math.min(Math.max(maxResultsRaw, 1), 100);
 
-    const listResult = await getAdminAuth().listUsers({ maxResults, pageToken });
+    const listResult = await getAdminAuth().listUsers(maxResults, pageToken);
 
     const db = getAdminDb();
     const refs = listResult.users.map((u) => db.collection("users").doc(u.uid));

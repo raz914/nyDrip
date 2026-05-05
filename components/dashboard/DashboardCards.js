@@ -6,6 +6,7 @@ import { CrownIcon } from "@/components/dashboard/icons";
 import {
   MEMBERSHIP_BONUS_ACTIONS,
   MEMBERSHIP_MARGIN_RULES,
+  MEMBERSHIP_TIERS,
 } from "@/lib/memberships";
 import { formatDrips } from "@/lib/rewards";
 
@@ -138,6 +139,11 @@ export function RewardsCard({ rewards, ledger = [] }) {
 export function MembershipCard({ membership }) {
   const { plan } = membership;
   const isNonMember = plan.id === "non_member";
+  const visibleBenefits = isNonMember
+    ? plan.benefits
+    : membership.displayBenefits.length
+      ? membership.displayBenefits.map((benefit) => benefit.summary)
+      : ["No included credits remaining in this period."];
 
   return (
     <section className="border border-[var(--color-primary)] bg-white">
@@ -158,8 +164,18 @@ export function MembershipCard({ membership }) {
                 <span className="ml-1 text-base text-[#858585]">/month</span>
               </p>
               <p className="mt-3 text-sm text-[#858585] md:text-base">
-                {plan.minimumTermMonths}-month minimum, then auto-renews monthly.
+                {membership.statusLabel}
               </p>
+              {membership.nextRenewalAtLabel ? (
+                <p className="mt-2 text-sm text-[#858585] md:text-base">
+                  Next renewal: {membership.nextRenewalAtLabel}
+                </p>
+              ) : null}
+              {membership.minimumTermEndsAtLabel ? (
+                <p className="mt-2 text-sm text-[#858585] md:text-base">
+                  Minimum term ends: {membership.minimumTermEndsAtLabel}
+                </p>
+              ) : null}
             </>
           )}
           <p className="mt-4 text-sm leading-5 text-[#111111] md:text-base md:leading-6">
@@ -174,13 +190,103 @@ export function MembershipCard({ membership }) {
             {isNonMember ? "Membership benefits" : "Included this month"}
           </h3>
           <ul className="mt-4 space-y-3 text-sm text-[#111111] md:text-base">
-            {(isNonMember ? plan.benefits : plan.includedCredits).map((item) => (
+            {visibleBenefits.map((item) => (
               <li key={item} className="border-t border-black/10 pt-3">
                 {item}
               </li>
             ))}
           </ul>
+          {!isNonMember && membership.mockPaymentMethod?.last4 ? (
+            <p className="mt-4 text-sm text-[#858585] md:text-base">
+              Mock payment method: {membership.mockPaymentMethod.brand} ending in{" "}
+              {membership.mockPaymentMethod.last4}
+            </p>
+          ) : null}
         </div>
+      </div>
+    </section>
+  );
+}
+
+export function MembershipManagerCard({
+  membership,
+  selectedTier,
+  onTierSelect,
+  onScheduleTierChange,
+  onCancelAtPeriodEnd,
+  onResumeAutoRenew,
+  isSubmitting,
+  message,
+}) {
+  if (!membership.isActiveMember) {
+    return null;
+  }
+
+  return (
+    <section className="bg-[#f0f2f5]">
+      <div className="border-b border-black/10 px-5 py-5">
+        <h2 className="text-lg font-medium leading-none md:text-[1.25rem]">
+          Manage Membership
+        </h2>
+      </div>
+
+      <div className="space-y-4 px-5 py-6">
+        <label className="block text-sm text-[#858585] md:text-base">
+          Schedule next tier
+          <select
+            value={selectedTier}
+            onChange={(event) => onTierSelect(event.target.value)}
+            className="mt-2 w-full border border-[#111111] bg-white px-3 py-2.5 text-[#111111] outline-none"
+          >
+            {MEMBERSHIP_TIERS.filter((tier) => tier.id !== "non_member").map((tier) => (
+              <option key={tier.id} value={tier.id}>
+                {tier.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={onScheduleTierChange}
+            disabled={isSubmitting}
+            className="border border-[#111111] bg-white px-4 py-2 disabled:opacity-60"
+          >
+            Schedule Tier Change
+          </button>
+          {membership.status === "cancel_at_period_end" ? (
+            <button
+              type="button"
+              onClick={onResumeAutoRenew}
+              disabled={isSubmitting}
+              className="border border-[#111111] bg-white px-4 py-2 disabled:opacity-60"
+            >
+              Resume Auto-Renew
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onCancelAtPeriodEnd}
+              disabled={isSubmitting || !membership.canCancelAtPeriodEnd}
+              className="border border-[#111111] bg-white px-4 py-2 disabled:opacity-60"
+            >
+              Cancel At Period End
+            </button>
+          )}
+        </div>
+
+        {!membership.canCancelAtPeriodEnd && membership.minimumTermEndsAtLabel ? (
+          <p className="text-sm text-[#858585] md:text-base">
+            Cancellation unlocks after {membership.minimumTermEndsAtLabel}.
+          </p>
+        ) : null}
+        {membership.pendingTierPlan ? (
+          <p className="text-sm text-[#858585] md:text-base">
+            Scheduled tier change: {membership.pendingTierPlan.name}
+          </p>
+        ) : null}
+        {message ? <p className="text-sm text-[var(--color-primary)]">{message}</p> : null}
       </div>
     </section>
   );

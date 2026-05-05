@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test": "node --test",
     "admin:create-user": "node scripts/create-admin-user.js"
   },
   "dependencies": {
