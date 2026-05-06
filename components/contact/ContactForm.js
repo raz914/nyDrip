@@ -1,16 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
 import { ArrowRightIcon } from "@/components/home/icons";
-
-const initialValues = {
-  name: "",
-  phone: "",
-  email: "",
-  questions: "",
-  company: "",
-};
 
 const variantClasses = {
   home: {
@@ -35,7 +25,7 @@ const variantClasses = {
   },
 };
 
-function ContactField({ label, name, type = "text", textarea = false, value, onChange, classes }) {
+function ContactField({ label, name, type = "text", textarea = false, classes }) {
   return (
     <label className="block">
       <span className={classes.label}>{label}</span>
@@ -43,21 +33,15 @@ function ContactField({ label, name, type = "text", textarea = false, value, onC
         <textarea
           name={name}
           rows={3}
-          value={value}
-          onChange={onChange}
           className={classes.textarea}
           placeholder={label}
-          required
         />
       ) : (
         <input
           type={type}
           name={name}
-          value={value}
-          onChange={onChange}
           className={classes.input}
           placeholder={label}
-          required
         />
       )}
     </label>
@@ -66,52 +50,9 @@ function ContactField({ label, name, type = "text", textarea = false, value, onC
 
 export default function ContactForm({ variant = "home" }) {
   const classes = variantClasses[variant] ?? variantClasses.home;
-  const [formValues, setFormValues] = useState(initialValues);
-  const [consent, setConsent] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
 
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setFormValues((current) => ({
-      ...current,
-      [name]: value,
-    }));
-  }
-
-  async function handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
-    setSubmitting(true);
-    setMessage("");
-    setError("");
-
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...formValues,
-          consent,
-          source: variant,
-        }),
-      });
-      const result = await response.json();
-
-      if (!response.ok || !result.ok) {
-        throw new Error(result.message || "We could not submit your request.");
-      }
-
-      setMessage(result.message || "Thank you. We received your request.");
-      setFormValues(initialValues);
-      setConsent(false);
-    } catch (nextError) {
-      setError(nextError.message);
-    } finally {
-      setSubmitting(false);
-    }
   }
 
   return (
@@ -120,16 +61,12 @@ export default function ContactForm({ variant = "home" }) {
         <ContactField
           label="Your Name"
           name="name"
-          value={formValues.name}
-          onChange={handleChange}
           classes={classes}
         />
         <ContactField
           label="Phone"
           name="phone"
           type="tel"
-          value={formValues.phone}
-          onChange={handleChange}
           classes={classes}
         />
         <div className="md:col-span-2">
@@ -137,8 +74,6 @@ export default function ContactForm({ variant = "home" }) {
             label="E-mail Address"
             name="email"
             type="email"
-            value={formValues.email}
-            onChange={handleChange}
             classes={classes}
           />
         </div>
@@ -147,8 +82,6 @@ export default function ContactForm({ variant = "home" }) {
             label="Questions"
             name="questions"
             textarea
-            value={formValues.questions}
-            onChange={handleChange}
             classes={classes}
           />
         </div>
@@ -157,8 +90,6 @@ export default function ContactForm({ variant = "home" }) {
       <input
         type="text"
         name="company"
-        value={formValues.company}
-        onChange={handleChange}
         autoComplete="off"
         tabIndex={-1}
         className="hidden"
@@ -169,21 +100,15 @@ export default function ContactForm({ variant = "home" }) {
         <input
           type="checkbox"
           name="consent"
-          checked={consent}
-          onChange={(event) => setConsent(event.target.checked)}
-          required
           className="h-4 w-4 rounded-[1px] border border-white/70 bg-transparent accent-white"
         />
         <span>I agree to receive communications</span>
       </label>
 
-      <button type="submit" className={classes.button} disabled={submitting}>
-        <span>{submitting ? "Submitting..." : "Submit"}</span>
+      <button type="submit" className={classes.button}>
+        <span>Submit</span>
         <ArrowRightIcon />
       </button>
-
-      {message ? <p className="text-sm text-[var(--color-secondary)]">{message}</p> : null}
-      {error ? <p className="text-sm text-[#ffb4b4]">{error}</p> : null}
     </form>
   );
 }
