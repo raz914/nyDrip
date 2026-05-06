@@ -2,6 +2,8 @@ export const serviceDropdownLinks = [
   { label: "IV Therapy", href: "/services/iv-therapy" },
   { label: "Peptide Wellness", href: "/services/peptide-wellness" },
   { label: "Injections & Boosters", href: "/services/injections-boosters" },
+  { label: "Online Telehealth Consultations", href: "/services/online-telehealth-consultations" },
+  { label: "Compression Boots", href: "/services/compression-boots" },
   { label: "NAD+ Injection Kit", href: "/services/nad-injection-kit" },
   { label: "Testosterone Replacement", href: "/services/testosterone-replacement" },
   { label: "Corporate Partnership", href: "/services/corporate-partnership" },
@@ -30,7 +32,7 @@ export const homeNavLinks = [
     children: serviceDropdownLinks,
   },
   { label: "Memberships", href: "/memberships" },
-  { label: "About", href: "/about", children: areaDropdownLinks },
+  { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
 ];
 
@@ -42,6 +44,6 @@ export const sharedServiceNavLinks = [
     children: serviceDropdownLinks,
   },
   { label: "Memberships", href: "/memberships" },
-  { label: "About", href: "/about", children: areaDropdownLinks },
+  { label: "About", href: "/about" },
   { label: "Blog", href: "/blog" },
 ];

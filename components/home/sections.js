@@ -550,10 +550,10 @@ export function SiteFooter() {
         </p>
         <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap gap-6">
-            <a href="#contact" className="underline">
+            <a href="/privacy-policy" className="underline">
               Privacy Policy
             </a>
-            <a href="#contact" className="underline">
+            <a href="/terms-and-conditions" className="underline">
               Terms & Conditions
             </a>
           </div>

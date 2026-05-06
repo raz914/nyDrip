@@ -260,7 +260,7 @@ export const faqs = [
   },
 ];
 
-export const areaEntries = [
+const rawAreaEntries = [
   {
     label: "Newburgh",
     slug: "newburgh",
@@ -336,20 +336,29 @@ export const areaEntries = [
   },
 ];
 
+export const areaEntries = rawAreaEntries.map((area) => ({
+  ...area,
+  href: area.href ?? (area.isLive ? `/areas/${area.slug}` : undefined),
+}));
+
 export const areasWeServe = areaEntries.map((area) => area.label);
 
 export const services = [
-  "IV Therapy Services",
-  "Peptide Wellness",
-  "Injection & Boosters",
-  "Testosterone",
-  "Online Telehealth Consultations",
-  "Wellness Partnerships",
-  "NAD+ Kit",
-  "Compression Boots",
+  { label: "IV Therapy Services", href: "/services/iv-therapy" },
+  { label: "Peptide Wellness", href: "/services/peptide-wellness" },
+  { label: "Injections & Boosters", href: "/services/injections-boosters" },
+  { label: "Testosterone", href: "/services/testosterone-replacement" },
+  { label: "Online Telehealth Consultations", href: "/services/online-telehealth-consultations" },
+  { label: "Wellness Partnerships", href: "/services/corporate-partnership" },
+  { label: "NAD+ Kit", href: "/services/nad-injection-kit" },
+  { label: "Compression Boots", href: "/services/compression-boots" },
 ];
 
-export const aboutLinks = ["How It Works", "Our Blog", "Areas We Serve"];
+export const aboutLinks = [
+  { label: "How It Works", href: "/#how-it-works" },
+  { label: "Our Blog", href: "/blog" },
+  { label: "Areas We Serve", href: "/about" },
+];
 
 
 

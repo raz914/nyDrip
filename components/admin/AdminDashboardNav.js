@@ -8,7 +8,7 @@ import { logOut } from "@/lib/auth";
 
 const links = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/admin/availability", label: "Availability" },
+  { href: "/admin/availability", label: "Booking Manager" },
   { href: "/admin/users", label: "Users" },
   { href: "/admin/pricing", label: "Pricing" },
   { href: "/admin/contact-submissions", label: "Submissions" },

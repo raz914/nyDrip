@@ -318,10 +318,10 @@ export function ServicesFooter() {
         </p>
         <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-wrap gap-6">
-            <Link href="#contact" className="underline">
+            <Link href="/privacy-policy" className="underline">
               Privacy Policy
             </Link>
-            <Link href="#contact" className="underline">
+            <Link href="/terms-and-conditions" className="underline">
               Terms & Conditions
             </Link>
           </div>
