@@ -1,7 +1,7 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { NextResponse } from "next/server";
 
-import { areaProductPriceMap, treatmentCatalog } from "@/components/pricing/catalog";
+import { treatmentCatalog } from "@/components/pricing/catalog";
 import { buildBookableServices } from "@/lib/bookingCatalog";
 import { getAdminDb, requireAdminRequest } from "@/lib/firebaseAdmin";
 import { PRICING_DOC_PATH, getPricingDocumentData } from "@/lib/serverPricing";
@@ -48,33 +48,11 @@ function sanitizeCatalogOverrides(input) {
   return out;
 }
 
-function sanitizeAreaOverrides(input) {
-  if (!input || typeof input !== "object") {
-    return {};
-  }
-
-  const out = {};
-
-  for (const [key, val] of Object.entries(input)) {
-    if (typeof key !== "string" || !key.trim()) {
-      continue;
-    }
-    const s = String(val ?? "").trim();
-    if (!s.startsWith("$")) {
-      continue;
-    }
-    out[key.trim()] = s;
-  }
-
-  return out;
-}
-
 export async function GET(request) {
   try {
     await requireAdminRequest(request);
 
     const stored = await getPricingDocumentData();
-    const areaDefaults = { ...areaProductPriceMap };
     const baseRows = buildBookableServices(treatmentCatalog, {});
     const baseById = Object.fromEntries(baseRows.map((s) => [s.id, s.price]));
 
@@ -88,8 +66,6 @@ export async function GET(request) {
     return NextResponse.json({
       ok: true,
       catalogOverrides: stored.catalogOverrides,
-      areaOverrides: { ...areaDefaults, ...stored.areaOverrides },
-      areaDefaults,
       services,
       updatedAt: stored.updatedAt,
       updatedBy: stored.updatedBy,
@@ -111,29 +87,21 @@ export async function PATCH(request) {
       body.catalogOverrides !== undefined
         ? sanitizeCatalogOverrides(body.catalogOverrides)
         : null;
-    const areaOverrides =
-      body.areaOverrides !== undefined ? sanitizeAreaOverrides(body.areaOverrides) : null;
 
-    if (catalogOverrides === null && areaOverrides === null) {
+    if (catalogOverrides === null) {
       return NextResponse.json(
-        { ok: false, message: "Provide catalogOverrides and/or areaOverrides." },
+        { ok: false, message: "Provide catalogOverrides." },
         { status: 400 },
       );
     }
 
-    const existing = await getPricingDocumentData();
-    const nextCatalog =
-      catalogOverrides !== null
-        ? catalogOverrides
-        : existing.catalogOverrides;
-    const nextArea = areaOverrides !== null ? areaOverrides : existing.areaOverrides;
+    const nextCatalog = catalogOverrides;
 
     await getAdminDb()
       .doc(PRICING_DOC_PATH)
       .set(
         {
           catalogOverrides: nextCatalog,
-          areaOverrides: nextArea,
           updatedAt: FieldValue.serverTimestamp(),
           updatedBy: adminUser.uid,
         },
@@ -150,7 +118,6 @@ export async function PATCH(request) {
     return NextResponse.json({
       ok: true,
       catalogOverrides: nextCatalog,
-      areaOverrides: { ...areaProductPriceMap, ...nextArea },
       services,
     });
   } catch (error) {

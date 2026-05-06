@@ -14,6 +14,7 @@ import {
   injectionsBoostersNavLinks,
   injectionsBoostersProducts,
 } from "@/components/services/injections-boosters/data";
+import { withResolvedStartingPrices } from "@/lib/publicPricing";
 
 function InjectionsHeroSection() {
   return (
@@ -68,7 +69,7 @@ function ProductCard({ product }) {
   );
 }
 
-function InjectionsProductsSection() {
+function InjectionsProductsSection({ products }) {
   return (
     <section className="px-5 py-20 md:px-10 md:py-24">
       <div className="mx-auto max-w-[1512px]">
@@ -76,7 +77,7 @@ function InjectionsProductsSection() {
           Our Injections & Boosters
         </h2>
         <div className="mx-auto mt-14 grid max-w-[1180px] gap-10 sm:grid-cols-2 lg:grid-cols-4">
-          {injectionsBoostersProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.title} product={product} />
           ))}
         </div>
@@ -130,13 +131,15 @@ function InjectionsFaqSection() {
   );
 }
 
-export default function InjectionsBoostersPage() {
+export default function InjectionsBoostersPage({ services }) {
+  const products = withResolvedStartingPrices(injectionsBoostersProducts, services);
+
   return (
     <>
       <ServicesHeader links={injectionsBoostersNavLinks} />
       <main className="bg-white text-[#111111]">
         <InjectionsHeroSection />
-        <InjectionsProductsSection />
+        <InjectionsProductsSection products={products} />
         <InjectionsBenefitsSection />
         <InjectionsFaqSection />
 

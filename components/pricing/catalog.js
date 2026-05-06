@@ -44,30 +44,3 @@ export const treatmentCatalog = [
   { name: "Compression Boots (60 mins)", category: "Compression Boots", duration: "1 h", price: "$50.00" },
   { name: "Glutathione IV Drip (100mL)", category: "IV Therapy", duration: "45 min", price: "$175.00" },
 ];
-
-export const areaProductPriceMap = {
-  "Niagen Plus Drip": "$800.00",
-  "NAD+": "$545.00",
-  "NAD+ Drip": "$545.00",
-  "Spring Restore": "$350.00",
-  "Migraine Drip": "$275.00",
-  "Radiance Drip": "$275.00",
-  "Energy Drip": "$275.00",
-  "Bikini Blitz Drip": "$275.00",
-  "Performance Drip": "$275.00",
-  Performance: "$275.00",
-  "Myers Drip": "$275.00",
-  "Immunity Drip": "$275.00",
-  "Rejuvenate Drip": "$275.00",
-  Rejuvenate: "$275.00",
-  "Hangover Cure Drip": "$275.00",
-  "Hangover Drip": "$275.00",
-  Hangover: "$275.00",
-  "Glutathione IV Therapy": "$175.00",
-  "Hydration Drip": "$175.00",
-  "NYD+ Drip": "$545.00",
-};
-
-export function getAreaProductPrice(productTitle) {
-  return areaProductPriceMap[productTitle] ?? null;
-}

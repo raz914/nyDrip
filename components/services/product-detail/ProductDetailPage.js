@@ -11,6 +11,11 @@ import {
   getBookingHrefForProductTitle,
   getBookingHrefForServiceId,
 } from "@/components/booking/data";
+import {
+  getProductDetailPriceLines,
+  withResolvedStartingPrices,
+} from "@/lib/publicPricing";
+import { getPublicBookableServices } from "@/lib/serverPricing";
 
 function resolveProductCtaHref(cta, fallbackTitle) {
   if (cta?.serviceId) {
@@ -359,23 +364,42 @@ function ProductFaqSection({ title, faqs }) {
   );
 }
 
-export default function ProductDetailPage({ product }) {
+export default async function ProductDetailPage({ product }) {
+  const services = await getPublicBookableServices();
+  const resolvedProduct = {
+    ...product,
+    hero: {
+      ...product.hero,
+      priceLines: getProductDetailPriceLines(
+        product.hero.title,
+        product.hero.priceLines,
+        services,
+      ),
+    },
+    addOns: product.addOns
+      ? {
+          ...product.addOns,
+          items: withResolvedStartingPrices(product.addOns.items ?? [], services),
+        }
+      : product.addOns,
+  };
+
   return (
     <>
-      <ServicesHeader links={product.navLinks} />
+      <ServicesHeader links={resolvedProduct.navLinks} />
       <main className="bg-white text-[#111111]">
-        <ProductIntroSection hero={product.hero} benefits={product.benefits} />
+        <ProductIntroSection hero={resolvedProduct.hero} benefits={resolvedProduct.benefits} />
         <HowItWorksSection />
-        <ProductDetailSections sections={product.detailSections} />
-        <ProductProofSection section={product.proof} />
-        <ProductAddOnsSection section={product.addOns} />
-        <ProductConsultationSection section={product.consultation} />
+        <ProductDetailSections sections={resolvedProduct.detailSections} />
+        <ProductProofSection section={resolvedProduct.proof} />
+        <ProductAddOnsSection section={resolvedProduct.addOns} />
+        <ProductConsultationSection section={resolvedProduct.consultation} />
 
         <section className="bg-[#111111] text-white">
           <div className="mx-auto max-w-[1512px] px-5 py-24 md:px-10">
             <ProductFaqSection
-              title={product.faqTitle ?? "Frequently Asked Questions"}
-              faqs={product.faqs}
+              title={resolvedProduct.faqTitle ?? "Frequently Asked Questions"}
+              faqs={resolvedProduct.faqs}
             />
             <div className="pt-24">
               <ServicesContactSection />

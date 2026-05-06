@@ -2,18 +2,15 @@ import { notFound } from "next/navigation";
 
 import BlogPostPage from "@/components/blog/BlogPostPage";
 import {
-  getBlogPostBySlug,
-  getBlogSlugs,
-  getRelatedPosts,
-} from "@/components/blog/data";
+  getPublishedBlogPostBySlug,
+  getRelatedBlogPosts,
+} from "@/lib/blogPosts";
 
-export function generateStaticParams() {
-  return getBlogSlugs().map((slug) => ({ slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+  const post = await getPublishedBlogPostBySlug(slug);
 
   if (!post) {
     return {
@@ -29,11 +26,11 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { slug } = await params;
-  const post = getBlogPostBySlug(slug);
+  const post = await getPublishedBlogPostBySlug(slug);
 
   if (!post) {
     notFound();
   }
 
-  return <BlogPostPage post={post} relatedPosts={getRelatedPosts(slug)} />;
+  return <BlogPostPage post={post} relatedPosts={await getRelatedBlogPosts(slug)} />;
 }

@@ -2,11 +2,11 @@
  * Create (or update) a staff Firebase Auth user from an admin username + password,
  * and set custom claim admin: true.
  *
- * Username "Usama" becomes email usama@nydrip-staff.local (see lib/adminStaffEmail.js).
+ * Username "Username" becomes email username@nydrip-staff.local (see lib/adminStaffEmail.js).
  *
  * Usage (same Firebase Admin env vars as the Next app):
  *   node scripts/create-admin-user.js
- *   node scripts/create-admin-user.js Usama "YourPasswordHere"
+ *   node scripts/create-admin-user.js Username "YourPasswordHere"
  */
 
 const { cert, getApps, initializeApp } = require("firebase-admin/app");
@@ -49,7 +49,7 @@ function getServiceAccount() {
 }
 
 async function main() {
-  const username = process.argv[2] || "Usama";
+  const username = process.argv[2] || "Username";
   const password = process.argv[3] || "Changeme@136";
   const email = staffUsernameToEmail(username);
 

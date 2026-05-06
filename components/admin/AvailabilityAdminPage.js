@@ -29,7 +29,7 @@ function getTimeOptions() {
 }
 
 export default function AvailabilityAdminPage() {
-  const { user } = useAdminGate("/admin/availability");
+  const { user, ready } = useAdminGate("/admin/availability");
   const dates = useMemo(() => getRollingWeekdayDates(), []);
   const timeOptions = useMemo(() => getTimeOptions(), []);
   const [form, setForm] = useState({
@@ -43,6 +43,10 @@ export default function AvailabilityAdminPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!ready || !user) {
+      return;
+    }
+
     let isActive = true;
 
     async function loadBlocks() {
@@ -74,7 +78,7 @@ export default function AvailabilityAdminPage() {
     return () => {
       isActive = false;
     };
-  }, [user]);
+  }, [user, ready]);
 
   function updateForm(field, value) {
     setForm((current) => {
@@ -95,6 +99,10 @@ export default function AvailabilityAdminPage() {
     event.preventDefault();
     setStatus("");
     setError("");
+
+    if (!ready || !user) {
+      return;
+    }
 
     try {
       const headers = await getAdminRequestHeaders(user);
@@ -126,6 +134,10 @@ export default function AvailabilityAdminPage() {
   async function deleteBlock(id) {
     setStatus("");
     setError("");
+
+    if (!ready || !user) {
+      return;
+    }
 
     try {
       const headers = await getAdminRequestHeaders(user);

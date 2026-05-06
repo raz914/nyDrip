@@ -1,5 +1,5 @@
 import BlogListing from "@/components/blog/BlogListing";
-import { blogIntro, blogPosts, blogTopics, blogYears } from "@/components/blog/data";
+import { blogIntro } from "@/components/blog/data";
 import {
   ServicesContactSection,
   ServicesFooter,
@@ -7,16 +7,16 @@ import {
 } from "@/components/services/sections";
 import { sharedServiceNavLinks } from "@/components/navigation/nav-data";
 
-export default function BlogPage() {
+export default function BlogPage({ posts, topics, years }) {
   return (
     <>
       <ServicesHeader links={sharedServiceNavLinks} />
       <main className="bg-white text-[#111111]">
         <BlogListing
           intro={blogIntro}
-          posts={blogPosts}
-          topics={blogTopics}
-          years={blogYears}
+          posts={posts}
+          topics={topics}
+          years={years}
         />
 
         <section className="bg-[#111111] text-white">

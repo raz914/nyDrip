@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import SharedNavbar from "@/components/navigation/SharedNavbar";
+import ContactForm from "@/components/contact/ContactForm";
 
 import { aboutLinks, areaEntries, services as footerServices } from "@/components/home/data";
 import {
@@ -46,29 +47,6 @@ function ServiceStepIcon({ kind }) {
   }
 
   return <SparkIcon />;
-}
-
-function ContactField({ label, name, type = "text", textarea = false }) {
-  return (
-    <label className="block">
-      <span className="block text-lg text-[#858585] md:text-xl">{label}</span>
-      {textarea ? (
-        <textarea
-          name={name}
-          rows={3}
-          className="mt-2 w-full resize-none border-b border-white/60 bg-transparent pb-3 text-base text-white outline-none placeholder:text-[#858585]"
-          placeholder={label}
-        />
-      ) : (
-        <input
-          type={type}
-          name={name}
-          className="mt-2 w-full border-b border-white/60 bg-transparent pb-3 text-base text-white outline-none placeholder:text-[#858585]"
-          placeholder={label}
-        />
-      )}
-    </label>
-  );
 }
 
 function FooterGroup({ title, items }) {
@@ -281,34 +259,7 @@ export function ServicesContactSection() {
           </p>
         </div>
 
-        <form className="space-y-10" action="#">
-          <div className="grid gap-10 md:grid-cols-2 md:gap-x-5 md:gap-y-10">
-            <ContactField label="Your Name" name="name" />
-            <ContactField label="Phone" name="phone" type="tel" />
-            <div className="md:col-span-2">
-              <ContactField label="E-mail Address" name="email" type="email" />
-            </div>
-            <div className="md:col-span-2">
-              <ContactField label="Questions" name="questions" textarea />
-            </div>
-          </div>
-
-          <label className="flex items-center gap-3 text-sm text-white md:text-base">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded-[1px] border border-white/70 bg-transparent accent-white"
-            />
-            <span>I agree to receive communications</span>
-          </label>
-
-          <button
-            type="button"
-            className="inline-flex w-full items-center justify-center gap-2 bg-[var(--color-primary)] px-5 py-2.5 text-[15px] font-medium text-white [&_span]:text-white [&_svg]:text-white sm:w-auto"
-          >
-            <span>Submit</span>
-            <ArrowRightIcon className="h-5 w-5" />
-          </button>
-        </form>
+        <ContactForm variant="services" />
       </div>
     </section>
   );

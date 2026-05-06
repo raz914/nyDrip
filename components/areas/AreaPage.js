@@ -12,7 +12,6 @@ import {
 } from "@/components/home/icons";
 import { FaqItem } from "@/components/home/primitives";
 import AreaServicesCarousel from "@/components/areas/AreaServicesCarousel";
-import { serviceItems } from "@/components/services/data";
 import { ServicesContactSection, ServicesFooter, ServicesHeader } from "@/components/services/sections";
 
 function ActionLink({
@@ -108,14 +107,14 @@ function AreaHeroSection({ hero }) {
   );
 }
 
-function AreaServicesSection({ areaLabel }) {
+function AreaServicesSection({ areaLabel, products }) {
   return (
     <section className="px-5 py-20 md:px-10 md:py-[100px]">
       <div className="mx-auto max-w-[1512px]">
         <h2 className="text-center text-[2.25rem] font-bold leading-none tracking-[-0.03em] md:text-[3.25rem]">
           Services We Have in {areaLabel}
         </h2>
-        <AreaServicesCarousel services={serviceItems} />
+        <AreaServicesCarousel services={products} />
       </div>
     </section>
   );
@@ -275,7 +274,7 @@ export default function AreaPage({ area }) {
       <ServicesHeader />
       <main className="bg-white text-[#111111]">
         <AreaHeroSection hero={area.hero} />
-        <AreaServicesSection areaLabel={area.label} />
+        <AreaServicesSection areaLabel={area.label} products={area.products ?? []} />
         <AreaLocalSection localSection={area.localSection} />
         <AreaHowItWorksSection howItWorks={area.howItWorks} />
         <AreaBookingSection booking={area.booking} />

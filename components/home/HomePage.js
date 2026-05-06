@@ -12,15 +12,20 @@ import {
   TestimonialsSection,
   WhyUsSection,
 } from "@/components/home/sections";
+import { featuredDrips, serviceCards } from "@/components/home/data";
+import { withResolvedStartingPrices } from "@/lib/publicPricing";
 
-export default function HomePage() {
+export default function HomePage({ services }) {
+  const resolvedFeaturedDrips = withResolvedStartingPrices(featuredDrips, services);
+  const resolvedServiceCards = withResolvedStartingPrices(serviceCards, services);
+
   return (
     <>
       <SiteHeader />
       <main className="bg-white text-[#111111]">
         <HeroSection />
-        <FeaturedDripsSection />
-        <ServicesSection />
+        <FeaturedDripsSection featuredDrips={resolvedFeaturedDrips} />
+        <ServicesSection serviceCards={resolvedServiceCards} />
         <HowItWorksSection />
         <MobileIvSection />
         <WhyUsSection />

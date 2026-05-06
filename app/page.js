@@ -1,5 +1,10 @@
 import HomePage from "@/components/home/HomePage";
+import { getPublicBookableServices } from "@/lib/serverPricing";
 
-export default function Page() {
-  return <HomePage />;
+export const dynamic = "force-dynamic";
+
+export default async function Page() {
+  const services = await getPublicBookableServices();
+
+  return <HomePage services={services} />;
 }

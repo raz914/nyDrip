@@ -14,6 +14,7 @@ import {
   ivTherapyNavLinks,
   ivTherapyProducts,
 } from "@/components/services/iv-therapy/data";
+import { withResolvedStartingPrices } from "@/lib/publicPricing";
 
 function IvTherapyHeroSection() {
   return (
@@ -36,7 +37,7 @@ function IvTherapyHeroSection() {
   );
 }
 
-function IvTherapyProductsSection() {
+function IvTherapyProductsSection({ products }) {
   return (
     <section className="px-5 py-20 md:px-10 md:py-24">
       <div className="mx-auto max-w-[1512px]">
@@ -44,7 +45,7 @@ function IvTherapyProductsSection() {
           IV Therapy Drips
         </h2>
 
-        <IvTherapyProductsCarousel products={ivTherapyProducts} />
+        <IvTherapyProductsCarousel products={products} />
       </div>
     </section>
   );
@@ -105,13 +106,15 @@ function IvTherapyFaqSection() {
   );
 }
 
-export default function IvTherapyPage() {
+export default function IvTherapyPage({ services }) {
+  const products = withResolvedStartingPrices(ivTherapyProducts, services);
+
   return (
     <>
       <ServicesHeader links={ivTherapyNavLinks} />
       <main className="bg-white text-[#111111]">
         <IvTherapyHeroSection />
-        <IvTherapyProductsSection />
+        <IvTherapyProductsSection products={products} />
         <IvTherapyBenefitsSection />
 
         <section className="bg-[#111111] text-white">

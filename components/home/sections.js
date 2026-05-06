@@ -1,6 +1,7 @@
 import Image from "next/image";
 import SharedNavbar from "@/components/navigation/SharedNavbar";
 import ServiceCardsCarousel from "@/components/home/ServiceCardsCarousel";
+import ContactForm from "@/components/contact/ContactForm";
 import { getBookingHrefForProductTitle } from "@/components/booking/data";
 
 import {
@@ -8,9 +9,7 @@ import {
   areaEntries,
   benefits,
   faqs,
-  featuredDrips,
   navLinks,
-  serviceCards,
   services,
   steps,
   testimonials,
@@ -26,7 +25,6 @@ import {
 } from "@/components/home/icons";
 import {
   FaqItem,
-  Field,
   FooterMenuGroup,
   GoogleBadge,
   IconBadge,
@@ -111,7 +109,7 @@ export function HeroSection() {
   );
 }
 
-export function FeaturedDripsSection() {
+export function FeaturedDripsSection({ featuredDrips }) {
   return (
     <section id="services" className="bg-white">
       {featuredDrips.map((drip, index) => (
@@ -178,7 +176,7 @@ export function FeaturedDripsSection() {
   );
 }
 
-export function ServicesSection() {
+export function ServicesSection({ serviceCards }) {
   return (
     <section className="overflow-hidden bg-white px-5 py-20 md:px-7 lg:px-8">
       <div className="mx-auto flex w-full max-w-[1180px] flex-col items-center gap-12">
@@ -501,34 +499,7 @@ export function ContactSection() {
           </p>
         </div>
 
-        <form className="space-y-10" action="#">
-          <div className="grid gap-10 md:grid-cols-2 md:gap-x-5 md:gap-y-10">
-            <Field label="Your Name" name="name" />
-            <Field label="Phone" name="phone" type="tel" />
-            <div className="md:col-span-2">
-              <Field label="E-mail Address" name="email" type="email" />
-            </div>
-            <div className="md:col-span-2">
-              <Field label="Questions" name="questions" textarea />
-            </div>
-          </div>
-
-          <label className="flex items-center gap-3 text-base text-white">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded-[1px] border border-white/70 bg-transparent accent-white"
-            />
-            <span>I agree to receive communications</span>
-          </label>
-
-          <button
-            type="button"
-            className="inline-flex items-center justify-center gap-2 bg-[var(--color-primary)] px-5 py-2.5 text-[15px] font-medium text-white [&_span]:text-white [&_svg]:text-white"
-          >
-            <span>Submit</span>
-            <ArrowRightIcon />
-          </button>
-        </form>
+        <ContactForm variant="home" />
       </div>
     </div>
   );

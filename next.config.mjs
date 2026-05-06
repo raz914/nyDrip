@@ -9,6 +9,16 @@ const nextConfig = {
   allowedDevOrigins: ["192.168.1.131", "localhost", "127.0.0.1"],
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+      },
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+      },
+    ],
   },
   turbopack: {
     root: __dirname,

@@ -6,7 +6,7 @@ import { useAdminGate } from "@/hooks/useAdminGate";
 import { getAdminRequestHeaders } from "@/lib/adminRequestHeaders";
 
 export default function UsersAdminSection() {
-  const { user } = useAdminGate("/admin/users");
+  const { user, ready } = useAdminGate("/admin/users");
   const [users, setUsers] = useState([]);
   const [pageToken, setPageToken] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -18,6 +18,9 @@ export default function UsersAdminSection() {
       setError("");
 
       try {
+        if (!user) {
+          throw new Error("Sign in is required.");
+        }
         const headers = await getAdminRequestHeaders(user);
         const params = new URLSearchParams({ maxResults: "50" });
         if (token) {
@@ -44,8 +47,11 @@ export default function UsersAdminSection() {
   );
 
   useEffect(() => {
+    if (!ready || !user) {
+      return;
+    }
     fetchPage(null, false);
-  }, [fetchPage]);
+  }, [fetchPage, ready, user]);
 
   return (
     <main className="mx-auto max-w-6xl px-5 py-12 text-[#111111]">

@@ -56,6 +56,9 @@ function ServiceCard({ service }) {
           <p className="text-sm leading-6 text-[#2c2c2e]">
             {service.description}
           </p>
+          {service.price ? (
+            <p className="text-sm font-semibold text-[#111111]">{service.price}</p>
+          ) : null}
         </div>
         <ServiceLink
           href={href}

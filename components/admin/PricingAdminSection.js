@@ -11,12 +11,10 @@ function parseMoneyInput(value) {
 }
 
 export default function PricingAdminSection() {
-  const { user } = useAdminGate("/admin/pricing");
+  const { user, ready } = useAdminGate("/admin/pricing");
   const [services, setServices] = useState([]);
   const [storedCatalogOverrides, setStoredCatalogOverrides] = useState({});
   const [draftPrices, setDraftPrices] = useState({});
-  const [areaRows, setAreaRows] = useState([]);
-  const [areaDraft, setAreaDraft] = useState({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -41,13 +39,6 @@ export default function PricingAdminSection() {
         nextDraft[s.id] = String(s.price);
       }
       setDraftPrices(nextDraft);
-      const entries = Object.entries(data.areaOverrides || {});
-      setAreaRows(entries);
-      const ad = {};
-      for (const [k, v] of entries) {
-        ad[k] = String(v);
-      }
-      setAreaDraft(ad);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -56,15 +47,14 @@ export default function PricingAdminSection() {
   }, [user]);
 
   useEffect(() => {
+    if (!ready || !user) {
+      return;
+    }
     load();
-  }, [load]);
+  }, [load, ready, user]);
 
   function updateDraft(id, value) {
     setDraftPrices((prev) => ({ ...prev, [id]: value }));
-  }
-
-  function updateAreaDraft(key, value) {
-    setAreaDraft((prev) => ({ ...prev, [key]: value }));
   }
 
   async function saveCatalog() {
@@ -108,46 +98,6 @@ export default function PricingAdminSection() {
     }
   }
 
-  async function saveAreas() {
-    setSaving(true);
-    setStatus("");
-    setError("");
-    try {
-      const nextArea = {};
-      for (const [key] of areaRows) {
-        const v = areaDraft[key]?.trim();
-        if (v?.startsWith("$")) {
-          nextArea[key] = v;
-        }
-      }
-      const headers = await getAdminRequestHeaders(user);
-      const response = await fetch("/api/admin/pricing", {
-        method: "PATCH",
-        headers: {
-          ...headers,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ areaOverrides: nextArea }),
-      });
-      const data = await response.json();
-      if (!response.ok || !data.ok) {
-        throw new Error(data.message || "Save failed.");
-      }
-      const entries = Object.entries(data.areaOverrides || {});
-      setAreaRows(entries);
-      const ad = {};
-      for (const [k, v] of entries) {
-        ad[k] = String(v);
-      }
-      setAreaDraft(ad);
-      setStatus("Area display prices saved.");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  }
-
   const sortedServices = useMemo(
     () => [...services].sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name)),
     [services],
@@ -176,7 +126,7 @@ export default function PricingAdminSection() {
       {status ? <p className="mb-3 text-[var(--color-primary)]">{status}</p> : null}
       {error ? <p className="mb-3 text-[#d83f3f]">{error}</p> : null}
 
-      <section className="mb-12 border border-black/15 bg-white">
+      <section className="border border-black/15 bg-white">
         <header className="flex flex-col gap-3 border-b border-black/10 px-4 py-4 md:flex-row md:items-center md:justify-between">
           <h2 className="text-xl font-medium">Booking catalog</h2>
           <button
@@ -211,46 +161,6 @@ export default function PricingAdminSection() {
                       value={draftPrices[s.id] ?? ""}
                       onChange={(e) => updateDraft(s.id, e.target.value)}
                       className="w-28 border border-black/15 px-2 py-1"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section className="border border-black/15 bg-white">
-        <header className="flex flex-col gap-3 border-b border-black/10 px-4 py-4 md:flex-row md:items-center md:justify-between">
-          <h2 className="text-xl font-medium">Area page product labels</h2>
-          <button
-            type="button"
-            disabled={saving || loading}
-            onClick={saveAreas}
-            className="bg-[#111111] px-5 py-2 text-sm font-medium text-white disabled:opacity-50"
-          >
-            {saving ? "Saving…" : "Save area prices"}
-          </button>
-        </header>
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-black/10 bg-black/[0.03]">
-              <tr>
-                <th className="px-4 py-2 font-medium">Product title key</th>
-                <th className="px-4 py-2 font-medium">Displayed price</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-black/10">
-              {areaRows.map(([key]) => (
-                <tr key={key}>
-                  <td className="px-4 py-2 font-medium">{key}</td>
-                  <td className="px-4 py-2">
-                    <input
-                      type="text"
-                      value={areaDraft[key] ?? ""}
-                      onChange={(e) => updateAreaDraft(key, e.target.value)}
-                      placeholder="$275.00"
-                      className="w-32 border border-black/15 px-2 py-1"
                     />
                   </td>
                 </tr>

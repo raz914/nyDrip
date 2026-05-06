@@ -7,9 +7,12 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { logOut } from "@/lib/auth";
 
 const links = [
+  { href: "/admin", label: "Dashboard" },
   { href: "/admin/availability", label: "Availability" },
   { href: "/admin/users", label: "Users" },
   { href: "/admin/pricing", label: "Pricing" },
+  { href: "/admin/contact-submissions", label: "Submissions" },
+  { href: "/admin/blog", label: "Blog" },
 ];
 
 export default function AdminDashboardNav() {
@@ -27,43 +30,47 @@ export default function AdminDashboardNav() {
   }
 
   return (
-    <header className="border-b border-black/10 bg-[#111111] text-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-wrap items-center gap-6">
-          <span className="text-sm font-medium uppercase tracking-[0.12em] text-[#ffedba]">
-            Admin
-          </span>
-          <nav className="flex flex-wrap gap-4 text-sm">
-            {links.map((link) => {
-              const active = pathname === link.href || pathname.startsWith(`${link.href}/`);
-
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={
-                    active
-                      ? "font-medium text-[#ffedba] underline underline-offset-4"
-                      : "text-white/80 hover:text-white"
-                  }
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-        <div className="flex items-center gap-3 text-sm text-white/70">
-          <span className="truncate">{user?.email ?? user?.uid ?? "Staff"}</span>
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="border border-white/30 px-3 py-1.5 text-white transition-colors hover:bg-white hover:text-[#111111]"
-          >
-            Sign out
-          </button>
-        </div>
+    <aside className="flex h-full min-h-screen flex-col bg-[#111111] text-white">
+      <div className="border-b border-white/10 px-5 py-5">
+        <p className="text-xs font-medium uppercase tracking-[0.16em] text-[#ffedba]">
+          Admin Panel
+        </p>
+        <p className="mt-2 text-sm text-white/70">DripLounge</p>
       </div>
-    </header>
+
+      <nav className="flex-1 space-y-1 p-3">
+        {links.map((link) => {
+          const active =
+            pathname === link.href ||
+            (link.href !== "/admin" && pathname.startsWith(`${link.href}/`));
+
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={[
+                "block rounded px-3 py-2 text-sm transition-colors",
+                active
+                  ? "bg-white/10 font-medium text-[#ffedba]"
+                  : "text-white/80 hover:bg-white/5 hover:text-white",
+              ].join(" ")}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div className="border-t border-white/10 p-4">
+        <p className="truncate text-xs text-white/60">{user?.email ?? user?.uid ?? "Staff"}</p>
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className="mt-3 w-full border border-white/30 px-3 py-2 text-sm text-white transition-colors hover:bg-white hover:text-[#111111]"
+        >
+          Sign out
+        </button>
+      </div>
+    </aside>
   );
 }
