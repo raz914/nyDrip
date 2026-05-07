@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 
-import { createBookingCalendarEvent } from "@/lib/googleCalendar";
 import { getAdminDb, requireAuthenticatedRequest } from "@/lib/firebaseAdmin";
 import {
   BOOKING_STATUS,
@@ -11,9 +10,9 @@ import {
   finalizePendingServerBooking,
   finalizeGuestPendingServerBooking,
   updateGuestPendingBookingPayment,
-  updateBookingCalendarState,
   updatePendingBookingPayment,
 } from "@/lib/serverBookings";
+import { fulfillFinalizedBooking } from "@/lib/serverBookingFulfillment";
 import { ensureGuestBookingUserAndPasswordEmail } from "@/lib/serverGuestUsers";
 import { buildAppUrl, getStripe, toStripeAmount } from "@/lib/stripe";
 import {
@@ -34,38 +33,6 @@ function getBookingSessionName(booking) {
   const serviceName = firstItem?.displayName || firstItem?.name || "Appointment";
 
   return extraCount ? `${serviceName} + ${extraCount} more` : serviceName;
-}
-
-async function syncBookingCalendar(db, uid, booking) {
-  try {
-    const event = await createBookingCalendarEvent(booking);
-    const calendar = {
-      status: "created",
-      eventId: event.eventId,
-      htmlLink: event.htmlLink,
-      syncedAt: new Date(),
-    };
-
-    await updateBookingCalendarState(db, uid, booking.id, calendar);
-
-    return {
-      ...booking,
-      calendar,
-    };
-  } catch (error) {
-    const calendar = {
-      status: "failed",
-      error: error?.message || "Could not create Google Calendar event.",
-      syncedAt: new Date(),
-    };
-
-    await updateBookingCalendarState(db, uid, booking.id, calendar);
-
-    return {
-      ...booking,
-      calendar,
-    };
-  }
 }
 
 async function getOptionalAuthenticatedRequest(request) {
@@ -102,13 +69,13 @@ export async function POST(request) {
             amountPaidCents: Math.round((pendingBooking.totalPaid ?? 0) * 100),
           }),
         });
-        const syncedBooking = await syncBookingCalendar(db, user.uid, booking);
+        const fulfilledBooking = await fulfillFinalizedBooking(db, user.uid, booking);
 
         return NextResponse.json({
           ok: true,
           mode: "confirmed",
           devBypass: true,
-          booking: syncedBooking,
+          booking: fulfilledBooking,
         });
       }
 
@@ -119,13 +86,13 @@ export async function POST(request) {
           amountPaidCents: Math.round((pendingBooking.totalPaid ?? 0) * 100),
         }),
       });
-      const syncedBooking = await syncBookingCalendar(db, account.uid, booking);
+      const fulfilledBooking = await fulfillFinalizedBooking(db, account.uid, booking);
 
       return NextResponse.json({
         ok: true,
         mode: "confirmed",
         devBypass: true,
-        booking: syncedBooking,
+        booking: fulfilledBooking,
       });
     }
 
@@ -145,12 +112,12 @@ export async function POST(request) {
           paidAt: new Date(),
         },
       });
-      const syncedBooking = await syncBookingCalendar(db, user.uid, booking);
+      const fulfilledBooking = await fulfillFinalizedBooking(db, user.uid, booking);
 
       return NextResponse.json({
         ok: true,
         mode: "confirmed",
-        booking: syncedBooking,
+        booking: fulfilledBooking,
       });
     }
 

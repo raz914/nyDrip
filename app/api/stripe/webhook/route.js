@@ -1,7 +1,6 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { NextResponse } from "next/server";
 
-import { createBookingCalendarEvent } from "@/lib/googleCalendar";
 import { getAdminDb } from "@/lib/firebaseAdmin";
 import {
   DEFAULT_MEMBERSHIP_TIER,
@@ -18,8 +17,8 @@ import {
   finalizeGuestPendingServerBooking,
   expireGuestPendingServerBooking,
   GUEST_PENDING_BOOKINGS_COLLECTION,
-  updateBookingCalendarState,
 } from "@/lib/serverBookings";
+import { fulfillFinalizedBooking } from "@/lib/serverBookingFulfillment";
 import { ensureGuestBookingUserAndPasswordEmail } from "@/lib/serverGuestUsers";
 import { constructStripeEvent, fromStripeAmount, getStripe } from "@/lib/stripe";
 
@@ -112,28 +111,6 @@ async function finishStripeEventProcessing(db, event, status, error = "") {
     },
     { merge: true },
   );
-}
-
-async function syncBookingCalendar(db, uid, booking) {
-  try {
-    const event = await createBookingCalendarEvent(booking);
-    const calendar = {
-      status: "created",
-      eventId: event.eventId,
-      htmlLink: event.htmlLink,
-      syncedAt: new Date(),
-    };
-
-    await updateBookingCalendarState(db, uid, booking.id, calendar);
-  } catch (error) {
-    const calendar = {
-      status: "failed",
-      error: error?.message || "Could not create Google Calendar event.",
-      syncedAt: new Date(),
-    };
-
-    await updateBookingCalendarState(db, uid, booking.id, calendar);
-  }
 }
 
 async function activateMembershipFromCheckout(db, session) {
@@ -341,7 +318,7 @@ async function handleBookingCheckoutCompleted(db, session) {
     },
   });
 
-  await syncBookingCalendar(db, uid, booking);
+  await fulfillFinalizedBooking(db, uid, booking);
 }
 
 async function handleGuestBookingCheckoutCompleted(db, session) {
@@ -381,7 +358,7 @@ async function handleGuestBookingCheckoutCompleted(db, session) {
     },
   });
 
-  await syncBookingCalendar(db, account.uid, booking);
+  await fulfillFinalizedBooking(db, account.uid, booking);
 }
 
 async function handleBookingCheckoutExpired(db, session) {

@@ -4,9 +4,13 @@ import { getAdminDb, requireAuthenticatedRequest } from "@/lib/firebaseAdmin";
 import { getMembershipSummary, syncMembershipState } from "@/lib/memberships";
 import {
   GUEST_PENDING_BOOKINGS_COLLECTION,
+  finalizeGuestPendingServerBooking,
+  finalizePendingServerBooking,
   getServerBookingById,
 } from "@/lib/serverBookings";
-import { getStripe } from "@/lib/stripe";
+import { fulfillFinalizedBooking } from "@/lib/serverBookingFulfillment";
+import { ensureGuestBookingUserAndPasswordEmail } from "@/lib/serverGuestUsers";
+import { fromStripeAmount, getStripe } from "@/lib/stripe";
 
 export const runtime = "nodejs";
 
@@ -31,6 +35,29 @@ function serializeMembership(summary) {
       expiresAtLabel: benefit.expiresAtLabel ?? null,
       period: benefit.period,
     })),
+  };
+}
+
+function getStripeId(value) {
+  return typeof value === "string" ? value : value?.id || "";
+}
+
+function isPaidCheckoutSession(session) {
+  return session.status === "complete" && session.payment_status === "paid";
+}
+
+function getBookingPaymentFromSession(session) {
+  return {
+    provider: "stripe",
+    status: "paid",
+    checkoutStatus: session.status ?? "complete",
+    checkoutSessionId: session.id,
+    paymentIntentId: getStripeId(session.payment_intent),
+    customerId: getStripeId(session.customer),
+    amountPaid: fromStripeAmount(session.amount_total),
+    amountPaidCents: session.amount_total ?? 0,
+    currency: session.currency || "usd",
+    paidAt: new Date(),
   };
 }
 
@@ -72,7 +99,14 @@ export async function GET(request) {
       }
 
       const bookingId = session.metadata?.bookingId || session.client_reference_id || "";
-      const booking = bookingId ? await getServerBookingById(db, user.uid, bookingId) : null;
+      let booking = bookingId ? await getServerBookingById(db, user.uid, bookingId) : null;
+
+      if (booking && booking.status !== "Approved" && isPaidCheckoutSession(session)) {
+        booking = await finalizePendingServerBooking(db, user.uid, bookingId, {
+          payment: getBookingPaymentFromSession(session),
+        });
+        booking = await fulfillFinalizedBooking(db, user.uid, booking);
+      }
 
       return NextResponse.json({
         ok: true,
@@ -97,12 +131,21 @@ export async function GET(request) {
       const snapshot = bookingId
         ? await db.collection(GUEST_PENDING_BOOKINGS_COLLECTION).doc(bookingId).get()
         : null;
-      const booking = snapshot?.exists
+      let booking = snapshot?.exists
         ? {
             id: snapshot.id,
             ...snapshot.data(),
           }
         : null;
+
+      if (booking && booking.status !== "Approved" && isPaidCheckoutSession(session)) {
+        const account = await ensureGuestBookingUserAndPasswordEmail(db, booking);
+
+        booking = await finalizeGuestPendingServerBooking(db, account.uid, bookingId, {
+          payment: getBookingPaymentFromSession(session),
+        });
+        booking = await fulfillFinalizedBooking(db, account.uid, booking);
+      }
 
       return NextResponse.json({
         ok: true,
