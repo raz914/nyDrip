@@ -10,6 +10,14 @@ import {
 } from "@/lib/memberships";
 import { formatDrips } from "@/lib/rewards";
 
+function formatCurrency(value) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0);
+}
+
 export function NextAppointmentCard({ appointment }) {
   return (
     <section className="border border-[var(--color-primary)] bg-white">
@@ -53,7 +61,21 @@ function LedgerRow({ entry }) {
   );
 }
 
-export function RewardsCard({ rewards, ledger = [] }) {
+function RedeemHistoryRow({ entry }) {
+  const value =
+    entry.kind === "coupon"
+      ? `-${formatCurrency(entry.value)}`
+      : formatDrips(entry.value ?? 0);
+
+  return (
+    <div className="flex items-center justify-between gap-4 border-t border-black/10 py-3 text-sm md:text-base">
+      <span className="text-[#858585]">{entry.label}</span>
+      <span className="text-[#111111]">{value}</span>
+    </div>
+  );
+}
+
+export function RewardsCard({ rewards, ledger = [], redeemHistory = [] }) {
   const bonusActions = MEMBERSHIP_BONUS_ACTIONS.slice(0, 4);
   const earnRateLabel =
     rewards.tier === "non_member"
@@ -69,7 +91,7 @@ export function RewardsCard({ rewards, ledger = [] }) {
             Drips Rewards
           </h2>
         </div>
-        <Link href="/dashboard" className="text-sm text-[#858585] underline underline-offset-2 md:text-base">
+        <Link href="#redeem-history" className="text-sm text-[#858585] underline underline-offset-2 md:text-base">
           Redeem History
         </Link>
       </div>
@@ -131,6 +153,21 @@ export function RewardsCard({ rewards, ledger = [] }) {
             ))}
           </div>
         ) : null}
+
+        <section id="redeem-history" className="mt-5">
+          <h3 className="text-base font-medium md:text-xl">Redeem History</h3>
+          {redeemHistory.length ? (
+            <div className="mt-2">
+              {redeemHistory.slice(0, 5).map((entry) => (
+                <RedeemHistoryRow key={entry.id} entry={entry} />
+              ))}
+            </div>
+          ) : (
+            <p className="mt-3 border-t border-black/10 pt-3 text-sm text-[#858585] md:text-base">
+              No redeemed Drips or coupon codes yet.
+            </p>
+          )}
+        </section>
       </div>
     </section>
   );

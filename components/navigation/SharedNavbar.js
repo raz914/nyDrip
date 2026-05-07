@@ -241,7 +241,7 @@ export default function SharedNavbar({
   const styles = themeStyles[theme];
   const dropdownId = useId();
   const navRef = useRef(null);
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [desktopOpen, setDesktopOpen] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState(null);
@@ -255,13 +255,9 @@ export default function SharedNavbar({
     return {
       ...cta,
       label: user.displayName || "Account",
-      href: "#",
+      href: "/dashboard",
       showArrow: true,
-      items: [
-        { label: "Dashboard", href: "/dashboard" },
-        { label: "Profile Settings", href: "/profile-settings" },
-        { label: "Log Out", action: signOut },
-      ],
+      items: undefined,
     };
   });
 

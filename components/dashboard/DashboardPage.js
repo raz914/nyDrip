@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -30,6 +31,18 @@ const EMPTY_REFERRAL_STATS = {
   successfulReferrals: 0,
   dripsEarned: 0,
 };
+
+function toDate(value) {
+  if (!value) {
+    return null;
+  }
+
+  if (typeof value.toDate === "function") {
+    return value.toDate();
+  }
+
+  return value instanceof Date ? value : new Date(value);
+}
 
 function getSettledValue(result, fallback) {
   return result.status === "fulfilled" ? result.value : fallback;
@@ -65,6 +78,34 @@ function getReferralStats(ledger) {
   };
 }
 
+function getRedeemHistory(ledger, bookings) {
+  const dripsRedemptions = ledger
+    .filter((entry) => entry.type === "redeem")
+    .map((entry) => ({
+      id: entry.id,
+      kind: "drips",
+      label: entry.note ?? "Redeemed Drips",
+      value: entry.drips ?? 0,
+      createdAt: toDate(entry.createdAt),
+    }));
+  const couponRedemptions = bookings
+    .filter((booking) => booking.couponCode && Number(booking.couponDiscount) > 0)
+    .map((booking) => ({
+      id: `${booking.id}-coupon`,
+      kind: "coupon",
+      label: `Coupon ${booking.couponCode}`,
+      value: Number(booking.couponDiscount) || 0,
+      createdAt: toDate(booking.createdAt),
+    }));
+
+  return [...dripsRedemptions, ...couponRedemptions].sort((a, b) => {
+    const aTime = a.createdAt?.getTime?.() ?? 0;
+    const bTime = b.createdAt?.getTime?.() ?? 0;
+
+    return bTime - aTime;
+  });
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
@@ -73,6 +114,7 @@ export default function DashboardPage() {
     rewards: getRewardsSummary(EMPTY_REWARDS),
     membership: getMembershipSummary(),
     ledger: [],
+    redeemHistory: [],
     nextAppointment: null,
     historyRows: [],
     referralStats: EMPTY_REFERRAL_STATS,
@@ -136,6 +178,7 @@ export default function DashboardPage() {
           rewards: getRewardsSummary(rewards, membership),
           membership,
           ledger,
+          redeemHistory: getRedeemHistory(ledger, bookings),
           nextAppointment: mapBookingToAppointment(getNextAppointment(bookings)),
           historyRows: bookings.map(mapBookingToHistoryRow),
           referralStats: getReferralStats(ledger),
@@ -201,7 +244,9 @@ export default function DashboardPage() {
             <h1 className="text-[1.35rem] font-medium leading-none md:text-[2.5rem]">
               Welcome in, {firstName}
             </h1>
-            <ProfileIcon />
+            <Link href="/profile-settings" aria-label="Open profile settings">
+              <ProfileIcon />
+            </Link>
           </header>
 
           <div className="space-y-6 md:space-y-7">
@@ -221,6 +266,7 @@ export default function DashboardPage() {
               <RewardsCard
                 rewards={dashboardData.rewards}
                 ledger={dashboardData.ledger}
+                redeemHistory={dashboardData.redeemHistory}
               />
             </div>
 

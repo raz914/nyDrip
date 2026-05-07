@@ -60,6 +60,20 @@ function buildMembershipStripeFields(subscription, session = null) {
   };
 }
 
+function getInvoiceAmount(invoice, status) {
+  if (status === "paid") {
+    return {
+      amount: fromStripeAmount(invoice.amount_paid ?? invoice.amount_due ?? 0),
+      amountCents: invoice.amount_paid ?? invoice.amount_due ?? 0,
+    };
+  }
+
+  return {
+    amount: fromStripeAmount(invoice.amount_due ?? invoice.amount_remaining ?? 0),
+    amountCents: invoice.amount_due ?? invoice.amount_remaining ?? 0,
+  };
+}
+
 async function beginStripeEventProcessing(db, event) {
   const eventRef = db.collection("stripeWebhookEvents").doc(event.id);
 
@@ -271,6 +285,39 @@ async function syncMembershipFromSubscription(db, subscription, { session = null
   });
 }
 
+async function recordMembershipInvoicePayment(db, subscription, invoice, status) {
+  const uid = subscription.metadata?.uid || "";
+
+  if (!uid || !invoice?.id || invoice.billing_reason === "subscription_create") {
+    return;
+  }
+
+  const userRef = db.collection("users").doc(uid);
+  const { amount, amountCents } = getInvoiceAmount(invoice, status);
+
+  await userRef.collection("membershipLedger").doc(`invoice_${invoice.id}`).set(
+    {
+      type: status === "paid" ? "invoice_paid" : "invoice_payment_failed",
+      tier: subscription.metadata?.tierId || "",
+      amountPaid: status === "paid" ? amount : 0,
+      amountPaidCents: status === "paid" ? amountCents : 0,
+      amountDue: amount,
+      amountDueCents: amountCents,
+      currency: invoice.currency || "usd",
+      status,
+      paymentProvider: "stripe",
+      stripeInvoiceId: invoice.id,
+      stripeSubscriptionId: subscription.id,
+      stripeCustomerId: getStripeId(invoice.customer || subscription.customer),
+      stripeHostedInvoiceUrl: invoice.hosted_invoice_url || "",
+      stripeInvoicePdf: invoice.invoice_pdf || "",
+      createdAt: fromStripeUnix(invoice.created) ?? new Date(),
+      updatedAt: new Date(),
+    },
+    { merge: true },
+  );
+}
+
 async function handleBookingCheckoutCompleted(db, session) {
   const uid = session.metadata?.uid || "";
   const bookingId = session.metadata?.bookingId || session.client_reference_id || "";
@@ -418,6 +465,12 @@ export async function POST(request) {
           if (subscriptionId) {
             const stripe = getStripe();
             const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+            await recordMembershipInvoicePayment(
+              db,
+              subscription,
+              invoice,
+              event.type === "invoice.paid" ? "paid" : "failed",
+            );
             await syncMembershipFromSubscription(db, subscription);
           }
           break;
