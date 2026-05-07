@@ -21,12 +21,6 @@ export default function MembershipCheckoutSection() {
   );
   const [membership, setMembership] = useState(null);
   const [membershipLoading, setMembershipLoading] = useState(true);
-  const [payment, setPayment] = useState({
-    cardholderName: "",
-    cardNumber: "4242 4242 4242 4242",
-    expiration: "12 / 30",
-    cvc: "123",
-  });
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -39,6 +33,12 @@ export default function MembershipCheckoutSection() {
       setSelectedTier(selectedPlanFromQuery);
     }
   }, [selectedPlanFromQuery]);
+
+  useEffect(() => {
+    if (searchParams.get("checkout") === "cancelled") {
+      setError("Checkout was cancelled before the membership was activated.");
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (loading) {
@@ -85,7 +85,7 @@ export default function MembershipCheckoutSection() {
   const hasActiveMembership = membership?.isActiveMember;
   const selectedPlanMatchesCurrentTier = membership?.tier === selectedTier;
   const canScheduleTierChange =
-    hasActiveMembership && !selectedPlanMatchesCurrentTier;
+    hasActiveMembership && !selectedPlanMatchesCurrentTier && !membership?.stripeSubscriptionId;
 
   async function handleSubscribe(event) {
     event.preventDefault();
@@ -102,14 +102,13 @@ export default function MembershipCheckoutSection() {
     try {
       const result = await subscribeToMembership(user, {
         tierId: selectedTier,
-        payment,
       });
 
-      const nextMembership = await getUserMembership(user.uid);
-      setMembership(nextMembership);
-      setMessage(
-        `${selectedPlan.name} is now active. Your next renewal is ${result.membership.nextRenewalAtLabel ?? "set"}.`,
-      );
+      if (!result.url) {
+        throw new Error("Stripe checkout could not be started.");
+      }
+
+      window.location.assign(result.url);
     } catch (nextError) {
       setError(nextError.message);
     } finally {
@@ -156,9 +155,9 @@ export default function MembershipCheckoutSection() {
               Start your monthly membership
             </h2>
             <p className="mt-4 max-w-[720px] text-sm leading-6 text-[#2c2c2e] md:text-base">
-              Membership starts immediately after this mock checkout. Included services
-              unlock in your booking flow right away, renew monthly, and expire at the
-              end of each active period if unused.
+              Membership starts after secure Stripe checkout. Included services unlock in
+              your booking flow right away, renew monthly, and expire at the end of each
+              active period if unused.
             </p>
 
             <div className="mt-8 grid gap-4 md:grid-cols-2">
@@ -243,7 +242,9 @@ export default function MembershipCheckoutSection() {
                 ) : (
                   <>
                     <p className="mt-2 text-[#858585]">
-                      This is your current membership tier. Use the dashboard to manage renewal or switch plans.
+                      {membership?.stripeSubscriptionId && !selectedPlanMatchesCurrentTier
+                        ? "Plan changes for Stripe memberships are not self-serve yet. Contact support if you need to switch tiers."
+                        : "This is your current membership tier. Use the dashboard to manage renewal or switch plans."}
                     </p>
                     <Link
                       href="/dashboard"
@@ -256,74 +257,17 @@ export default function MembershipCheckoutSection() {
               </div>
             ) : (
               <form onSubmit={handleSubscribe} className="space-y-4 pt-5">
-                <label className="block">
-                  <span className="mb-2 block text-sm text-[#858585]">Cardholder Name</span>
-                  <input
-                    value={payment.cardholderName}
-                    onChange={(event) =>
-                      setPayment((current) => ({
-                        ...current,
-                        cardholderName: event.target.value,
-                      }))
-                    }
-                    placeholder="Full Name"
-                    className="w-full border border-[#111111] bg-white px-3 py-3 outline-none"
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-2 block text-sm text-[#858585]">Card Number</span>
-                  <input
-                    value={payment.cardNumber}
-                    onChange={(event) =>
-                      setPayment((current) => ({
-                        ...current,
-                        cardNumber: event.target.value,
-                      }))
-                    }
-                    placeholder="1234 1234 1234 1234"
-                    className="w-full border border-[#111111] bg-white px-3 py-3 outline-none"
-                  />
-                </label>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label className="block">
-                    <span className="mb-2 block text-sm text-[#858585]">Expiration</span>
-                    <input
-                      value={payment.expiration}
-                      onChange={(event) =>
-                        setPayment((current) => ({
-                          ...current,
-                          expiration: event.target.value,
-                        }))
-                      }
-                      placeholder="MM / YY"
-                      className="w-full border border-[#111111] bg-white px-3 py-3 outline-none"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="mb-2 block text-sm text-[#858585]">CVC</span>
-                    <input
-                      value={payment.cvc}
-                      onChange={(event) =>
-                        setPayment((current) => ({
-                          ...current,
-                          cvc: event.target.value,
-                        }))
-                      }
-                      placeholder="CVC"
-                      className="w-full border border-[#111111] bg-white px-3 py-3 outline-none"
-                    />
-                  </label>
-                </div>
+                <p className="border border-black/10 bg-white px-4 py-4 text-sm text-[#585858] md:text-base">
+                  You will be redirected to Stripe Checkout to securely enter payment
+                  details and start your membership.
+                </p>
                 <button
                   type="submit"
                   disabled={submitting}
                   className="inline-flex w-full items-center justify-center bg-[var(--color-primary)] px-5 py-3 text-white disabled:opacity-60"
                 >
-                  {submitting ? "Starting Membership..." : `Start ${selectedPlan.name}`}
+                  {submitting ? "Redirecting..." : `Continue to Stripe for ${selectedPlan.name}`}
                 </button>
-                <p className="text-xs text-[#858585]">
-                  Mock checkout only. Raw card number, CVC, and expiration are never stored.
-                </p>
               </form>
             )}
 

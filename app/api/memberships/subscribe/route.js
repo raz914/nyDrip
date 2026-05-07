@@ -4,45 +4,16 @@ import { getAdminDb, requireAuthenticatedRequest } from "@/lib/firebaseAdmin";
 import {
   DEFAULT_MEMBERSHIP_TIER,
   EMPTY_MEMBERSHIP,
-  activateMembership,
   formatMembershipPrice,
   getMembershipPlan,
-  getMembershipSummary,
-  sanitizeMockPaymentMethod,
   syncMembershipState,
 } from "@/lib/memberships";
+import { buildAppUrl, getStripe, toStripeAmount } from "@/lib/stripe";
+
+export const runtime = "nodejs";
 
 function jsonError(message, status = 400) {
   return NextResponse.json({ ok: false, message }, { status });
-}
-
-function serializeMembership(summary) {
-  return {
-    ...summary,
-    currentPeriodEndsAt: summary.currentPeriodEndsAt?.toISOString?.() ?? null,
-    nextRenewalAt: summary.nextRenewalAt?.toISOString?.() ?? null,
-    minimumTermEndsAt: summary.minimumTermEndsAt?.toISOString?.() ?? null,
-    startedAt: summary.startedAt?.toISOString?.() ?? null,
-    currentPeriodStartedAt: summary.currentPeriodStartedAt?.toISOString?.() ?? null,
-    benefits: summary.displayBenefits?.map((benefit) => ({
-      code: benefit.code,
-      label: benefit.label,
-      summary: benefit.summary,
-      remaining: benefit.remaining,
-      expiresAt: benefit.expiresAt?.toISOString?.() ?? null,
-      expiresAtLabel: benefit.expiresAtLabel ?? null,
-      period: benefit.period,
-    })),
-  };
-}
-
-function isValidMockPayment(payment = {}) {
-  const digits = String(payment.cardNumber ?? "").replace(/\D/g, "");
-  return (
-    digits.length >= 12 &&
-    String(payment.expiration ?? "").trim().length >= 4 &&
-    String(payment.cvc ?? "").trim().length >= 3
-  );
 }
 
 export async function POST(request) {
@@ -50,21 +21,15 @@ export async function POST(request) {
     const decoded = await requireAuthenticatedRequest(request);
     const body = await request.json();
     const tierId = String(body?.tierId ?? "");
-    const payment = body?.payment ?? {};
     const plan = getMembershipPlan(tierId);
 
     if (!tierId || plan.id === DEFAULT_MEMBERSHIP_TIER) {
       return jsonError("Choose a valid membership tier.");
     }
 
-    if (!isValidMockPayment(payment)) {
-      return jsonError("Enter a valid mock card before subscribing.");
-    }
-
     const db = getAdminDb();
     const userRef = db.collection("users").doc(decoded.uid);
-    const now = new Date();
-    const result = await db.runTransaction(async (transaction) => {
+    await db.runTransaction(async (transaction) => {
       const snapshot = await transaction.get(userRef);
       const data = snapshot.exists ? snapshot.data() || {} : {};
       const synced = syncMembershipState(
@@ -80,51 +45,49 @@ export async function POST(request) {
       if (currentSummary.isActiveMember) {
         throw new Error("You already have an active membership. Manage it from the dashboard.");
       }
-
-      const activation = activateMembership({
+    });
+    const stripe = getStripe();
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      success_url: buildAppUrl("/memberships/success?session_id={CHECKOUT_SESSION_ID}"),
+      cancel_url: buildAppUrl("/memberships?checkout=cancelled#checkout"),
+      client_reference_id: decoded.uid,
+      customer_email: decoded.email ?? undefined,
+      metadata: {
+        kind: "membership_signup",
+        uid: decoded.uid,
         tierId: plan.id,
-        now,
-        mockPaymentMethod: sanitizeMockPaymentMethod(payment),
-      });
-      const nextSummary = getMembershipSummary(
-        activation.membership,
-        activation.membershipBenefits,
-      );
-      const ledgerRef = userRef.collection("membershipLedger").doc();
-      const existingRewards = data.rewards ?? {};
-
-      transaction.set(
-        userRef,
+      },
+      line_items: [
         {
-          uid: decoded.uid,
-          email: decoded.email ?? data.email ?? "",
-          displayName: data.displayName ?? "",
-          membership: activation.membership,
-          membershipBenefits: activation.membershipBenefits,
-          rewards: {
-            ...existingRewards,
-            tier: plan.id,
-            updatedAt: now,
+          quantity: 1,
+          price_data: {
+            currency: "usd",
+            unit_amount: toStripeAmount(plan.price),
+            recurring: {
+              interval: "month",
+            },
+            product_data: {
+              name: `${plan.name} Membership`,
+              description: `${formatMembershipPrice(plan.price)} / month with a ${plan.minimumTermMonths}-month minimum term.`,
+            },
           },
-          updatedAt: now,
         },
-        { merge: true },
-      );
-      transaction.set(ledgerRef, {
-        type: "signup",
-        tier: plan.id,
-        price: plan.price,
-        priceLabel: formatMembershipPrice(plan.price),
-        mockPaymentMethod: sanitizeMockPaymentMethod(payment),
-        createdAt: now,
-      });
-
-      return nextSummary;
+      ],
+      subscription_data: {
+        metadata: {
+          kind: "membership_signup",
+          uid: decoded.uid,
+          tierId: plan.id,
+        },
+      },
     });
 
     return NextResponse.json({
       ok: true,
-      membership: serializeMembership(result),
+      url: session.url,
+      sessionId: session.id,
+      tierId: plan.id,
     });
   } catch (error) {
     const message = error?.message || "Could not start membership.";

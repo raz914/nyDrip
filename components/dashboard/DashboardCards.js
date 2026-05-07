@@ -198,7 +198,7 @@ export function MembershipCard({ membership }) {
           </ul>
           {!isNonMember && membership.mockPaymentMethod?.last4 ? (
             <p className="mt-4 text-sm text-[#858585] md:text-base">
-              Mock payment method: {membership.mockPaymentMethod.brand} ending in{" "}
+              Payment method: {membership.mockPaymentMethod.brand} ending in{" "}
               {membership.mockPaymentMethod.last4}
             </p>
           ) : null}
@@ -221,6 +221,8 @@ export function MembershipManagerCard({
   if (!membership.isActiveMember) {
     return null;
   }
+
+  const supportsSelfServeTierChange = !membership.stripeSubscriptionId;
 
   return (
     <section className="bg-[#f0f2f5]">
@@ -250,7 +252,7 @@ export function MembershipManagerCard({
           <button
             type="button"
             onClick={onScheduleTierChange}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !supportsSelfServeTierChange}
             className="border border-[#111111] bg-white px-4 py-2 disabled:opacity-60"
           >
             Schedule Tier Change
@@ -284,6 +286,11 @@ export function MembershipManagerCard({
         {membership.pendingTierPlan ? (
           <p className="text-sm text-[#858585] md:text-base">
             Scheduled tier change: {membership.pendingTierPlan.name}
+          </p>
+        ) : null}
+        {!supportsSelfServeTierChange ? (
+          <p className="text-sm text-[#858585] md:text-base">
+            Tier changes for Stripe-managed memberships are not self-serve yet.
           </p>
         ) : null}
         {message ? <p className="text-sm text-[var(--color-primary)]">{message}</p> : null}

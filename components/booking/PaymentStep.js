@@ -16,17 +16,13 @@ export default function PaymentStep({
   membership,
   membershipPricing,
   isSubmitting,
+  isApplyingCoupon = false,
   onPaymentChange,
   onApplyCoupon,
   onDripsToRedeemChange,
   onBack,
   onSubmit,
 }) {
-  const canSubmit =
-    payment.cardNumber.replace(/\s/g, "").length >= 12 &&
-    payment.expiration.trim().length >= 5 &&
-    payment.cvc.trim().length >= 3;
-
   return (
     <StepPanel
       title="Please tell us how you would like to pay"
@@ -36,8 +32,8 @@ export default function PaymentStep({
           <BookingButton variant="secondary" onClick={onBack} disabled={isSubmitting}>
             Back
           </BookingButton>
-          <BookingButton onClick={onSubmit} disabled={!canSubmit || isSubmitting}>
-            {isSubmitting ? "Processing" : "Continue"}
+          <BookingButton onClick={onSubmit} disabled={isSubmitting}>
+            {isSubmitting ? "Redirecting" : "Continue to Secure Checkout"}
           </BookingButton>
         </>
       }
@@ -55,8 +51,8 @@ export default function PaymentStep({
             onChange={(value) => onPaymentChange("couponCode", value)}
             placeholder="Paste Your Code Here"
           />
-          <BookingButton variant="muted" onClick={onApplyCoupon}>
-            Redeem
+          <BookingButton variant="muted" onClick={onApplyCoupon} disabled={isApplyingCoupon}>
+            {isApplyingCoupon ? "Checking" : "Redeem"}
           </BookingButton>
         </div>
         {couponMessage ? (
@@ -125,7 +121,7 @@ export default function PaymentStep({
 
         <div className="flex flex-wrap items-center gap-3 border-t border-black/10 pt-6 text-sm text-[#1b2f55] md:text-base">
           <span className="inline-flex h-3 w-3 rounded-full bg-[var(--color-primary)]" />
-          <span>I will pay now with Credit Card $10.00</span>
+          <span>Pay securely with Stripe Checkout</span>
           <Image
             src="/services/payment-cards.png"
             alt="Accepted payment cards"
@@ -134,32 +130,10 @@ export default function PaymentStep({
             className="h-7 w-auto"
           />
         </div>
-
-        <UnderlineInput
-          label="Credit Card Number"
-          name="cardNumber"
-          value={payment.cardNumber}
-          onChange={(value) => onPaymentChange("cardNumber", value)}
-          placeholder="1234 1234 1234 1234"
-          inputMode="numeric"
-        />
-
-        <div className="grid gap-5 md:grid-cols-2">
-          <UnderlineInput
-            label="Expiration Date"
-            name="expiration"
-            value={payment.expiration}
-            onChange={(value) => onPaymentChange("expiration", value)}
-            placeholder="MM / YY"
-          />
-          <UnderlineInput
-            label="Card Security Code"
-            name="cvc"
-            value={payment.cvc}
-            onChange={(value) => onPaymentChange("cvc", value)}
-            placeholder="CVC"
-          />
-        </div>
+        <p className="border border-black/10 bg-[#f8f8f8] px-4 py-4 text-sm text-[#585858] md:text-base">
+          We will send you to Stripe&apos;s hosted checkout page to complete payment. Card
+          details stay on Stripe and are never entered directly into this booking form.
+        </p>
       </div>
     </StepPanel>
   );

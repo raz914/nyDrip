@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { ArrowRightIcon } from "@/components/home/icons";
 
 const variantClasses = {
@@ -25,7 +27,7 @@ const variantClasses = {
   },
 };
 
-function ContactField({ label, name, type = "text", textarea = false, classes }) {
+function ContactField({ label, name, type = "text", textarea = false, classes, required = false }) {
   return (
     <label className="block">
       <span className={classes.label}>{label}</span>
@@ -35,6 +37,7 @@ function ContactField({ label, name, type = "text", textarea = false, classes })
           rows={3}
           className={classes.textarea}
           placeholder={label}
+          required={required}
         />
       ) : (
         <input
@@ -42,6 +45,7 @@ function ContactField({ label, name, type = "text", textarea = false, classes })
           name={name}
           className={classes.input}
           placeholder={label}
+          required={required}
         />
       )}
     </label>
@@ -50,9 +54,50 @@ function ContactField({ label, name, type = "text", textarea = false, classes })
 
 export default function ContactForm({ variant = "home" }) {
   const classes = variantClasses[variant] ?? variantClasses.home;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitState, setSubmitState] = useState({ type: "", message: "" });
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const payload = {
+      name: String(formData.get("name") || "").trim(),
+      phone: String(formData.get("phone") || "").trim(),
+      email: String(formData.get("email") || "").trim(),
+      questions: String(formData.get("questions") || "").trim(),
+      company: String(formData.get("company") || "").trim(),
+      consent: formData.get("consent") === "on",
+    };
+
+    setIsSubmitting(true);
+    setSubmitState({ type: "", message: "" });
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.message || "Could not send your message.");
+      }
+
+      form.reset();
+      setSubmitState({
+        type: "success",
+        message: "Thanks, your message was sent. We will contact you soon.",
+      });
+    } catch (error) {
+      setSubmitState({
+        type: "error",
+        message: error?.message || "Could not send your message.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -62,12 +107,14 @@ export default function ContactForm({ variant = "home" }) {
           label="Your Name"
           name="name"
           classes={classes}
+          required
         />
         <ContactField
           label="Phone"
           name="phone"
           type="tel"
           classes={classes}
+          required
         />
         <div className="md:col-span-2">
           <ContactField
@@ -75,6 +122,7 @@ export default function ContactForm({ variant = "home" }) {
             name="email"
             type="email"
             classes={classes}
+            required
           />
         </div>
         <div className="md:col-span-2">
@@ -83,6 +131,7 @@ export default function ContactForm({ variant = "home" }) {
             name="questions"
             textarea
             classes={classes}
+            required
           />
         </div>
       </div>
@@ -105,10 +154,18 @@ export default function ContactForm({ variant = "home" }) {
         <span>I agree to receive communications</span>
       </label>
 
-      <button type="submit" className={classes.button}>
-        <span>Submit</span>
+      <button type="submit" className={classes.button} disabled={isSubmitting}>
+        <span>{isSubmitting ? "Sending..." : "Submit"}</span>
         <ArrowRightIcon />
       </button>
+      {submitState.message ? (
+        <p
+          role="status"
+          className={submitState.type === "error" ? "text-red-300" : "text-green-300"}
+        >
+          {submitState.message}
+        </p>
+      ) : null}
     </form>
   );
 }

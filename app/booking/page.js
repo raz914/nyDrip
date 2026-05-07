@@ -5,7 +5,7 @@ import BookingPage from "@/components/booking/BookingPage";
 export const metadata = {
   title: "Book Your Appointment | DripLounge",
   description:
-    "Book DripLounge IV therapy, wellness services, and consultations with a secure mock checkout flow.",
+    "Book DripLounge IV therapy, wellness services, and consultations with secure Stripe checkout.",
 };
 
 export default function Page() {

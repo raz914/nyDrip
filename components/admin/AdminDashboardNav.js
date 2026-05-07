@@ -11,6 +11,7 @@ const links = [
   { href: "/admin/availability", label: "Booking Manager" },
   { href: "/admin/users", label: "Users" },
   { href: "/admin/pricing", label: "Pricing" },
+  { href: "/admin/coupons", label: "Coupons" },
   { href: "/admin/blog", label: "Blog" },
 ];
 

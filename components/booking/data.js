@@ -33,11 +33,6 @@ export const LOCATION_OPTIONS = [
   },
 ];
 
-export const MOCK_COUPONS = {
-  DRIP10: 10,
-  LOUNGE25: 25,
-};
-
 export const BOOKING_DATES = getRollingWeekdayDates();
 export const TIME_SLOTS = getBookableTimeSlots(15);
 
@@ -129,14 +124,12 @@ export function getTravelFeeAmount(locationType, travelFeeResult) {
 export function calculateBookingTotal({
   items,
   locationType,
-  couponCode,
   travelFeeResult,
 }) {
   const subtotal = calculateSubtotal(items);
   const travelFee = getTravelFeeAmount(locationType, travelFeeResult);
-  const couponDiscount = MOCK_COUPONS[couponCode?.toUpperCase()] ?? 0;
 
-  return Math.max(subtotal + travelFee - couponDiscount, 0);
+  return Math.max(subtotal + travelFee, 0);
 }
 
 export function formatBookingDate(dateValue) {

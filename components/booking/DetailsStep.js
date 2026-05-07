@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { LOCATION_OPTIONS, formatCurrency } from "@/components/booking/data";
 import {
   BookingButton,
@@ -127,12 +129,12 @@ export default function DetailsStep({
           />
           <span>
             I agree to{" "}
-            <a
+            <Link
               href="/terms-and-conditions"
-              className="text-[var(--color-primary)] underline"
+              className="font-medium text-[var(--color-primary)] underline decoration-current decoration-2 underline-offset-4 transition-colors hover:text-[#111111] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-primary)]"
             >
               the Terms of Service
-            </a>
+            </Link>
           </span>
         </label>
       </div>

@@ -10,6 +10,7 @@ import {
   getRenewalEligibilityDate,
   syncMembershipState,
 } from "@/lib/memberships";
+import { getStripe } from "@/lib/stripe";
 
 function jsonError(message, status = 400) {
   return NextResponse.json({ ok: false, message }, { status });
@@ -42,23 +43,41 @@ export async function POST(request) {
     const db = getAdminDb();
     const userRef = db.collection("users").doc(decoded.uid);
     const now = new Date();
+    const snapshot = await userRef.get();
+    const data = snapshot.exists ? snapshot.data() || {} : {};
+    const synced = syncMembershipState(
+      data.membership ?? EMPTY_MEMBERSHIP,
+      data.membershipBenefits ?? [],
+      now,
+    );
+    const currentSummary = getMembershipSummary(
+      synced.membership,
+      synced.membershipBenefits,
+    );
+
+    if (!currentSummary.isActiveMember) {
+      throw new Error("You do not have an active membership to manage.");
+    }
+
+    const stripeSubscriptionId = synced.membership?.stripeSubscriptionId || "";
+
+    if (
+      stripeSubscriptionId &&
+      (action === "cancel_at_period_end" || action === "resume_auto_renew")
+    ) {
+      const stripe = getStripe();
+      await stripe.subscriptions.update(stripeSubscriptionId, {
+        cancel_at_period_end: action === "cancel_at_period_end",
+      });
+    }
+
+    if (stripeSubscriptionId && action === "schedule_tier_change") {
+      throw new Error(
+        "Tier changes for active Stripe memberships are not supported yet. Please contact support.",
+      );
+    }
+
     const result = await db.runTransaction(async (transaction) => {
-      const snapshot = await transaction.get(userRef);
-      const data = snapshot.exists ? snapshot.data() || {} : {};
-      const synced = syncMembershipState(
-        data.membership ?? EMPTY_MEMBERSHIP,
-        data.membershipBenefits ?? [],
-        now,
-      );
-      const currentSummary = getMembershipSummary(
-        synced.membership,
-        synced.membershipBenefits,
-      );
-
-      if (!currentSummary.isActiveMember) {
-        throw new Error("You do not have an active membership to manage.");
-      }
-
       const nextMembership = {
         ...synced.membership,
       };

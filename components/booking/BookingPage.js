@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import BookingCartSummary from "@/components/booking/BookingCartSummary";
@@ -15,7 +15,6 @@ import {
   BOOKING_DATES,
   DEFAULT_LOCATION,
   LOCATION_OPTIONS,
-  MOCK_COUPONS,
   TIME_SLOTS,
   bookableServices,
   calculateBookingTotal,
@@ -109,12 +108,11 @@ export default function BookingPage() {
   });
   const [payment, setPayment] = useState({
     couponCode: "",
-    cardNumber: "4242 4242 4242 4242",
-    expiration: "12 / 30",
-    cvc: "123",
   });
   const [appliedCouponCode, setAppliedCouponCode] = useState("");
+  const [appliedCouponDiscount, setAppliedCouponDiscount] = useState(0);
   const [couponMessage, setCouponMessage] = useState("");
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [dripsToRedeem, setDripsToRedeem] = useState(0);
   const [rewards, setRewards] = useState(EMPTY_REWARDS);
   const [membership, setMembership] = useState(getMembershipSummary());
@@ -180,6 +178,12 @@ export default function BookingPage() {
   }, [loading, pathname, router, searchParams, serviceId, user]);
 
   useEffect(() => {
+    if (searchParams.get("checkout") === "cancelled") {
+      setCheckoutError("Checkout was cancelled before payment completed.");
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     if (!user) {
       return undefined;
     }
@@ -214,11 +218,10 @@ export default function BookingPage() {
   const location = getLocation(locationType, details);
   const subtotal = calculateSubtotal(cartItems);
   const travelFee = getTravelFeeAmount(locationType, travelFeeState.result);
-  const couponDiscount = MOCK_COUPONS[appliedCouponCode] ?? 0;
+  const couponDiscount = appliedCouponDiscount;
   const baseOrderTotal = calculateBookingTotal({
     items: cartItems,
     locationType,
-    couponCode: appliedCouponCode,
     travelFeeResult: travelFeeState.result,
   });
   const membershipPricing = getMembershipPricing({
@@ -232,7 +235,11 @@ export default function BookingPage() {
   const membershipDiscount = membershipPricing.membershipDiscount;
   const travelFeeWaived = membershipPricing.travelFeeWaived;
   const orderTotal = Math.max(
-    baseOrderTotal - membershipCreditApplied - membershipDiscount - travelFeeWaived,
+    baseOrderTotal -
+      membershipCreditApplied -
+      membershipDiscount -
+      travelFeeWaived -
+      couponDiscount,
     0,
   );
   const bookingDates = useMemo(() => getRollingWeekdayDates(), []);
@@ -249,6 +256,18 @@ export default function BookingPage() {
   const dripCredit = calculateDripCredit(selectedDripsToRedeem);
   const total = Math.max(orderTotal - dripCredit, 0);
   const showCart = cartItems.length > 0 || currentStep > 0;
+  const cartSignature = cartItems
+    .map((item) => `${item.cartId}:${item.id}:${item.price}`)
+    .join("|");
+  const couponContextSignature = [
+    cartSignature,
+    locationType,
+    membershipCreditApplied,
+    membershipDiscount,
+    travelFee,
+    travelFeeWaived,
+  ].join("|");
+  const previousCouponContextSignature = useRef(couponContextSignature);
 
   useEffect(() => {
     if (!bookingDates.includes(selectedDate)) {
@@ -324,6 +343,20 @@ export default function BookingPage() {
       isActive = false;
     };
   }, [bookingDurationMinutes, loading, locationType, selectedDate, serviceId, user]);
+
+  useEffect(() => {
+    if (previousCouponContextSignature.current === couponContextSignature) {
+      return;
+    }
+
+    previousCouponContextSignature.current = couponContextSignature;
+
+    if (appliedCouponCode) {
+      setAppliedCouponCode("");
+      setAppliedCouponDiscount(0);
+      setCouponMessage("Coupon removed because booking details changed.");
+    }
+  }, [appliedCouponCode, couponContextSignature]);
 
   function addSelectedService() {
     const service = getServiceById(serviceId, serviceCatalog);
@@ -416,6 +449,8 @@ export default function BookingPage() {
 
     if (field === "couponCode") {
       setCouponMessage("");
+      setAppliedCouponCode("");
+      setAppliedCouponDiscount(0);
     }
   }
 
@@ -423,17 +458,60 @@ export default function BookingPage() {
     setDripsToRedeem(Math.min(value, maxRedeemableDrips));
   }
 
-  function applyCoupon() {
+  async function applyCoupon() {
     const code = payment.couponCode.trim().toUpperCase();
 
-    if (code === "DRIP10" || code === "LOUNGE25") {
-      setAppliedCouponCode(code);
-      setCouponMessage(`${code} applied successfully.`);
+    if (!code) {
+      setAppliedCouponCode("");
+      setAppliedCouponDiscount(0);
+      setCouponMessage("Enter a coupon code.");
       return;
     }
 
-    setAppliedCouponCode("");
-    setCouponMessage("Try DRIP10 or LOUNGE25 for this mock checkout.");
+    if (!user) {
+      setCouponMessage("Sign in is required to apply coupons.");
+      return;
+    }
+
+    setIsApplyingCoupon(true);
+    setCouponMessage("");
+
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          couponCode: code,
+          items: cartItems,
+          locationType,
+          subtotal,
+          travelFee,
+        }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.message || "Coupon could not be applied.");
+      }
+
+      setAppliedCouponCode(result.couponCode);
+      setAppliedCouponDiscount(result.couponDiscount);
+      setPayment((currentPayment) => ({
+        ...currentPayment,
+        couponCode: result.couponCode,
+      }));
+      setCouponMessage(result.message || `${result.couponCode} applied successfully.`);
+    } catch (error) {
+      setAppliedCouponCode("");
+      setAppliedCouponDiscount(0);
+      setCouponMessage(error.message);
+    } finally {
+      setIsApplyingCoupon(false);
+    }
   }
 
   async function calculateMobileTravelFee() {
@@ -495,7 +573,7 @@ export default function BookingPage() {
     goToStep(3);
   }
 
-  async function submitMockPayment() {
+  async function submitStripeCheckout() {
     if (loading) {
       return;
     }
@@ -536,7 +614,7 @@ export default function BookingPage() {
         throw new Error("Please calculate the travel fee before checkout.");
       }
 
-      const bookingResponse = await fetch("/api/bookings/confirm", {
+      const bookingResponse = await fetch("/api/stripe/booking-checkout", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -565,21 +643,33 @@ export default function BookingPage() {
           travelFeeWaived,
           orderTotal,
           dripsToRedeem: selectedDripsToRedeem,
-          payment,
         }),
       });
       const bookingResult = await bookingResponse.json();
 
       if (!bookingResponse.ok || !bookingResult.ok) {
-        throw new Error(bookingResult.message || "Could not confirm booking.");
+        throw new Error(bookingResult.message || "Could not start checkout.");
       }
 
-      const booking = bookingResult.booking;
+      if (bookingResult.mode === "confirmed" && bookingResult.booking) {
+        const booking = bookingResult.booking;
 
-      setSavedBooking(booking);
-      setRewards(getRewardsSummary(booking.rewards, membership));
-      setIsSubmitting(false);
-      goToStep(4);
+        setSavedBooking(booking);
+        setCartItems(booking.items ?? []);
+        setSelectedDate(booking.appointmentDate);
+        setSelectedTime(booking.appointmentTime);
+        setRewards(getRewardsSummary(booking.rewards, membership));
+        setIsSubmitting(false);
+        goToStep(4);
+        return;
+      }
+
+      if (bookingResult.url) {
+        window.location.assign(bookingResult.url);
+        return;
+      }
+
+      throw new Error("Stripe checkout could not be started.");
     } catch (error) {
       setCheckoutError(error.message);
       setIsSubmitting(false);
@@ -648,11 +738,12 @@ export default function BookingPage() {
         membership={membership}
         membershipPricing={membershipPricing}
         isSubmitting={isSubmitting}
+        isApplyingCoupon={isApplyingCoupon}
         onPaymentChange={updatePayment}
         onApplyCoupon={applyCoupon}
         onDripsToRedeemChange={updateDripsToRedeem}
         onBack={goBack}
-        onSubmit={submitMockPayment}
+        onSubmit={submitStripeCheckout}
       />
     );
   }
