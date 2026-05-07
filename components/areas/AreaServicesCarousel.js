@@ -40,13 +40,17 @@ function ServiceCard({ service }) {
   return (
     <article className="flex h-full flex-col">
       <div className="relative h-[250px] overflow-hidden border border-black/12 bg-white md:h-[270px]">
-        <Image
-          src={service.image}
-          alt={service.alt}
-          fill
-          sizes="(min-width: 1024px) 343px, (min-width: 640px) 45vw, 90vw"
-          className={service.imageClassName}
-        />
+        <div className="absolute inset-0 p-4 md:p-5">
+          <div className="relative h-full w-full">
+            <Image
+              src={service.image}
+              alt={service.alt}
+              fill
+              sizes="(min-width: 1024px) 343px, (min-width: 640px) 45vw, 90vw"
+              className={["object-contain", service.imageClassName].filter(Boolean).join(" ")}
+            />
+          </div>
+        </div>
       </div>
       <div className="mt-5 flex flex-1 flex-col justify-between gap-5">
         <div className="space-y-2">

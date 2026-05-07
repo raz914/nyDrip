@@ -275,15 +275,30 @@ export function ServicesFooter() {
               DRIPLOUNGE
             </Link>
             <div className="flex items-center gap-6 text-white md:mt-8">
-              <Link href="#contact" aria-label="Facebook">
+              <a
+                href="https://www.facebook.com/nydriplounge/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+              >
                 <SocialIcon label="facebook" />
-              </Link>
-              <Link href="#contact" aria-label="Instagram">
+              </a>
+              <a
+                href="https://www.instagram.com/nydriplounge/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+              >
                 <SocialIcon label="instagram" />
-              </Link>
-              <Link href="#contact" aria-label="X">
-                <SocialIcon label="x" />
-              </Link>
+              </a>
+              <a
+                href="https://www.tiktok.com/@the.drip.lounge"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+              >
+                <SocialIcon label="tiktok" />
+              </a>
             </div>
           </div>
 

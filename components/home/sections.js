@@ -515,14 +515,29 @@ export function SiteFooter() {
               DRIPLOUNGE
             </a>
             <div className="flex items-center gap-6 text-white md:mt-8">
-              <a href="#contact" aria-label="Facebook">
+              <a
+                href="https://www.facebook.com/nydriplounge/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+              >
                 <SocialIcon label="facebook" />
               </a>
-              <a href="#contact" aria-label="Instagram">
+              <a
+                href="https://www.instagram.com/nydriplounge/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+              >
                 <SocialIcon label="instagram" />
               </a>
-              <a href="#contact" aria-label="X">
-                <SocialIcon label="x" />
+              <a
+                href="https://www.tiktok.com/@the.drip.lounge"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="TikTok"
+              >
+                <SocialIcon label="tiktok" />
               </a>
             </div>
           </div>
