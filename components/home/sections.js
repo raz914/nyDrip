@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SharedNavbar from "@/components/navigation/SharedNavbar";
 import ServiceCardsCarousel from "@/components/home/ServiceCardsCarousel";
+import TestimonialsCarousel from "@/components/home/TestimonialsCarousel";
 import ContactForm from "@/components/contact/ContactForm";
 import { getBookingHrefForProductTitle } from "@/components/booking/data";
 import { publicContactEmail, publicContactMailto } from "@/lib/siteContact";
@@ -14,7 +15,6 @@ import {
   navLinks,
   services,
   steps,
-  testimonials,
 } from "@/components/home/data";
 import {
   ArrowRightIcon,
@@ -28,12 +28,10 @@ import {
 import {
   FaqItem,
   FooterMenuGroup,
-  GoogleBadge,
   IconBadge,
   PrimaryLink,
   SectionBand,
   SocialIcon,
-  StarRating,
   TextCta,
 } from "@/components/home/primitives";
 
@@ -436,52 +434,7 @@ export function TestimonialsSection() {
       <h2 className="text-center text-[2rem] font-medium md:text-[3.25rem]">
         Our Trusted Clients
       </h2>
-      <div className="grid gap-5 lg:grid-cols-3">
-        {testimonials.map((testimonial) => (
-          <article
-            key={testimonial.name + testimonial.time}
-            className="border border-[#ffedba] bg-[#1c1c1e] px-5 py-6"
-          >
-            <div className="flex items-center justify-between">
-              <StarRating />
-              <GoogleBadge />
-            </div>
-            <p className="mt-6 text-sm leading-7 text-white md:text-base">
-              {testimonial.quote}
-            </p>
-            <div className="mt-6 flex items-center gap-7">
-              <Image
-                src="/homepage/testimonial-avatar.jpg"
-                alt={testimonial.name}
-                width={44}
-                height={44}
-                className="rounded-full object-cover"
-              />
-              <div>
-                <p className="text-sm font-medium text-white md:text-base">
-                  {testimonial.name}
-                </p>
-                <p className="text-sm text-[#858585] md:text-base">
-                  {testimonial.time}
-                </p>
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
-      <div className="flex items-center justify-center gap-4 text-white/70">
-        <button type="button" aria-label="Previous testimonials" className="rounded-full border border-white/20 p-2">
-          <ChevronDownIcon className="h-4 w-4 rotate-90" />
-        </button>
-        <div className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded-full bg-white" />
-          <span className="h-3 w-3 rounded-full bg-white/30" />
-          <span className="h-3 w-3 rounded-full bg-white/30" />
-        </div>
-        <button type="button" aria-label="Next testimonials" className="rounded-full border border-white/20 p-2">
-          <ChevronDownIcon className="h-4 w-4 -rotate-90" />
-        </button>
-      </div>
+      <TestimonialsCarousel />
     </div>
   );
 }

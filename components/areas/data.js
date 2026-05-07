@@ -1,4 +1,5 @@
 import { faqs, serviceCards, steps, areaEntries } from "@/components/home/data";
+import { getLocationHref } from "@/lib/locationUrls";
 
 export function getAreaHref(area) {
   if (!area) {
@@ -9,7 +10,7 @@ export function getAreaHref(area) {
     return area.href;
   }
 
-  return area.isLive ? `/areas/${area.slug}` : null;
+  return area.isLive ? getLocationHref(area.slug) : null;
 }
 
 const middletownProducts = [
@@ -1841,7 +1842,6 @@ export function getAreaPageBySlug(slug) {
 export function getStaticAreaSlugs() {
   return Object.keys(areaPages);
 }
-
 
 
 

@@ -306,7 +306,7 @@ function AboutTestimonialsSection() {
         Our Trusted Clients
       </h2>
       <div className="mt-10 grid gap-5 lg:grid-cols-3">
-        {testimonials.map((testimonial) => (
+        {testimonials.slice(0, 3).map((testimonial) => (
           <article
             key={testimonial.name + testimonial.time}
             className="border border-[#ffedba] bg-[#1c1c1e] px-5 py-6"

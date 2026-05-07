@@ -1,9 +1,7 @@
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 
-import AreaPage from "@/components/areas/AreaPage";
-import { getAreaPageBySlug, getStaticAreaSlugs } from "@/components/areas/data";
-import { withResolvedStartingPrices } from "@/lib/publicPricing";
-import { getPublicBookableServices } from "@/lib/serverPricing";
+import { getStaticAreaSlugs } from "@/components/areas/data";
+import { getLocationHref } from "@/lib/locationUrls";
 
 export const dynamic = "force-dynamic";
 
@@ -13,17 +11,5 @@ export function generateStaticParams() {
 
 export default async function Page({ params }) {
   const { slug } = await params;
-  const area = getAreaPageBySlug(slug);
-
-  if (!area) {
-    notFound();
-  }
-
-  const services = await getPublicBookableServices();
-  const resolvedArea = {
-    ...area,
-    products: withResolvedStartingPrices(area.products ?? [], services),
-  };
-
-  return <AreaPage area={resolvedArea} />;
+  redirect(getLocationHref(slug) ?? "/locations");
 }

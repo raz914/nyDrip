@@ -1,3 +1,5 @@
+import { getLocationHref } from "@/lib/locationUrls";
+
 export { homeNavLinks as navLinks } from "@/components/navigation/nav-data";
 
 export const featuredDrips = [
@@ -300,7 +302,6 @@ const rawAreaEntries = [
     label: "Newburgh",
     slug: "newburgh",
     isLive: true,
-    href: "/areas/newburgh",
     pin: { left: "29%", top: "56%" },
   },
   {
@@ -373,7 +374,7 @@ const rawAreaEntries = [
 
 export const areaEntries = rawAreaEntries.map((area) => ({
   ...area,
-  href: area.href ?? (area.isLive ? `/areas/${area.slug}` : undefined),
+  href: area.href ?? (area.isLive ? getLocationHref(area.slug) : undefined),
 }));
 
 export const areasWeServe = areaEntries.map((area) => area.label);
@@ -394,8 +395,6 @@ export const aboutLinks = [
   { label: "Our Blog", href: "/blog" },
   { label: "Areas We Serve", href: "/about" },
 ];
-
-
 
 
 

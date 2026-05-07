@@ -1,3 +1,5 @@
+import { getLocationHref } from "@/lib/locationUrls";
+
 export const serviceDropdownLinks = [
   { label: "IV Therapy", href: "/services/iv-therapy" },
   { label: "Peptide Wellness", href: "/services/peptide-wellness" },
@@ -10,18 +12,18 @@ export const serviceDropdownLinks = [
 ];
 
 export const areaDropdownLinks = [
-  { label: "Amenia", href: "/areas/amenia" },
-  { label: "Highland", href: "/areas/highland" },
-  { label: "Middletown", href: "/areas/middletown" },
-  { label: "Newburgh", href: "/areas/newburgh" },
-  { label: "Peekskill", href: "/areas/peekskill" },
-  { label: "Purchase", href: "/areas/purchase" },
-  { label: "Rhinebeck", href: "/areas/rhinebeck" },
-  { label: "Scarsdale", href: "/areas/scarsdale" },
-  { label: "Sloatsburg", href: "/areas/sloatsburg" },
-  { label: "Wappingers Falls", href: "/areas/wappingers-falls" },
-  { label: "Washingtonville", href: "/areas/washingtonville" },
-  { label: "Westchester", href: "/areas/westchester" },
+  { label: "Amenia", href: getLocationHref("amenia") },
+  { label: "Highland", href: getLocationHref("highland") },
+  { label: "Middletown", href: getLocationHref("middletown") },
+  { label: "Newburgh", href: getLocationHref("newburgh") },
+  { label: "Peekskill", href: getLocationHref("peekskill") },
+  { label: "Purchase", href: getLocationHref("purchase") },
+  { label: "Rhinebeck", href: getLocationHref("rhinebeck") },
+  { label: "Scarsdale", href: getLocationHref("scarsdale") },
+  { label: "Sloatsburg", href: getLocationHref("sloatsburg") },
+  { label: "Wappingers Falls", href: getLocationHref("wappingers-falls") },
+  { label: "Washingtonville", href: getLocationHref("washingtonville") },
+  { label: "Westchester", href: getLocationHref("westchester") },
 ];
 
 export const homeNavLinks = [
