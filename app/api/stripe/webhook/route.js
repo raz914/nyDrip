@@ -12,10 +12,10 @@ import {
   syncMembershipState,
 } from "@/lib/memberships";
 import {
-  finalizePendingServerBooking,
-  expirePendingServerBooking,
-  finalizeGuestPendingServerBooking,
-  expireGuestPendingServerBooking,
+  finalizePendingServerBookingGroup,
+  expirePendingServerBookingGroup,
+  finalizeGuestPendingServerBookingGroup,
+  expireGuestPendingServerBookingGroup,
   GUEST_PENDING_BOOKINGS_COLLECTION,
 } from "@/lib/serverBookings";
 import { fulfillFinalizedBooking } from "@/lib/serverBookingFulfillment";
@@ -303,7 +303,7 @@ async function handleBookingCheckoutCompleted(db, session) {
     return;
   }
 
-  const booking = await finalizePendingServerBooking(db, uid, bookingId, {
+  const booking = await finalizePendingServerBookingGroup(db, uid, bookingId, {
     payment: {
       provider: "stripe",
       status: "paid",
@@ -318,7 +318,13 @@ async function handleBookingCheckoutCompleted(db, session) {
     },
   });
 
-  await fulfillFinalizedBooking(db, uid, booking);
+  if (booking.checkoutBookings?.length) {
+    await Promise.all(
+      booking.checkoutBookings.map((entry) => fulfillFinalizedBooking(db, uid, entry)),
+    );
+  } else {
+    await fulfillFinalizedBooking(db, uid, booking);
+  }
 }
 
 async function handleGuestBookingCheckoutCompleted(db, session) {
@@ -343,7 +349,7 @@ async function handleGuestBookingCheckoutCompleted(db, session) {
     ...guestBookingSnapshot.data(),
   };
   const account = await ensureGuestBookingUserAndPasswordEmail(db, guestBooking);
-  const booking = await finalizeGuestPendingServerBooking(db, account.uid, guestBookingId, {
+  const booking = await finalizeGuestPendingServerBookingGroup(db, account.uid, guestBookingId, {
     payment: {
       provider: "stripe",
       status: "paid",
@@ -358,7 +364,15 @@ async function handleGuestBookingCheckoutCompleted(db, session) {
     },
   });
 
-  await fulfillFinalizedBooking(db, account.uid, booking);
+  if (booking.checkoutBookings?.length) {
+    await Promise.all(
+      booking.checkoutBookings.map((entry) =>
+        fulfillFinalizedBooking(db, account.uid, entry),
+      ),
+    );
+  } else {
+    await fulfillFinalizedBooking(db, account.uid, booking);
+  }
 }
 
 async function handleBookingCheckoutExpired(db, session) {
@@ -369,7 +383,7 @@ async function handleBookingCheckoutExpired(db, session) {
     return;
   }
 
-  await expirePendingServerBooking(db, uid, bookingId);
+  await expirePendingServerBookingGroup(db, uid, bookingId);
 }
 
 async function handleGuestBookingCheckoutExpired(db, session) {
@@ -380,7 +394,7 @@ async function handleGuestBookingCheckoutExpired(db, session) {
     return;
   }
 
-  await expireGuestPendingServerBooking(db, guestBookingId);
+  await expireGuestPendingServerBookingGroup(db, guestBookingId);
 }
 
 export async function POST(request) {

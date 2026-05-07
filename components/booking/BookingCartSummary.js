@@ -13,6 +13,8 @@ function CartItem({
   onRemove,
   readOnly,
 }) {
+  const itemDate = item.appointmentDate || selectedDate;
+  const itemTime = item.appointmentTime || selectedTime;
   const itemPrice = travelFee
     ? `${formatCurrency(item.price)} (${formatCurrency(travelFee)} travel fee)`
     : formatCurrency(item.price);
@@ -30,11 +32,13 @@ function CartItem({
       </div>
       <div className="space-y-1 text-sm md:text-base">
         <p className="font-medium">{item.displayName}</p>
-        {selectedDate && selectedTime ? (
+        {itemDate && itemTime ? (
           <p className="text-[#858585]">
-            {formatBookingDate(selectedDate)} {selectedTime}
+            {formatBookingDate(itemDate)} {itemTime}
           </p>
-        ) : null}
+        ) : readOnly ? null : (
+          <p className="text-[#d83f3f]">Choose time</p>
+        )}
         <p>{itemPrice}</p>
       </div>
       {readOnly ? (

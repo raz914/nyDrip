@@ -128,7 +128,7 @@ export default function BookingSuccessPage() {
   return (
     <BookingShell currentStep={4} footer={false}>
       <ConfirmationStep
-        cartItems={booking.items ?? []}
+        cartItems={booking.checkoutItems ?? booking.items ?? []}
         selectedDate={booking.appointmentDate}
         selectedTime={booking.appointmentTime}
         location={booking.location}

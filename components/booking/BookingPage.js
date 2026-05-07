@@ -30,6 +30,7 @@ import {
   getBookableTimeSlots,
   getCartDurationMinutes,
   getRollingWeekdayDates,
+  parseTimeToMinutes,
 } from "@/lib/bookingRules";
 import {
   EMPTY_REWARDS,
@@ -85,6 +86,9 @@ export default function BookingPage() {
   );
   const [selectedDate, setSelectedDate] = useState(BOOKING_DATES[0]);
   const [selectedTime, setSelectedTime] = useState(TIME_SLOTS[8]);
+  const [schedulingCartId, setSchedulingCartId] = useState(() =>
+    initialService ? null : "",
+  );
   const [locationType, setLocationType] = useState(DEFAULT_LOCATION.type);
   const [details, setDetails] = useState({
     fullName: "",
@@ -232,10 +236,14 @@ export default function BookingPage() {
   );
   const bookingDates = useMemo(() => getRollingWeekdayDates(), []);
   const bookingDurationMinutes = getCartDurationMinutes(cartItems);
-  const selectedSlotAvailability = slotAvailability[selectedTime] ?? {
-    available: false,
-    reason: availabilityMessage || "Live availability is still loading.",
-  };
+  const activeCartItem = cartItems.find((item) => item.cartId === schedulingCartId) ?? null;
+  const activeDurationMinutes =
+    activeCartItem?.durationMinutes || getCartDurationMinutes(activeCartItem ? [activeCartItem] : []);
+  const activeSelectedDate = activeCartItem?.appointmentDate || selectedDate;
+  const activeSelectedTime = activeCartItem?.appointmentTime || selectedTime;
+  const hasUnscheduledItems = cartItems.some(
+    (item) => !item.appointmentDate || !item.appointmentTime,
+  );
   const maxRedeemableDrips = getMaxRedeemableDrips(
     rewards.availableDrips,
     orderTotal,
@@ -270,7 +278,7 @@ export default function BookingPage() {
   }, [availableTimeSlots, selectedTime]);
 
   useEffect(() => {
-    if (!selectedDate || !bookingDurationMinutes) {
+    if (!activeSelectedDate || !activeDurationMinutes || currentStep !== 1) {
       setSlotAvailability({});
       setAvailabilityStatus("idle");
       setAvailabilityMessage("");
@@ -285,10 +293,10 @@ export default function BookingPage() {
 
       try {
         const params = new URLSearchParams({
-          date: selectedDate,
-          durationMinutes: String(bookingDurationMinutes),
+          date: activeSelectedDate,
+          durationMinutes: String(activeDurationMinutes),
           locationType,
-          serviceId,
+          serviceId: activeCartItem?.id || serviceId,
         });
         const headers = {};
 
@@ -306,14 +314,14 @@ export default function BookingPage() {
         }
 
         if (isActive) {
-          setAvailableTimeSlots(result.timeSlots || getBookableTimeSlots(bookingDurationMinutes));
+          setAvailableTimeSlots(result.timeSlots || getBookableTimeSlots(activeDurationMinutes));
           setSlotAvailability(result.availabilityByTime || {});
           setAvailabilityStatus("ready");
           setAvailabilityMessage("");
         }
       } catch (error) {
         if (isActive) {
-          setAvailableTimeSlots(getBookableTimeSlots(bookingDurationMinutes));
+          setAvailableTimeSlots(getBookableTimeSlots(activeDurationMinutes));
           setSlotAvailability({});
           setAvailabilityStatus("error");
           setAvailabilityMessage(
@@ -329,7 +337,15 @@ export default function BookingPage() {
     return () => {
       isActive = false;
     };
-  }, [bookingDurationMinutes, locationType, selectedDate, serviceId, user]);
+  }, [
+    activeCartItem?.id,
+    activeDurationMinutes,
+    activeSelectedDate,
+    currentStep,
+    locationType,
+    serviceId,
+    user,
+  ]);
 
   useEffect(() => {
     if (previousCouponContextSignature.current === couponContextSignature) {
@@ -352,7 +368,13 @@ export default function BookingPage() {
       return;
     }
 
-    setCartItems((currentItems) => [...currentItems, makeCartItem(service)]);
+    const item = makeCartItem(service);
+
+    setCartItems((currentItems) => [...currentItems, item]);
+    setSchedulingCartId(item.cartId);
+    setSelectedDate(item.appointmentDate || selectedDate);
+    setSelectedTime(item.appointmentTime || selectedTime);
+    goToStep(1);
   }
 
   function changeCategory(nextCategory) {
@@ -364,6 +386,9 @@ export default function BookingPage() {
 
   function removeCartItem(cartId) {
     setCartItems((currentItems) => currentItems.filter((item) => item.cartId !== cartId));
+    if (schedulingCartId === cartId) {
+      setSchedulingCartId("");
+    }
   }
 
   function goToStep(step) {
@@ -380,6 +405,23 @@ export default function BookingPage() {
   }
 
   function continueFromService() {
+    const unscheduledItem = cartItems.find(
+      (item) => !item.appointmentDate || !item.appointmentTime,
+    );
+
+    if (unscheduledItem) {
+      setSchedulingCartId(unscheduledItem.cartId);
+      setSelectedDate(unscheduledItem.appointmentDate || selectedDate);
+      setSelectedTime(unscheduledItem.appointmentTime || selectedTime);
+      goToStep(1);
+      return;
+    }
+
+    if (cartItems.length) {
+      goToStep(2);
+      return;
+    }
+
     if (!cartItems.length) {
       const service = getServiceById(serviceId, serviceCatalog);
 
@@ -387,10 +429,87 @@ export default function BookingPage() {
         return;
       }
 
-      setCartItems([makeCartItem(service)]);
+      const item = makeCartItem(service);
+
+      setCartItems([item]);
+      setSchedulingCartId(item.cartId);
     }
 
     goToStep(1);
+  }
+
+  function changeActiveDate(date) {
+    setSelectedDate(date);
+    setSelectedTime("");
+    if (!activeCartItem) {
+      return;
+    }
+    setCartItems((currentItems) =>
+      currentItems.map((item) =>
+        item.cartId === activeCartItem.cartId
+          ? {
+              ...item,
+              appointmentDate: date,
+              appointmentTime: "",
+              startMinutes: null,
+              endMinutes: null,
+            }
+          : item,
+      ),
+    );
+  }
+
+  function changeActiveTime(time) {
+    setSelectedTime(time);
+    if (!activeCartItem) {
+      return;
+    }
+
+    const startMinutes = parseTimeToMinutes(time);
+    const durationMinutes = activeCartItem.durationMinutes || activeDurationMinutes;
+
+    setCartItems((currentItems) =>
+      currentItems.map((item) =>
+        item.cartId === activeCartItem.cartId
+          ? {
+              ...item,
+              appointmentDate: activeSelectedDate,
+              appointmentTime: time,
+              startMinutes,
+              endMinutes: startMinutes === null ? null : startMinutes + durationMinutes,
+              durationMinutes,
+            }
+          : item,
+      ),
+    );
+  }
+
+  function continueFromTime() {
+    if (!activeCartItem) {
+      goToStep(hasUnscheduledItems ? 0 : 2);
+      return;
+    }
+
+    const nextItems = cartItems.map((item) =>
+      item.cartId === activeCartItem.cartId && !item.appointmentDate && activeSelectedDate
+        ? { ...item, appointmentDate: activeSelectedDate }
+        : item,
+    );
+    const nextUnscheduledItem = nextItems.find(
+      (item) =>
+        item.cartId !== activeCartItem.cartId &&
+        (!item.appointmentDate || !item.appointmentTime),
+    );
+
+    if (nextUnscheduledItem) {
+      setSchedulingCartId(nextUnscheduledItem.cartId);
+      setSelectedDate(nextUnscheduledItem.appointmentDate || selectedDate);
+      setSelectedTime(nextUnscheduledItem.appointmentTime || selectedTime);
+      return;
+    }
+
+    setSchedulingCartId("");
+    goToStep(2);
   }
 
   function updateDetails(field, value) {
@@ -540,8 +659,9 @@ export default function BookingPage() {
   }
 
   function continueFromDetails() {
-    if (!selectedSlotAvailability.available) {
-      setCheckoutError(selectedSlotAvailability.reason);
+    if (hasUnscheduledItems) {
+      setCheckoutError("Choose a date and time for every service before checkout.");
+      goToStep(0);
       return;
     }
 
@@ -562,22 +682,26 @@ export default function BookingPage() {
         requestHeaders.Authorization = `Bearer ${await user.getIdToken()}`;
       }
 
-      const availabilityResponse = await fetch("/api/booking-availability", {
-        method: "POST",
-        headers: requestHeaders,
-        body: JSON.stringify({
-          date: selectedDate,
-          time: selectedTime,
-          durationMinutes: bookingDurationMinutes,
-          locationType,
-        }),
-      });
-      const availabilityResult = await availabilityResponse.json();
+      for (const item of cartItems) {
+        const availabilityResponse = await fetch("/api/booking-availability", {
+          method: "POST",
+          headers: requestHeaders,
+          body: JSON.stringify({
+            date: item.appointmentDate,
+            time: item.appointmentTime,
+            durationMinutes: item.durationMinutes || getCartDurationMinutes([item]),
+            locationType,
+          }),
+        });
+        const availabilityResult = await availabilityResponse.json();
 
-      if (!availabilityResponse.ok || !availabilityResult.ok) {
-        throw new Error(
-          availabilityResult.message || "This time slot is no longer available.",
-        );
+        if (!availabilityResponse.ok || !availabilityResult.ok) {
+          throw new Error(
+            `${item.displayName}: ${
+              availabilityResult.message || "This time slot is no longer available."
+            }`,
+          );
+        }
       }
 
       if (locationType === "mobile" && !travelFeeState.result?.ok) {
@@ -589,8 +713,9 @@ export default function BookingPage() {
         headers: requestHeaders,
         body: JSON.stringify({
           items: cartItems,
-          appointmentDate: selectedDate,
-          appointmentTime: selectedTime,
+          scheduledItems: cartItems,
+          appointmentDate: cartItems[0]?.appointmentDate || selectedDate,
+          appointmentTime: cartItems[0]?.appointmentTime || selectedTime,
           location,
           customer: {
             fullName: details.fullName,
@@ -624,7 +749,7 @@ export default function BookingPage() {
         const booking = bookingResult.booking;
 
         setSavedBooking(booking);
-        setCartItems(booking.items ?? []);
+        setCartItems(booking.checkoutItems ?? booking.items ?? []);
         setSelectedDate(booking.appointmentDate);
         setSelectedTime(booking.appointmentTime);
         setRewards(getRewardsSummary(booking.rewards, membership));
@@ -666,17 +791,17 @@ export default function BookingPage() {
       return (
         <TimeStep
           bookingDates={bookingDates}
-          selectedDate={selectedDate}
-          selectedTime={selectedTime}
+          selectedDate={activeSelectedDate}
+          selectedTime={activeSelectedTime}
           timeSlots={availableTimeSlots}
-          durationMinutes={bookingDurationMinutes}
+          durationMinutes={activeDurationMinutes}
           slotAvailability={slotAvailability}
           availabilityMessage={availabilityMessage}
           availabilityStatus={availabilityStatus}
-          onDateChange={setSelectedDate}
-          onTimeChange={setSelectedTime}
+          onDateChange={changeActiveDate}
+          onTimeChange={changeActiveTime}
           onBack={goBack}
-          onContinue={() => goToStep(2)}
+          onContinue={continueFromTime}
         />
       );
     }

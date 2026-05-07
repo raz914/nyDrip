@@ -4,8 +4,8 @@ import { getAdminDb, requireAuthenticatedRequest } from "@/lib/firebaseAdmin";
 import { getMembershipSummary, syncMembershipState } from "@/lib/memberships";
 import {
   GUEST_PENDING_BOOKINGS_COLLECTION,
-  finalizeGuestPendingServerBooking,
-  finalizePendingServerBooking,
+  finalizeGuestPendingServerBookingGroup,
+  finalizePendingServerBookingGroup,
   getServerBookingById,
 } from "@/lib/serverBookings";
 import { fulfillFinalizedBooking } from "@/lib/serverBookingFulfillment";
@@ -102,10 +102,19 @@ export async function GET(request) {
       let booking = bookingId ? await getServerBookingById(db, user.uid, bookingId) : null;
 
       if (booking && booking.status !== "Approved" && isPaidCheckoutSession(session)) {
-        booking = await finalizePendingServerBooking(db, user.uid, bookingId, {
+        booking = await finalizePendingServerBookingGroup(db, user.uid, bookingId, {
           payment: getBookingPaymentFromSession(session),
         });
-        booking = await fulfillFinalizedBooking(db, user.uid, booking);
+        booking = booking.checkoutBookings?.length
+          ? {
+              ...booking,
+              checkoutBookings: await Promise.all(
+                booking.checkoutBookings.map((entry) =>
+                  fulfillFinalizedBooking(db, user.uid, entry),
+                ),
+              ),
+            }
+          : await fulfillFinalizedBooking(db, user.uid, booking);
       }
 
       return NextResponse.json({
@@ -141,10 +150,19 @@ export async function GET(request) {
       if (booking && booking.status !== "Approved" && isPaidCheckoutSession(session)) {
         const account = await ensureGuestBookingUserAndPasswordEmail(db, booking);
 
-        booking = await finalizeGuestPendingServerBooking(db, account.uid, bookingId, {
+        booking = await finalizeGuestPendingServerBookingGroup(db, account.uid, bookingId, {
           payment: getBookingPaymentFromSession(session),
         });
-        booking = await fulfillFinalizedBooking(db, account.uid, booking);
+        booking = booking.checkoutBookings?.length
+          ? {
+              ...booking,
+              checkoutBookings: await Promise.all(
+                booking.checkoutBookings.map((entry) =>
+                  fulfillFinalizedBooking(db, account.uid, entry),
+                ),
+              ),
+            }
+          : await fulfillFinalizedBooking(db, account.uid, booking);
       }
 
       return NextResponse.json({
