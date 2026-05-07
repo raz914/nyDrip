@@ -4,10 +4,16 @@ import { getAdminDb, requireAuthenticatedRequest } from "@/lib/firebaseAdmin";
 import {
   DEFAULT_MEMBERSHIP_TIER,
   EMPTY_MEMBERSHIP,
+  activateMembership,
   formatMembershipPrice,
   getMembershipPlan,
+  getMembershipSummary,
   syncMembershipState,
 } from "@/lib/memberships";
+import {
+  assertDevStripeBypassAllowed,
+  isDevStripeBypassEnabled,
+} from "@/lib/devStripeBypass.mjs";
 import { buildAppUrl, getStripe, toStripeAmount } from "@/lib/stripe";
 
 export const runtime = "nodejs";
@@ -16,8 +22,30 @@ function jsonError(message, status = 400) {
   return NextResponse.json({ ok: false, message }, { status });
 }
 
+function serializeMembership(summary) {
+  return {
+    ...summary,
+    currentPeriodEndsAt: summary.currentPeriodEndsAt?.toISOString?.() ?? null,
+    nextRenewalAt: summary.nextRenewalAt?.toISOString?.() ?? null,
+    minimumTermEndsAt: summary.minimumTermEndsAt?.toISOString?.() ?? null,
+    startedAt: summary.startedAt?.toISOString?.() ?? null,
+    currentPeriodStartedAt: summary.currentPeriodStartedAt?.toISOString?.() ?? null,
+    benefits: summary.displayBenefits?.map((benefit) => ({
+      code: benefit.code,
+      label: benefit.label,
+      summary: benefit.summary,
+      remaining: benefit.remaining,
+      expiresAt: benefit.expiresAt?.toISOString?.() ?? null,
+      expiresAtLabel: benefit.expiresAtLabel ?? null,
+      period: benefit.period,
+    })),
+  };
+}
+
 export async function POST(request) {
   try {
+    assertDevStripeBypassAllowed();
+
     const decoded = await requireAuthenticatedRequest(request);
     const body = await request.json();
     const tierId = String(body?.tierId ?? "");
@@ -29,6 +57,85 @@ export async function POST(request) {
 
     const db = getAdminDb();
     const userRef = db.collection("users").doc(decoded.uid);
+    const now = new Date();
+
+    if (isDevStripeBypassEnabled()) {
+      const membership = await db.runTransaction(async (transaction) => {
+        const snapshot = await transaction.get(userRef);
+        const data = snapshot.exists ? snapshot.data() || {} : {};
+        const synced = syncMembershipState(
+          data.membership ?? EMPTY_MEMBERSHIP,
+          data.membershipBenefits ?? [],
+          now,
+        );
+        const currentSummary = getMembershipSummary(
+          synced.membership,
+          synced.membershipBenefits,
+        );
+
+        if (currentSummary.isActiveMember) {
+          throw new Error("You already have an active membership. Manage it from the dashboard.");
+        }
+
+        const activation = activateMembership({
+          tierId: plan.id,
+          now,
+          mockPaymentMethod: {
+            provider: "dev_bypass",
+            label: "Development Stripe bypass",
+          },
+        });
+        const nextMembership = {
+          ...activation.membership,
+          stripeCustomerId: "",
+          stripeSubscriptionId: "",
+          stripeCheckoutSessionId: "dev_bypass",
+          stripePriceId: "dev_bypass",
+          stripeSubscriptionStatus: "dev_bypassed",
+          updatedAt: now,
+        };
+        const existingRewards = data.rewards ?? {};
+        const ledgerRef = userRef.collection("membershipLedger").doc();
+
+        transaction.set(
+          userRef,
+          {
+            uid: decoded.uid,
+            email: data.email ?? decoded.email ?? "",
+            displayName: data.displayName ?? "",
+            membership: nextMembership,
+            membershipBenefits: activation.membershipBenefits,
+            rewards: {
+              ...existingRewards,
+              tier: plan.id,
+              updatedAt: now,
+            },
+            updatedAt: now,
+          },
+          { merge: true },
+        );
+        transaction.set(ledgerRef, {
+          type: "signup",
+          tier: plan.id,
+          price: plan.price,
+          priceLabel: formatMembershipPrice(plan.price),
+          paymentProvider: "dev_bypass",
+          stripeCheckoutSessionId: "dev_bypass",
+          createdAt: now,
+        });
+
+        return getMembershipSummary(nextMembership, activation.membershipBenefits);
+      });
+
+      return NextResponse.json({
+        ok: true,
+        mode: "activated",
+        devBypass: true,
+        tierId: plan.id,
+        membership: serializeMembership(membership),
+      });
+    }
+
     await db.runTransaction(async (transaction) => {
       const snapshot = await transaction.get(userRef);
       const data = snapshot.exists ? snapshot.data() || {} : {};

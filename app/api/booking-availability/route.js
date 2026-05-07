@@ -8,7 +8,7 @@ import {
   getBookableTimeSlots,
   parseDurationToMinutes,
 } from "@/lib/bookingRules";
-import { getAdminDb, requireAuthenticatedRequest } from "@/lib/firebaseAdmin";
+import { getAdminDb } from "@/lib/firebaseAdmin";
 
 function getDurationMinutes(searchParams, servicesList) {
   const serviceId = searchParams.get("serviceId");
@@ -80,8 +80,6 @@ async function getAvailabilityPayload(searchParams) {
 
 export async function GET(request) {
   try {
-    await requireAuthenticatedRequest(request);
-
     const { searchParams } = new URL(request.url);
     const payload = await getAvailabilityPayload(searchParams);
     const { status, ...body } = payload;
@@ -93,15 +91,13 @@ export async function GET(request) {
         ok: false,
         message: error.message || "Availability is unavailable.",
       },
-      { status: error.message === "Sign in is required." ? 401 : 503 },
+      { status: 503 },
     );
   }
 }
 
 export async function POST(request) {
   try {
-    await requireAuthenticatedRequest(request);
-
     const body = await request.json().catch(() => ({}));
     const searchParams = new URLSearchParams({
       date: body.date || "",
@@ -139,7 +135,7 @@ export async function POST(request) {
         ok: false,
         message: error.message || "Availability could not be validated.",
       },
-      { status: error.message === "Sign in is required." ? 401 : 503 },
+      { status: 503 },
     );
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import BookingCartSummary from "@/components/booking/BookingCartSummary";
 import BookingShell from "@/components/booking/BookingShell";
@@ -59,22 +59,8 @@ function getLocation(locationType, details) {
   return option;
 }
 
-function getBookingReturnUrl(pathname, searchParams, serviceId) {
-  const nextSearchParams = new URLSearchParams(searchParams.toString());
-
-  if (serviceId && !nextSearchParams.has("service")) {
-    nextSearchParams.set("service", serviceId);
-  }
-
-  const queryString = nextSearchParams.toString();
-
-  return queryString ? `${pathname}?${queryString}` : pathname;
-}
-
 export default function BookingPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-  const pathname = usePathname();
+  const { user } = useAuth();
   const searchParams = useSearchParams();
   const [serviceCatalog, setServiceCatalog] = useState(bookableServices);
 
@@ -102,6 +88,7 @@ export default function BookingPage() {
     fullName: "",
     phone: "",
     email: "",
+    dateOfBirth: "",
     address: "",
     notes: "",
     agreeToTerms: false,
@@ -166,16 +153,6 @@ export default function BookingPage() {
     setServiceId(next.id);
     setCategory(next.category);
   }, [serviceCatalog, serviceId]);
-
-  useEffect(() => {
-    if (loading || user) {
-      return;
-    }
-
-    const currentUrl = getBookingReturnUrl(pathname, searchParams, serviceId);
-
-    router.replace(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
-  }, [loading, pathname, router, searchParams, serviceId, user]);
 
   useEffect(() => {
     if (searchParams.get("checkout") === "cancelled") {
@@ -282,11 +259,7 @@ export default function BookingPage() {
   }, [availableTimeSlots, selectedTime]);
 
   useEffect(() => {
-    if (loading) {
-      return undefined;
-    }
-
-    if (!user || !selectedDate || !bookingDurationMinutes) {
+    if (!selectedDate || !bookingDurationMinutes) {
       setSlotAvailability({});
       setAvailabilityStatus("idle");
       setAvailabilityMessage("");
@@ -300,17 +273,20 @@ export default function BookingPage() {
       setAvailabilityMessage("");
 
       try {
-        const token = await user.getIdToken();
         const params = new URLSearchParams({
           date: selectedDate,
           durationMinutes: String(bookingDurationMinutes),
           locationType,
           serviceId,
         });
+        const headers = {};
+
+        if (user) {
+          headers.Authorization = `Bearer ${await user.getIdToken()}`;
+        }
+
         const response = await fetch(`/api/booking-availability?${params.toString()}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
         });
         const result = await response.json();
 
@@ -342,7 +318,7 @@ export default function BookingPage() {
     return () => {
       isActive = false;
     };
-  }, [bookingDurationMinutes, loading, locationType, selectedDate, serviceId, user]);
+  }, [bookingDurationMinutes, locationType, selectedDate, serviceId, user]);
 
   useEffect(() => {
     if (previousCouponContextSignature.current === couponContextSignature) {
@@ -393,17 +369,6 @@ export default function BookingPage() {
   }
 
   function continueFromService() {
-    if (loading) {
-      return;
-    }
-
-    if (!user) {
-      const currentUrl = getBookingReturnUrl(pathname, searchParams, serviceId);
-
-      router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
-      return;
-    }
-
     if (!cartItems.length) {
       const service = getServiceById(serviceId, serviceCatalog);
 
@@ -574,27 +539,21 @@ export default function BookingPage() {
   }
 
   async function submitStripeCheckout() {
-    if (loading) {
-      return;
-    }
-
-    if (!user) {
-      const currentUrl = getBookingReturnUrl(pathname, searchParams, serviceId);
-      router.push(`/login?returnTo=${encodeURIComponent(currentUrl)}`);
-      return;
-    }
-
     setIsSubmitting(true);
     setCheckoutError("");
 
     try {
-      const token = await user.getIdToken();
+      const requestHeaders = {
+        "Content-Type": "application/json",
+      };
+
+      if (user) {
+        requestHeaders.Authorization = `Bearer ${await user.getIdToken()}`;
+      }
+
       const availabilityResponse = await fetch("/api/booking-availability", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: requestHeaders,
         body: JSON.stringify({
           date: selectedDate,
           time: selectedTime,
@@ -616,10 +575,7 @@ export default function BookingPage() {
 
       const bookingResponse = await fetch("/api/stripe/booking-checkout", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: requestHeaders,
         body: JSON.stringify({
           items: cartItems,
           appointmentDate: selectedDate,
@@ -629,6 +585,7 @@ export default function BookingPage() {
             fullName: details.fullName,
             phone: details.phone,
             email: details.email,
+            dateOfBirth: details.dateOfBirth,
           },
           notes: details.notes,
           subtotal,
@@ -739,28 +696,13 @@ export default function BookingPage() {
         membershipPricing={membershipPricing}
         isSubmitting={isSubmitting}
         isApplyingCoupon={isApplyingCoupon}
+        isGuest={!user}
         onPaymentChange={updatePayment}
         onApplyCoupon={applyCoupon}
         onDripsToRedeemChange={updateDripsToRedeem}
         onBack={goBack}
         onSubmit={submitStripeCheckout}
       />
-    );
-  }
-
-  if (loading || !user) {
-    return (
-      <BookingShell currentStep={0}>
-        <div className="border border-[#111111] bg-white px-5 py-12 text-center text-[#111111]">
-          <h1 className="text-[1.75rem] font-medium leading-none md:text-[2.25rem]">
-            Sign in to book your appointment
-          </h1>
-          <p className="mx-auto mt-4 max-w-[520px] text-base text-[#858585] md:text-lg">
-            We are taking you to login so we can protect your booking details and
-            confirm live availability.
-          </p>
-        </div>
-      </BookingShell>
     );
   }
 

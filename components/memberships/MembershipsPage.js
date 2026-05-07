@@ -111,7 +111,12 @@ function MembershipPlanCard({ plan, compact = false }) {
 
   return (
     <article className={wrapperClassName}>
-      <div className={[titleClassName, "border-b border-[#111111] px-5 py-5"].join(" ")}>
+      <div
+        className={[
+          titleClassName,
+          "min-h-[132px] border-b border-[#111111] px-5 py-5 md:min-h-[158px]",
+        ].join(" ")}
+      >
         <h3 className="text-lg font-semibold leading-tight md:text-xl">{plan.name}</h3>
         <div className="mt-2 flex items-end gap-0.5">
           <span className="text-[2rem] font-medium leading-none md:text-[2.25rem]">

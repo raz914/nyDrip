@@ -199,6 +199,7 @@ function getInitialCreateForm(date) {
     fullName: "",
     email: "",
     phone: "",
+    dateOfBirth: "",
     address: "",
     notes: "",
   };
@@ -437,6 +438,7 @@ export default function AvailabilityAdminPage() {
             fullName: createForm.fullName,
             email: createForm.email,
             phone: createForm.phone,
+            dateOfBirth: createForm.dateOfBirth,
           },
           location: {
             address: createForm.address,
@@ -876,6 +878,15 @@ function CreateBookingPanel({
               placeholder="Phone number"
             />
           </label>
+          <label className="grid min-w-0 gap-1 text-sm">
+            <span>Date of birth</span>
+            <input
+              type="date"
+              value={form.dateOfBirth}
+              onChange={(event) => onChange("dateOfBirth", event.target.value)}
+              className="w-full min-w-0 border border-black/15 px-3 py-2"
+            />
+          </label>
         </div>
 
         {form.locationType === "mobile" ? (
@@ -928,6 +939,7 @@ function BookingPanel({
         <p>{booking.customer?.fullName || "No customer name"}</p>
         <p>{booking.customer?.email || "No email"}</p>
         <p>{booking.customer?.phone || "No phone"}</p>
+        <p>{booking.customer?.dateOfBirth || "No date of birth"}</p>
         <p>Calendar: {booking.calendar?.status || "pending"}</p>
         {booking.calendar?.htmlLink ? (
           <a

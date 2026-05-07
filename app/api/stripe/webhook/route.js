@@ -15,8 +15,12 @@ import {
 import {
   finalizePendingServerBooking,
   expirePendingServerBooking,
+  finalizeGuestPendingServerBooking,
+  expireGuestPendingServerBooking,
+  GUEST_PENDING_BOOKINGS_COLLECTION,
   updateBookingCalendarState,
 } from "@/lib/serverBookings";
+import { ensureGuestBookingUserAndPasswordEmail } from "@/lib/serverGuestUsers";
 import { constructStripeEvent, fromStripeAmount, getStripe } from "@/lib/stripe";
 
 export const runtime = "nodejs";
@@ -293,6 +297,46 @@ async function handleBookingCheckoutCompleted(db, session) {
   await syncBookingCalendar(db, uid, booking);
 }
 
+async function handleGuestBookingCheckoutCompleted(db, session) {
+  const guestBookingId =
+    session.metadata?.guestBookingId || session.metadata?.bookingId || session.client_reference_id || "";
+
+  if (!guestBookingId) {
+    return;
+  }
+
+  const guestBookingSnapshot = await db
+    .collection(GUEST_PENDING_BOOKINGS_COLLECTION)
+    .doc(guestBookingId)
+    .get();
+
+  if (!guestBookingSnapshot.exists) {
+    return;
+  }
+
+  const guestBooking = {
+    id: guestBookingSnapshot.id,
+    ...guestBookingSnapshot.data(),
+  };
+  const account = await ensureGuestBookingUserAndPasswordEmail(db, guestBooking);
+  const booking = await finalizeGuestPendingServerBooking(db, account.uid, guestBookingId, {
+    payment: {
+      provider: "stripe",
+      status: "paid",
+      checkoutStatus: session.status ?? "complete",
+      checkoutSessionId: session.id,
+      paymentIntentId: getStripeId(session.payment_intent),
+      customerId: getStripeId(session.customer),
+      amountPaid: fromStripeAmount(session.amount_total),
+      amountPaidCents: session.amount_total ?? 0,
+      currency: session.currency || "usd",
+      paidAt: new Date(),
+    },
+  });
+
+  await syncBookingCalendar(db, account.uid, booking);
+}
+
 async function handleBookingCheckoutExpired(db, session) {
   const uid = session.metadata?.uid || "";
   const bookingId = session.metadata?.bookingId || session.client_reference_id || "";
@@ -302,6 +346,17 @@ async function handleBookingCheckoutExpired(db, session) {
   }
 
   await expirePendingServerBooking(db, uid, bookingId);
+}
+
+async function handleGuestBookingCheckoutExpired(db, session) {
+  const guestBookingId =
+    session.metadata?.guestBookingId || session.metadata?.bookingId || session.client_reference_id || "";
+
+  if (!guestBookingId) {
+    return;
+  }
+
+  await expireGuestPendingServerBooking(db, guestBookingId);
 }
 
 export async function POST(request) {
@@ -329,6 +384,8 @@ export async function POST(request) {
 
           if (session.metadata?.kind === "booking") {
             await handleBookingCheckoutCompleted(db, session);
+          } else if (session.metadata?.kind === "guest_booking") {
+            await handleGuestBookingCheckoutCompleted(db, session);
           } else if (session.metadata?.kind === "membership_signup") {
             await activateMembershipFromCheckout(db, session);
           }
@@ -340,6 +397,8 @@ export async function POST(request) {
 
           if (session.metadata?.kind === "booking") {
             await handleBookingCheckoutExpired(db, session);
+          } else if (session.metadata?.kind === "guest_booking") {
+            await handleGuestBookingCheckoutExpired(db, session);
           }
           break;
         }

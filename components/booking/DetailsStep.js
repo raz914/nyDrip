@@ -24,6 +24,7 @@ export default function DetailsStep({
     details.fullName.trim() &&
     details.phone.trim() &&
     details.email.trim() &&
+    details.dateOfBirth.trim() &&
     details.agreeToTerms &&
     (!needsTravelFee || (details.address.trim() && hasReadyTravelFee));
 
@@ -43,7 +44,7 @@ export default function DetailsStep({
       }
     >
       <div className="space-y-9">
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-5 md:grid-cols-4">
           <UnderlineInput
             label="Full Name"
             name="fullName"
@@ -65,6 +66,14 @@ export default function DetailsStep({
             type="email"
             value={details.email}
             onChange={(value) => onDetailsChange("email", value)}
+            required
+          />
+          <UnderlineInput
+            label="Date of Birth"
+            name="dateOfBirth"
+            type="date"
+            value={details.dateOfBirth}
+            onChange={(value) => onDetailsChange("dateOfBirth", value)}
             required
           />
         </div>

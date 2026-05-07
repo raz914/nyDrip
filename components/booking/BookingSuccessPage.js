@@ -55,12 +55,6 @@ export default function BookingSuccessPage() {
       return undefined;
     }
 
-    if (!user) {
-      setStatus("error");
-      setMessage("Sign in to view your booking confirmation.");
-      return undefined;
-    }
-
     if (!sessionId) {
       setStatus("error");
       setMessage("The Stripe checkout session is missing.");
@@ -72,14 +66,15 @@ export default function BookingSuccessPage() {
 
     async function loadStatus() {
       try {
-        const token = await user.getIdToken();
+        const headers = {};
+
+        if (user) {
+          headers.Authorization = `Bearer ${await user.getIdToken()}`;
+        }
+
         const response = await fetch(
           `/api/stripe/checkout-session?session_id=${encodeURIComponent(sessionId)}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
+          { headers },
         );
         const result = await response.json();
 

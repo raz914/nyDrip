@@ -3,13 +3,24 @@ import { NextResponse } from "next/server";
 import { createBookingCalendarEvent } from "@/lib/googleCalendar";
 import { getAdminDb, requireAuthenticatedRequest } from "@/lib/firebaseAdmin";
 import {
+  BOOKING_STATUS,
   createPendingServerBooking,
+  createGuestPendingServerBooking,
   expirePendingServerBooking,
+  expireGuestPendingServerBooking,
   finalizePendingServerBooking,
+  finalizeGuestPendingServerBooking,
+  updateGuestPendingBookingPayment,
   updateBookingCalendarState,
   updatePendingBookingPayment,
 } from "@/lib/serverBookings";
+import { ensureGuestBookingUserAndPasswordEmail } from "@/lib/serverGuestUsers";
 import { buildAppUrl, getStripe, toStripeAmount } from "@/lib/stripe";
+import {
+  assertDevStripeBypassAllowed,
+  createDevPaymentPayload,
+  isDevStripeBypassEnabled,
+} from "@/lib/devStripeBypass.mjs";
 
 export const runtime = "nodejs";
 
@@ -57,17 +68,72 @@ async function syncBookingCalendar(db, uid, booking) {
   }
 }
 
+async function getOptionalAuthenticatedRequest(request) {
+  try {
+    return await requireAuthenticatedRequest(request);
+  } catch (error) {
+    if (error?.message === "Sign in is required.") {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
 export async function POST(request) {
   let pendingBooking = null;
 
   try {
-    const user = await requireAuthenticatedRequest(request);
+    assertDevStripeBypassAllowed();
+
+    const user = await getOptionalAuthenticatedRequest(request);
     const body = await request.json().catch(() => ({}));
     const db = getAdminDb();
 
-    pendingBooking = await createPendingServerBooking(db, user, body);
+    pendingBooking = user
+      ? await createPendingServerBooking(db, user, body)
+      : await createGuestPendingServerBooking(db, body);
+
+    if (isDevStripeBypassEnabled()) {
+      if (user) {
+        const booking = await finalizePendingServerBooking(db, user.uid, pendingBooking.id, {
+          payment: createDevPaymentPayload({
+            amountPaid: pendingBooking.totalPaid ?? 0,
+            amountPaidCents: Math.round((pendingBooking.totalPaid ?? 0) * 100),
+          }),
+        });
+        const syncedBooking = await syncBookingCalendar(db, user.uid, booking);
+
+        return NextResponse.json({
+          ok: true,
+          mode: "confirmed",
+          devBypass: true,
+          booking: syncedBooking,
+        });
+      }
+
+      const account = await ensureGuestBookingUserAndPasswordEmail(db, pendingBooking);
+      const booking = await finalizeGuestPendingServerBooking(db, account.uid, pendingBooking.id, {
+        payment: createDevPaymentPayload({
+          amountPaid: pendingBooking.totalPaid ?? 0,
+          amountPaidCents: Math.round((pendingBooking.totalPaid ?? 0) * 100),
+        }),
+      });
+      const syncedBooking = await syncBookingCalendar(db, account.uid, booking);
+
+      return NextResponse.json({
+        ok: true,
+        mode: "confirmed",
+        devBypass: true,
+        booking: syncedBooking,
+      });
+    }
 
     if ((pendingBooking.totalPaid ?? 0) <= 0) {
+      if (!user) {
+        throw new Error("Guest checkout requires a payment before account creation.");
+      }
+
       const booking = await finalizePendingServerBooking(db, user.uid, pendingBooking.id, {
         payment: {
           provider: "internal",
@@ -94,11 +160,12 @@ export async function POST(request) {
       success_url: buildAppUrl("/booking/success?session_id={CHECKOUT_SESSION_ID}"),
       cancel_url: buildAppUrl("/booking?checkout=cancelled"),
       client_reference_id: pendingBooking.id,
-      customer_email: user.email ?? pendingBooking.customer?.email ?? undefined,
+      customer_email: user?.email ?? pendingBooking.customer?.email ?? undefined,
       metadata: {
-        kind: "booking",
-        uid: user.uid,
+        kind: user ? "booking" : "guest_booking",
+        uid: user?.uid ?? "",
         bookingId: pendingBooking.id,
+        guestBookingId: user ? "" : pendingBooking.id,
       },
       line_items: [
         {
@@ -115,7 +182,7 @@ export async function POST(request) {
       ],
     });
 
-    await updatePendingBookingPayment(db, user.uid, pendingBooking.id, {
+    const paymentUpdates = {
       provider: "stripe",
       status: "pending",
       checkoutStatus: session.status ?? "open",
@@ -126,7 +193,13 @@ export async function POST(request) {
       amountPaidCents: 0,
       currency: session.currency || "usd",
       expiresAt: session.expires_at ? new Date(session.expires_at * 1000) : null,
-    });
+    };
+
+    if (user) {
+      await updatePendingBookingPayment(db, user.uid, pendingBooking.id, paymentUpdates);
+    } else {
+      await updateGuestPendingBookingPayment(db, pendingBooking.id, paymentUpdates);
+    }
 
     return NextResponse.json({
       ok: true,
@@ -138,6 +211,11 @@ export async function POST(request) {
   } catch (error) {
     if (pendingBooking?.id && pendingBooking?.uid) {
       await expirePendingServerBooking(getAdminDb(), pendingBooking.uid, pendingBooking.id, {
+        status: BOOKING_STATUS.CANCELLED,
+        paymentStatus: "failed",
+      }).catch(() => {});
+    } else if (pendingBooking?.id && pendingBooking?.guest) {
+      await expireGuestPendingServerBooking(getAdminDb(), pendingBooking.id, {
         status: BOOKING_STATUS.CANCELLED,
         paymentStatus: "failed",
       }).catch(() => {});

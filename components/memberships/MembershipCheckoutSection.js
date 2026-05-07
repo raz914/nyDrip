@@ -104,6 +104,12 @@ export default function MembershipCheckoutSection() {
         tierId: selectedTier,
       });
 
+      if (result.mode === "activated" && result.membership) {
+        setMembership(result.membership);
+        setMessage(`${result.membership.tierName} is active in development bypass mode.`);
+        return;
+      }
+
       if (!result.url) {
         throw new Error("Stripe checkout could not be started.");
       }
