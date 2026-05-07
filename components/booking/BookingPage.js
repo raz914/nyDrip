@@ -43,6 +43,7 @@ import {
   getMembershipSummary,
   getUserMembership,
 } from "@/lib/memberships";
+import { getUserProfile } from "@/lib/profile";
 
 function getLocation(locationType, details) {
   const option =
@@ -167,16 +168,25 @@ export default function BookingPage() {
 
     let isActive = true;
 
-    async function loadRewards() {
+    async function loadAccountBookingData() {
       try {
-        const [nextMembership, nextRewards] = await Promise.all([
+        const [nextMembership, nextRewards, profile] = await Promise.all([
           getUserMembership(user.uid),
           getUserRewards(user.uid),
+          getUserProfile(user.uid),
         ]);
 
         if (isActive) {
+          const profileName = profile?.displayName?.trim() || user.displayName || "";
+          const profileEmail = user.email || profile?.email || "";
+
           setMembership(nextMembership);
           setRewards(getRewardsSummary(nextRewards, nextMembership));
+          setDetails((currentDetails) => ({
+            ...currentDetails,
+            fullName: currentDetails.fullName || profileName,
+            email: currentDetails.email || profileEmail,
+          }));
         }
       } catch (error) {
         if (isActive) {
@@ -185,7 +195,7 @@ export default function BookingPage() {
       }
     }
 
-    loadRewards();
+    loadAccountBookingData();
 
     return () => {
       isActive = false;
@@ -673,6 +683,7 @@ export default function BookingPage() {
       return (
         <DetailsStep
           details={details}
+          isSignedIn={Boolean(user)}
           locationType={locationType}
           travelFeeState={travelFeeState}
           onDetailsChange={updateDetails}

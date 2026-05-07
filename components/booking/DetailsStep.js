@@ -10,6 +10,7 @@ import {
 
 export default function DetailsStep({
   details,
+  isSignedIn = false,
   locationType,
   travelFeeState,
   onDetailsChange,
@@ -45,13 +46,15 @@ export default function DetailsStep({
     >
       <div className="space-y-9">
         <div className="grid gap-5 md:grid-cols-4">
-          <UnderlineInput
-            label="Full Name"
-            name="fullName"
-            value={details.fullName}
-            onChange={(value) => onDetailsChange("fullName", value)}
-            required
-          />
+          {!isSignedIn ? (
+            <UnderlineInput
+              label="Full Name"
+              name="fullName"
+              value={details.fullName}
+              onChange={(value) => onDetailsChange("fullName", value)}
+              required
+            />
+          ) : null}
           <UnderlineInput
             label="Phone"
             name="phone"
@@ -60,14 +63,16 @@ export default function DetailsStep({
             onChange={(value) => onDetailsChange("phone", value)}
             required
           />
-          <UnderlineInput
-            label="E-mail Address"
-            name="email"
-            type="email"
-            value={details.email}
-            onChange={(value) => onDetailsChange("email", value)}
-            required
-          />
+          {!isSignedIn ? (
+            <UnderlineInput
+              label="E-mail Address"
+              name="email"
+              type="email"
+              value={details.email}
+              onChange={(value) => onDetailsChange("email", value)}
+              required
+            />
+          ) : null}
           <UnderlineInput
             label="Date of Birth"
             name="dateOfBirth"
