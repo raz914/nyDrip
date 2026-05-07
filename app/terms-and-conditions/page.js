@@ -1,4 +1,5 @@
 import { ServicesFooter, ServicesHeader } from "@/components/services/sections";
+import { publicContactEmail } from "@/lib/siteContact";
 
 export const metadata = {
   title: "Terms and Conditions | DripLounge",
@@ -147,7 +148,7 @@ export default function Page() {
                 For assistance, reply HELP to any message or contact us directly at:
               </p>
               <ul className="list-disc space-y-1 pl-5 text-sm leading-7 text-[#2c2c2e] md:text-base md:leading-8">
-                <li>Email: nydriplounge@gmail.com</li>
+                <li>Email: {publicContactEmail}</li>
                 <li>Phone: (845) 391-0338</li>
               </ul>
             </section>
@@ -250,7 +251,7 @@ export default function Page() {
               <div className="space-y-1 text-sm leading-7 text-[#2c2c2e] md:text-base md:leading-8">
                 <p>The Drip Lounge Holdings LLC</p>
                 <p>New York, NY</p>
-                <p>Email: nydriplounge@gmail.com</p>
+                <p>Email: {publicContactEmail}</p>
                 <p>Phone: 845-381-0338</p>
               </div>
             </section>

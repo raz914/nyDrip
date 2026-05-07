@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import SharedNavbar from "@/components/navigation/SharedNavbar";
 import ContactForm from "@/components/contact/ContactForm";
+import { publicContactEmail, publicContactMailto } from "@/lib/siteContact";
 
 import { aboutLinks, areaEntries, services as footerServices } from "@/components/home/data";
 import {
@@ -251,8 +252,8 @@ export function ServicesContactSection() {
           </h2>
           <p className="text-lg leading-8 text-white md:text-xl">
             (845) 391-0338 |{" "}
-            <a href="mailto:nydriplounge@gmail.com" className="underline">
-              nydriplounge@gmail.com
+            <a href={publicContactMailto} className="underline">
+              {publicContactEmail}
             </a>
             <br />
             5177 Route 9W, Suite 2, Newburgh NY 12550
@@ -304,8 +305,8 @@ export function ServicesFooter() {
 
           <div className="space-y-2 text-sm text-[#858585] md:text-base">
             <p>5177 Route 9W, Suite 2, Newburgh NY 12550</p>
-            <a href="mailto:nydriplounge@gmail.com" className="underline">
-              nydriplounge@gmail.com
+            <a href={publicContactMailto} className="underline">
+              {publicContactEmail}
             </a>
             <p>(845) 391-0338</p>
           </div>

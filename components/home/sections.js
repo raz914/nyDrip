@@ -3,6 +3,7 @@ import SharedNavbar from "@/components/navigation/SharedNavbar";
 import ServiceCardsCarousel from "@/components/home/ServiceCardsCarousel";
 import ContactForm from "@/components/contact/ContactForm";
 import { getBookingHrefForProductTitle } from "@/components/booking/data";
+import { publicContactEmail, publicContactMailto } from "@/lib/siteContact";
 
 import {
   aboutLinks,
@@ -491,8 +492,8 @@ export function ContactSection() {
           <h2 className="text-xl font-medium md:text-[2.25rem]">Contact Now</h2>
           <p className="text-lg leading-8 text-white">
             (845) 391-0338 |{" "}
-            <a href="mailto:nydriplounge@gmail.com" className="underline">
-              nydriplounge@gmail.com
+            <a href={publicContactMailto} className="underline">
+              {publicContactEmail}
             </a>
             <br />
             5177 Route 9W, Suite 2, Newburgh NY 12550
@@ -543,8 +544,8 @@ export function SiteFooter() {
           </div>
           <div className="space-y-2 text-sm text-[#858585] md:text-base">
             <p>5177 Route 9W, Suite 2, Newburgh NY 12550</p>
-            <a href="mailto:nydriplounge@gmail.com" className="underline">
-              nydriplounge@gmail.com
+            <a href={publicContactMailto} className="underline">
+              {publicContactEmail}
             </a>
             <p>(845) 391-0338</p>
           </div>
