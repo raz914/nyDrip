@@ -10,7 +10,8 @@ import {
   StethoscopeIcon,
   VaccineIcon,
 } from "@/components/home/icons";
-import { FaqItem } from "@/components/home/primitives";
+import { testimonials } from "@/components/home/data";
+import { FaqItem, GoogleBadge, StarRating } from "@/components/home/primitives";
 import AreaServicesCarousel from "@/components/areas/AreaServicesCarousel";
 import { ServicesContactSection, ServicesFooter, ServicesHeader } from "@/components/services/sections";
 
@@ -268,6 +269,47 @@ function AreaFaqSection({ faqs }) {
   );
 }
 
+function AreaTestimonialsSection() {
+  return (
+    <section>
+      <h2 className="text-center text-[2rem] font-medium leading-none md:text-[3.25rem]">
+        Our Trusted Clients
+      </h2>
+      <div className="mt-10 grid gap-5 lg:grid-cols-3">
+        {testimonials.map((testimonial) => (
+          <article
+            key={testimonial.name + testimonial.time}
+            className="border border-[#ffedba] bg-[#1c1c1e] px-5 py-6"
+          >
+            <div className="flex items-center justify-between">
+              <StarRating />
+              <GoogleBadge />
+            </div>
+            <p className="mt-6 text-sm leading-7 text-white md:text-base">
+              {testimonial.quote}
+            </p>
+            <div className="mt-6 flex items-center gap-7">
+              <Image
+                src="/homepage/testimonial-avatar.jpg"
+                alt={testimonial.name}
+                width={44}
+                height={44}
+                className="rounded-full object-cover"
+              />
+              <div>
+                <p className="text-sm font-medium text-white md:text-base">
+                  {testimonial.name}
+                </p>
+                <p className="text-sm text-[#858585] md:text-base">{testimonial.time}</p>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function AreaPage({ area }) {
   return (
     <>
@@ -281,7 +323,10 @@ export default function AreaPage({ area }) {
 
         <section className="bg-[#111111] text-white">
           <div className="mx-auto max-w-[1512px] px-5 py-24 md:px-10">
+            <AreaTestimonialsSection />
+            <div className="pt-24">
             <AreaFaqSection faqs={area.faqs} />
+            </div>
             <div className="pt-24">
               <ServicesContactSection />
               <ServicesFooter />
@@ -292,4 +337,3 @@ export default function AreaPage({ area }) {
     </>
   );
 }
-

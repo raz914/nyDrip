@@ -185,15 +185,31 @@ export function ServicesOfferSection() {
                 </div>
 
                 <div className="order-1 border border-black/12 lg:order-2">
-                  <div className="relative h-[260px] overflow-hidden">
-                    <Image
-                      src={item.image}
-                      alt={item.alt}
-                      fill
-                      sizes="(min-width: 1024px) 464px, 100vw"
-                      className={item.imageClassName}
-                    />
-                  </div>
+                  {item.href ? (
+                    <Link
+                      href={item.href}
+                      aria-label={`View ${item.title}`}
+                      className="relative block h-[260px] overflow-hidden"
+                    >
+                      <Image
+                        src={item.image}
+                        alt={item.alt}
+                        fill
+                        sizes="(min-width: 1024px) 464px, 100vw"
+                        className={item.imageClassName}
+                      />
+                    </Link>
+                  ) : (
+                    <div className="relative h-[260px] overflow-hidden">
+                      <Image
+                        src={item.image}
+                        alt={item.alt}
+                        fill
+                        sizes="(min-width: 1024px) 464px, 100vw"
+                        className={item.imageClassName}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

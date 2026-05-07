@@ -36,22 +36,43 @@ function ServiceLink({ href, children, className }) {
 
 function ServiceCard({ service }) {
   const href = service.href ?? "#contact";
+  const isProductHref = Boolean(service.href) && !service.href.startsWith("#");
 
   return (
     <article className="flex h-full flex-col">
-      <div className="relative h-[250px] overflow-hidden border border-black/12 bg-white md:h-[270px]">
-        <div className="absolute inset-0 p-4 md:p-5">
-          <div className="relative h-full w-full">
-            <Image
-              src={service.image}
-              alt={service.alt}
-              fill
-              sizes="(min-width: 1024px) 343px, (min-width: 640px) 45vw, 90vw"
-              className={["object-contain", service.imageClassName].filter(Boolean).join(" ")}
-            />
+      {isProductHref ? (
+        <Link
+          href={service.href}
+          aria-label={`View ${service.title}`}
+          className="relative block h-[250px] overflow-hidden border border-black/12 bg-white md:h-[270px]"
+        >
+          <div className="absolute inset-0 p-4 md:p-5">
+            <div className="relative h-full w-full">
+              <Image
+                src={service.image}
+                alt={service.alt}
+                fill
+                sizes="(min-width: 1024px) 343px, (min-width: 640px) 45vw, 90vw"
+                className={["object-contain", service.imageClassName].filter(Boolean).join(" ")}
+              />
+            </div>
+          </div>
+        </Link>
+      ) : (
+        <div className="relative h-[250px] overflow-hidden border border-black/12 bg-white md:h-[270px]">
+          <div className="absolute inset-0 p-4 md:p-5">
+            <div className="relative h-full w-full">
+              <Image
+                src={service.image}
+                alt={service.alt}
+                fill
+                sizes="(min-width: 1024px) 343px, (min-width: 640px) 45vw, 90vw"
+                className={["object-contain", service.imageClassName].filter(Boolean).join(" ")}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <div className="mt-5 flex flex-1 flex-col justify-between gap-5">
         <div className="space-y-2">
           <h3 className="text-xl font-medium leading-tight text-[#111111]">

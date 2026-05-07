@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { getBookingHrefForProductTitle } from "@/components/booking/data";
 import { ChevronDownIcon } from "@/components/home/icons";
@@ -22,7 +23,11 @@ function chunkProducts(products) {
 function ProductCard({ product }) {
   return (
     <article>
-      <div className="relative h-[260px] overflow-hidden bg-[#f0f2f5] md:h-[397px]">
+      <Link
+        href={product.href}
+        aria-label={`View ${product.title}`}
+        className="relative block h-[260px] overflow-hidden bg-[#f0f2f5] md:h-[397px]"
+      >
         <Image
           src={product.image}
           alt={product.alt}
@@ -30,7 +35,7 @@ function ProductCard({ product }) {
           sizes="(min-width: 1024px) 343px, (min-width: 640px) 45vw, 90vw"
           className="object-contain p-[21px]"
         />
-      </div>
+      </Link>
       <div className="mt-5 space-y-5">
         <div className="space-y-2">
           <h3 className="text-xl font-medium leading-tight">{product.title}</h3>

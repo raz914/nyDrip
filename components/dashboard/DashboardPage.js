@@ -24,6 +24,11 @@ import {
 } from "@/lib/bookings";
 import { getMembershipSummary, getUserMembership } from "@/lib/memberships";
 import { manageMembership } from "@/lib/membershipApi";
+import {
+  getReferralCodeForUid,
+  getReferralStatsFromSources,
+  getUserReferrals,
+} from "@/lib/referrals";
 import { EMPTY_REWARDS, getRewardLedger, getRewardsSummary, getUserRewards } from "@/lib/rewards";
 
 const EMPTY_REFERRAL_STATS = {
@@ -49,7 +54,7 @@ function getSettledValue(result, fallback) {
 }
 
 function getReferralCode(user) {
-  return user?.uid ? `DL-${user.uid.slice(0, 8).toUpperCase()}` : "";
+  return getReferralCodeForUid(user?.uid);
 }
 
 function getReferralLink(user) {
@@ -61,21 +66,6 @@ function getAbsoluteReferralLink(user, origin) {
   const referralLink = getReferralLink(user);
 
   return origin ? `${origin}${referralLink}` : referralLink;
-}
-
-function getReferralStats(ledger) {
-  const referralEntries = ledger.filter(
-    (entry) => entry.type === "bonus" && /referral/i.test(entry.note ?? ""),
-  );
-
-  return {
-    invitedUsers: 0,
-    successfulReferrals: referralEntries.length,
-    dripsEarned: referralEntries.reduce(
-      (total, entry) => total + Math.max(entry.drips ?? 0, 0),
-      0,
-    ),
-  };
 }
 
 function getRedeemHistory(ledger, bookings) {
@@ -149,12 +139,19 @@ export default function DashboardPage() {
       setError("");
 
       try {
-        const [membershipResult, rewardsResult, ledgerResult, bookingsResult] =
+        const [
+          membershipResult,
+          rewardsResult,
+          ledgerResult,
+          bookingsResult,
+          referralsResult,
+        ] =
           await Promise.allSettled([
           getUserMembership(user.uid),
           getUserRewards(user.uid),
-          getRewardLedger(user.uid),
+          getRewardLedger(user.uid, 100),
           getUserBookings(user.uid),
+          getUserReferrals(user.uid),
         ]);
         const membership = getSettledValue(
           membershipResult,
@@ -163,11 +160,13 @@ export default function DashboardPage() {
         const rewards = getSettledValue(rewardsResult, EMPTY_REWARDS);
         const ledger = getSettledValue(ledgerResult, []);
         const bookings = getSettledValue(bookingsResult, []);
+        const referrals = getSettledValue(referralsResult, []);
         const failures = [
           membershipResult,
           rewardsResult,
           ledgerResult,
           bookingsResult,
+          referralsResult,
         ].filter((result) => result.status === "rejected");
 
         if (!isActive) {
@@ -181,7 +180,7 @@ export default function DashboardPage() {
           redeemHistory: getRedeemHistory(ledger, bookings),
           nextAppointment: mapBookingToAppointment(getNextAppointment(bookings)),
           historyRows: bookings.map(mapBookingToHistoryRow),
-          referralStats: getReferralStats(ledger),
+          referralStats: getReferralStatsFromSources(ledger, referrals),
         });
         setSelectedTier(membership.pendingTierPlan?.id ?? membership.nextPlan?.id ?? membership.tier);
         if (failures.length) {

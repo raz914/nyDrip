@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import SharedNavbar from "@/components/navigation/SharedNavbar";
 import ServiceCardsCarousel from "@/components/home/ServiceCardsCarousel";
 import ContactForm from "@/components/contact/ContactForm";
@@ -153,15 +154,31 @@ export function FeaturedDripsSection({ featuredDrips }) {
               {drip.overlay ? <div className="absolute inset-0 bg-white/20" /> : null}
               <div className="relative flex min-h-[433px] items-center justify-center px-5 py-10 lg:min-h-[560px] lg:px-8">
                 <div className="w-full max-w-[560px] border border-[#808184] bg-[#efefef] p-8 md:p-10 lg:p-12">
-                  <div className="relative mx-auto aspect-[300/376] w-full max-w-[292px]">
-                    <Image
-                      src={drip.productImage}
-                      alt={drip.productAlt}
-                      fill
-                      sizes="292px"
-                      className="object-contain"
-                    />
-                  </div>
+                  {drip.href ? (
+                    <Link
+                      href={drip.href}
+                      aria-label={`View ${drip.title}`}
+                      className="relative mx-auto block aspect-[300/376] w-full max-w-[292px]"
+                    >
+                      <Image
+                        src={drip.productImage}
+                        alt={drip.productAlt}
+                        fill
+                        sizes="292px"
+                        className="object-contain"
+                      />
+                    </Link>
+                  ) : (
+                    <div className="relative mx-auto aspect-[300/376] w-full max-w-[292px]">
+                      <Image
+                        src={drip.productImage}
+                        alt={drip.productAlt}
+                        fill
+                        sizes="292px"
+                        className="object-contain"
+                      />
+                    </div>
+                  )}
                   <div className="mt-5 text-center">
                     <TextCta href={getBookingHrefForProductTitle(drip.title)} className="!text-[#0d42ff] !text-[14px] !font-semibold">
                       Reserve Now - {drip.price}
@@ -453,16 +470,16 @@ export function TestimonialsSection() {
         ))}
       </div>
       <div className="flex items-center justify-center gap-4 text-white/70">
-        <button type="button" className="rounded-full border border-white/20 p-2">
-          <ChevronDownIcon className="h-4 w-4 -rotate-90" />
+        <button type="button" aria-label="Previous testimonials" className="rounded-full border border-white/20 p-2">
+          <ChevronDownIcon className="h-4 w-4 rotate-90" />
         </button>
         <div className="flex items-center gap-2">
           <span className="h-3 w-3 rounded-full bg-white" />
           <span className="h-3 w-3 rounded-full bg-white/30" />
           <span className="h-3 w-3 rounded-full bg-white/30" />
         </div>
-        <button type="button" className="rounded-full border border-white/20 p-2">
-          <ChevronDownIcon className="h-4 w-4 rotate-90" />
+        <button type="button" aria-label="Next testimonials" className="rounded-full border border-white/20 p-2">
+          <ChevronDownIcon className="h-4 w-4 -rotate-90" />
         </button>
       </div>
     </div>

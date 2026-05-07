@@ -133,6 +133,8 @@ export async function POST(request) {
         uid: user?.uid ?? "",
         bookingId: pendingBooking.id,
         guestBookingId: user ? "" : pendingBooking.id,
+        referralCode: pendingBooking.referral?.code ?? "",
+        referrerUid: pendingBooking.referral?.referrerUid ?? "",
       },
       line_items: [
         {

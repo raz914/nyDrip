@@ -63,6 +63,7 @@ function getLocation(locationType, details) {
 export default function BookingPage() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
+  const referralCode = searchParams.get("ref") ?? "";
   const [serviceCatalog, setServiceCatalog] = useState(bookableServices);
 
   const initialService = useMemo(() => {
@@ -610,6 +611,7 @@ export default function BookingPage() {
           travelFeeWaived,
           orderTotal,
           dripsToRedeem: selectedDripsToRedeem,
+          referralCode,
         }),
       });
       const bookingResult = await bookingResponse.json();

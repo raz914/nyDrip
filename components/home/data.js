@@ -214,21 +214,56 @@ export const benefits = [
 export const testimonials = [
   {
     quote:
-      "What a wonderful experience. This was not my first drip, but it was my first NAD IV experience and I felt guided, comfortable, and cared for from start to finish.",
-    name: "L Metalia",
-    time: "7 months ago",
+      "I had an absolute amazing Botox experience! I couldn't be happier with the results. I look and feel 10 years younger.",
+    name: "Nancy T",
+    time: "1 month ago",
   },
   {
     quote:
-      "The booking process was smooth, the team was incredibly professional, and the treatment left me feeling recharged for the rest of the week.",
-    name: "A Reynolds",
+      "I'm new to The Drip Lounge and love it! I've been twice so far, and it's now apart of my monthly routine. The owner is super welcoming and friendly.",
+    name: "Taylor Kavanagh",
+    time: "1 month ago",
+  },
+  {
+    quote:
+      "Exceptional experience. The staff took the time to make me feel comfortable and really educated me on the different IV infusions available.",
+    name: "Carley Harper",
+    time: "1 month ago",
+  },
+  {
+    quote: "Excellent experience from start to finish.",
+    name: "Steven Wisor",
+    time: "2 months ago",
+  },
+  {
+    quote:
+      "Amazing experience. I was so hungover and The Drip Lounge got me in first thing in the AM! I started feeling better right away. Place was very relaxing!",
+    name: "Madison Schirripa",
+    time: "3 months ago",
+  },
+  {
+    quote:
+      "As a mom of 5 and running 2 businesses, you need to have someone you can trust. Not only do they give you options, but they come to you if needed.",
+    name: "Catherine Castro",
+    time: "4 months ago",
+  },
+  {
+    quote:
+      "Megan is so sweet. She came to my house when I was under the weather and did a mobile IV for me same day within 2 hours of me calling.",
+    name: "Brit Cogan",
     time: "5 months ago",
   },
   {
     quote:
-      "I loved having expert care come directly to me. The entire session felt polished, calm, and genuinely personalized.",
-    name: "C Morgan",
-    time: "3 months ago",
+      "I am so grateful to have a place nearby to get an IV. I feel so much better and definitely didn't get as sick as I would have without it!",
+    name: "Cameron Grayson",
+    time: "5 months ago",
+  },
+  {
+    quote:
+      "I was dehydrated and trying to avoid going to the hospital and catching something else when I came across The Drip Lounge.",
+    name: "Andrea M",
+    time: "5 months ago",
   },
 ];
 
@@ -359,8 +394,6 @@ export const aboutLinks = [
   { label: "Our Blog", href: "/blog" },
   { label: "Areas We Serve", href: "/about" },
 ];
-
-
 
 
 

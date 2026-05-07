@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { ArrowRightIcon } from "@/components/home/icons";
 import { TextCta } from "@/components/home/primitives";
@@ -21,7 +22,11 @@ function chunkCards(cards) {
 function ServiceCard({ card }) {
   return (
     <article className="space-y-4">
-      <div className="relative h-[250px] overflow-hidden bg-white md:h-[270px]">
+      <Link
+        href={card.href}
+        aria-label={`View ${card.title}`}
+        className="relative block h-[250px] overflow-hidden bg-white md:h-[270px]"
+      >
         <div className="absolute inset-0 p-4 md:p-5">
           <div className="relative h-full w-full">
             <Image
@@ -33,7 +38,7 @@ function ServiceCard({ card }) {
             />
           </div>
         </div>
-      </div>
+      </Link>
       <div className="space-y-4">
         <div className="space-y-2">
           <h3 className="text-xl font-medium leading-tight text-[#111111]">

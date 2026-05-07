@@ -49,7 +49,7 @@ export default function DashboardSidebar({ referralLink = "/booking" }) {
   }
 
   return (
-    <aside className="bg-[#111111] px-5 py-8 text-white md:fixed md:inset-y-0 md:left-0 md:w-[484px] md:px-10 md:py-10">
+    <aside className="bg-[#111111] px-5 py-8 text-white md:fixed md:inset-y-0 md:left-0 md:w-[484px] md:overflow-y-auto md:px-10 md:pb-14 md:pt-10">
       <div className="md:flex md:min-h-full md:flex-col">
         <div>
           <h1 className="text-[1.6rem] font-medium leading-none md:text-[2.5rem]">
@@ -103,7 +103,7 @@ export default function DashboardSidebar({ referralLink = "/booking" }) {
 
         <Link
           href="/"
-          className="mt-8 inline-flex items-center gap-2 text-sm text-[#ff63ff] transition-colors hover:text-white md:mt-auto"
+          className="mt-12 inline-flex items-center gap-2 text-sm text-[#ff63ff] transition-colors hover:text-white md:mt-14"
         >
           <ArrowIcon className="h-4 w-4 rotate-180" />
           <span>Back to Website</span>

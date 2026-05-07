@@ -5,7 +5,18 @@ import {
   formatCurrency,
 } from "@/components/booking/data";
 
-function CartItem({ item, selectedDate, selectedTime, onRemove, readOnly }) {
+function CartItem({
+  item,
+  selectedDate,
+  selectedTime,
+  travelFee = 0,
+  onRemove,
+  readOnly,
+}) {
+  const itemPrice = travelFee
+    ? `${formatCurrency(item.price)} (${formatCurrency(travelFee)} travel fee)`
+    : formatCurrency(item.price);
+
   return (
     <article className="grid grid-cols-[80px_minmax(0,1fr)_24px] gap-5">
       <div className="relative h-20 w-20 overflow-hidden bg-white">
@@ -24,7 +35,7 @@ function CartItem({ item, selectedDate, selectedTime, onRemove, readOnly }) {
             {formatBookingDate(selectedDate)} {selectedTime}
           </p>
         ) : null}
-        <p>{formatCurrency(item.price)}</p>
+        <p>{itemPrice}</p>
       </div>
       {readOnly ? (
         <span aria-hidden />
@@ -86,12 +97,13 @@ export default function BookingCartSummary({
 
       <section className="space-y-5 border-b border-black/10 px-5 py-7">
         {items.length ? (
-          items.map((item) => (
+          items.map((item, index) => (
             <CartItem
               key={item.cartId}
               item={item}
               selectedDate={selectedDate}
               selectedTime={selectedTime}
+              travelFee={index === 0 ? effectiveTravelFee : 0}
               onRemove={onRemove}
               readOnly={readOnly}
             />
