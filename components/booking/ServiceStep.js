@@ -23,10 +23,6 @@ export default function ServiceStep({
   const bookingCategories = getBookingCategories(catalog);
   const services = getServicesByCategory(category, catalog);
   const selectedService = services.find((service) => service.id === serviceId);
-  const hasUnscheduledItems = cartItems.some(
-    (item) => !item.appointmentDate || !item.appointmentTime,
-  );
-  const canContinue = cartItems.length > 0 && !hasUnscheduledItems;
 
   return (
     <StepPanel
@@ -39,9 +35,9 @@ export default function ServiceStep({
           </BookingButton>
           <BookingButton
             onClick={onContinue}
-            disabled={!selectedService && !canContinue}
+            disabled={!selectedService && !cartItems.length}
           >
-            {canContinue ? "Continue" : "Choose Time"}
+            Continue
           </BookingButton>
         </>
       }

@@ -2,7 +2,6 @@ import { treatmentCatalog } from "@/components/pricing/catalog";
 import { getStaticBookableServices } from "@/lib/bookingCatalog";
 import {
   getBookableTimeSlots,
-  parseDurationToMinutes,
   getRollingWeekdayDates,
 } from "@/lib/bookingRules";
 
@@ -144,15 +143,8 @@ export function formatBookingDate(dateValue) {
 }
 
 export function makeCartItem(service) {
-  const durationMinutes = parseDurationToMinutes(service.duration);
-
   return {
     ...service,
-    appointmentDate: "",
-    appointmentTime: "",
-    startMinutes: null,
-    endMinutes: null,
-    durationMinutes,
     cartId: `${service.id}-${Date.now()}-${Math.random().toString(16).slice(2)}`,
   };
 }

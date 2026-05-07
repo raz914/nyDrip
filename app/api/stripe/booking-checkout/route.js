@@ -5,20 +5,12 @@ import {
   BOOKING_STATUS,
   createPendingServerBooking,
   createGuestPendingServerBooking,
-  createPendingServerBookingGroup,
-  createGuestPendingServerBookingGroup,
   expirePendingServerBooking,
   expireGuestPendingServerBooking,
-  expirePendingServerBookingGroup,
-  expireGuestPendingServerBookingGroup,
   finalizePendingServerBooking,
   finalizeGuestPendingServerBooking,
-  finalizePendingServerBookingGroup,
-  finalizeGuestPendingServerBookingGroup,
   updateGuestPendingBookingPayment,
   updatePendingBookingPayment,
-  updateGuestPendingBookingGroupPayment,
-  updatePendingBookingGroupPayment,
 } from "@/lib/serverBookings";
 import { fulfillFinalizedBooking } from "@/lib/serverBookingFulfillment";
 import { ensureGuestBookingUserAndPasswordEmail } from "@/lib/serverGuestUsers";
@@ -36,9 +28,8 @@ function jsonError(message, status = 400) {
 }
 
 function getBookingSessionName(booking) {
-  const items = booking.checkoutItems?.length ? booking.checkoutItems : booking.items;
-  const firstItem = items?.[0];
-  const extraCount = Math.max((items?.length ?? 0) - 1, 0);
+  const firstItem = booking.items?.[0];
+  const extraCount = Math.max((booking.items?.length ?? 0) - 1, 0);
   const serviceName = firstItem?.displayName || firstItem?.name || "Appointment";
 
   return extraCount ? `${serviceName} + ${extraCount} more` : serviceName;
@@ -65,40 +56,20 @@ export async function POST(request) {
     const user = await getOptionalAuthenticatedRequest(request);
     const body = await request.json().catch(() => ({}));
     const db = getAdminDb();
-    const scheduledItems =
-      Array.isArray(body.scheduledItems) && body.scheduledItems.length
-        ? body.scheduledItems
-        : body.items || [];
-    const isGroupedCheckout = scheduledItems.length > 1;
 
     pendingBooking = user
-      ? isGroupedCheckout
-        ? await createPendingServerBookingGroup(db, user, body)
-        : await createPendingServerBooking(db, user, body)
-      : isGroupedCheckout
-        ? await createGuestPendingServerBookingGroup(db, body)
-        : await createGuestPendingServerBooking(db, body);
+      ? await createPendingServerBooking(db, user, body)
+      : await createGuestPendingServerBooking(db, body);
 
     if (isDevStripeBypassEnabled()) {
       if (user) {
-        const booking = await (isGroupedCheckout
-          ? finalizePendingServerBookingGroup
-          : finalizePendingServerBooking)(db, user.uid, pendingBooking.id, {
+        const booking = await finalizePendingServerBooking(db, user.uid, pendingBooking.id, {
           payment: createDevPaymentPayload({
             amountPaid: pendingBooking.totalPaid ?? 0,
             amountPaidCents: Math.round((pendingBooking.totalPaid ?? 0) * 100),
           }),
         });
-        const fulfilledBooking = booking.checkoutBookings?.length
-          ? {
-              ...booking,
-              checkoutBookings: await Promise.all(
-                booking.checkoutBookings.map((entry) =>
-                  fulfillFinalizedBooking(db, user.uid, entry),
-                ),
-              ),
-            }
-          : await fulfillFinalizedBooking(db, user.uid, booking);
+        const fulfilledBooking = await fulfillFinalizedBooking(db, user.uid, booking);
 
         return NextResponse.json({
           ok: true,
@@ -109,24 +80,13 @@ export async function POST(request) {
       }
 
       const account = await ensureGuestBookingUserAndPasswordEmail(db, pendingBooking);
-      const booking = await (isGroupedCheckout
-        ? finalizeGuestPendingServerBookingGroup
-        : finalizeGuestPendingServerBooking)(db, account.uid, pendingBooking.id, {
+      const booking = await finalizeGuestPendingServerBooking(db, account.uid, pendingBooking.id, {
         payment: createDevPaymentPayload({
           amountPaid: pendingBooking.totalPaid ?? 0,
           amountPaidCents: Math.round((pendingBooking.totalPaid ?? 0) * 100),
         }),
       });
-      const fulfilledBooking = booking.checkoutBookings?.length
-        ? {
-            ...booking,
-            checkoutBookings: await Promise.all(
-              booking.checkoutBookings.map((entry) =>
-                fulfillFinalizedBooking(db, account.uid, entry),
-              ),
-            ),
-          }
-        : await fulfillFinalizedBooking(db, account.uid, booking);
+      const fulfilledBooking = await fulfillFinalizedBooking(db, account.uid, booking);
 
       return NextResponse.json({
         ok: true,
@@ -141,9 +101,7 @@ export async function POST(request) {
         throw new Error("Guest checkout requires a payment before account creation.");
       }
 
-      const booking = await (isGroupedCheckout
-        ? finalizePendingServerBookingGroup
-        : finalizePendingServerBooking)(db, user.uid, pendingBooking.id, {
+      const booking = await finalizePendingServerBooking(db, user.uid, pendingBooking.id, {
         payment: {
           provider: "internal",
           status: "no_payment_required",
@@ -154,16 +112,7 @@ export async function POST(request) {
           paidAt: new Date(),
         },
       });
-      const fulfilledBooking = booking.checkoutBookings?.length
-        ? {
-            ...booking,
-            checkoutBookings: await Promise.all(
-              booking.checkoutBookings.map((entry) =>
-                fulfillFinalizedBooking(db, user.uid, entry),
-              ),
-            ),
-          }
-        : await fulfillFinalizedBooking(db, user.uid, booking);
+      const fulfilledBooking = await fulfillFinalizedBooking(db, user.uid, booking);
 
       return NextResponse.json({
         ok: true,
@@ -184,7 +133,6 @@ export async function POST(request) {
         uid: user?.uid ?? "",
         bookingId: pendingBooking.id,
         guestBookingId: user ? "" : pendingBooking.id,
-        checkoutGroupId: pendingBooking.checkoutGroupId || pendingBooking.id,
         referralCode: pendingBooking.referral?.code ?? "",
         referrerUid: pendingBooking.referral?.referrerUid ?? "",
       },
@@ -217,13 +165,9 @@ export async function POST(request) {
     };
 
     if (user) {
-      await (isGroupedCheckout
-        ? updatePendingBookingGroupPayment
-        : updatePendingBookingPayment)(db, user.uid, pendingBooking.id, paymentUpdates);
+      await updatePendingBookingPayment(db, user.uid, pendingBooking.id, paymentUpdates);
     } else {
-      await (isGroupedCheckout
-        ? updateGuestPendingBookingGroupPayment
-        : updateGuestPendingBookingPayment)(db, pendingBooking.id, paymentUpdates);
+      await updateGuestPendingBookingPayment(db, pendingBooking.id, paymentUpdates);
     }
 
     return NextResponse.json({
@@ -235,16 +179,12 @@ export async function POST(request) {
     });
   } catch (error) {
     if (pendingBooking?.id && pendingBooking?.uid) {
-      await (pendingBooking.checkoutGroupBookingIds?.length
-        ? expirePendingServerBookingGroup
-        : expirePendingServerBooking)(getAdminDb(), pendingBooking.uid, pendingBooking.id, {
+      await expirePendingServerBooking(getAdminDb(), pendingBooking.uid, pendingBooking.id, {
         status: BOOKING_STATUS.CANCELLED,
         paymentStatus: "failed",
       }).catch(() => {});
     } else if (pendingBooking?.id && pendingBooking?.guest) {
-      await (pendingBooking.checkoutGroupBookingIds?.length
-        ? expireGuestPendingServerBookingGroup
-        : expireGuestPendingServerBooking)(getAdminDb(), pendingBooking.id, {
+      await expireGuestPendingServerBooking(getAdminDb(), pendingBooking.id, {
         status: BOOKING_STATUS.CANCELLED,
         paymentStatus: "failed",
       }).catch(() => {});
