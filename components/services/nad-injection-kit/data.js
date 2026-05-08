@@ -6,7 +6,7 @@ export const nadInjectionKitHero = {
   description:
     "Experience the benefits of high-potency NAD+ injections — safely and conveniently from home. Our 4-month structured protocol is designed to restore and optimize your cellular health, energy, and focus over time.",
   ctaLabel: "Get Started and See if NAD+ is right for me",
-  ctaHref: "/booking?service=nad-injection-50mg",
+  ctaHref: "/nad-injection-intake",
   image: "/services/nad-injection-kit/kit-box.webp",
   imageAlt: "NAD+ Home Kit with injection supplies",
 };

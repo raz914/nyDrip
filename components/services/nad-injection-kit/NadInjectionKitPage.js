@@ -1,6 +1,7 @@
 import Image from "next/image";
 
-import { FaqItem, PrimaryLink, TextCta } from "@/components/home/primitives";
+import { FaqItem, TextCta } from "@/components/home/primitives";
+import { ArrowRightIcon } from "@/components/home/icons";
 import {
   ServicesContactSection,
   ServicesFooter,
@@ -29,9 +30,17 @@ function NadInjectionKitHeroSection() {
           {nadInjectionKitHero.description}
         </p>
         <div className="mt-8">
-          <PrimaryLink href={nadInjectionKitHero.ctaHref}>
+          <a
+            href={nadInjectionKitHero.ctaHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 bg-[var(--color-primary)] px-8 py-3.5 text-[15px] font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 [&_span]:text-white [&_svg]:text-white"
+          >
+            <span>
             {nadInjectionKitHero.ctaLabel}
-          </PrimaryLink>
+            </span>
+            <ArrowRightIcon className="h-5 w-5" />
+          </a>
         </div>
       </div>
     </section>
