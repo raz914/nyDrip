@@ -6,10 +6,12 @@ import { ArrowRightIcon } from "@/components/home/icons";
 import { GoogleBadge, IconBadge, StarRating } from "@/components/home/primitives";
 import SharedNavbar from "@/components/navigation/SharedNavbar";
 import { getAreaHref } from "@/components/areas/data";
+import { getBookingHrefForServiceId } from "@/components/booking/data";
 import { sharedServiceNavLinks } from "@/components/navigation/nav-data";
 import {
   aboutAreaPins,
   aboutHero,
+  aboutMeetMegan,
   aboutMission,
   aboutStory,
 } from "@/components/about/data";
@@ -223,6 +225,85 @@ function AboutMissionSection() {
   );
 }
 
+function MeetMeganSection() {
+  const bookingHref = getBookingHrefForServiceId(aboutMeetMegan.serviceId);
+
+  return (
+    <section className="bg-white px-5 pb-20 text-[#111111] md:px-10 md:pb-24">
+      <div className="mx-auto max-w-[1512px] border border-black/12 bg-[#f0f2f5] p-5 md:p-10">
+        <div className="grid gap-10 lg:grid-cols-[minmax(320px,520px)_minmax(0,1fr)] lg:items-start">
+          <div className="space-y-6">
+            <div className="relative aspect-[4/5] overflow-hidden border border-black/10 bg-white">
+              <Image
+                src={aboutMeetMegan.image}
+                alt={aboutMeetMegan.imageAlt}
+                fill
+                sizes="(min-width: 1024px) 520px, 100vw"
+                className="object-cover"
+              />
+            </div>
+            <ActionLink href={bookingHref} className="w-full sm:w-auto">
+              {aboutMeetMegan.ctaLabel}
+            </ActionLink>
+          </div>
+
+          <div className="space-y-8">
+            <div>
+              <p className="text-sm font-medium uppercase tracking-[0.08em] text-[var(--color-primary)] md:text-base">
+                {aboutMeetMegan.eyebrow}
+              </p>
+              <h2 className="mt-3 text-[2rem] font-medium leading-tight md:text-[3.25rem]">
+                {aboutMeetMegan.name}
+              </h2>
+              <p className="mt-3 text-sm font-medium text-[#585858] md:text-base">
+                {aboutMeetMegan.role}
+              </p>
+            </div>
+
+            <div className="border-t border-black/12 pt-8">
+              <h3 className="text-xl font-medium md:text-2xl">
+                {aboutMeetMegan.aboutTitle}
+              </h3>
+              <p className="mt-4 text-sm leading-7 text-[#2c2c2e] md:text-base md:leading-8">
+                {aboutMeetMegan.about}
+              </p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-[240px_minmax(0,1fr)]">
+              <h3 className="text-xl font-medium md:text-2xl">
+                {aboutMeetMegan.credentialsTitle}
+              </h3>
+              <ul className="space-y-3 text-sm leading-6 text-[#2c2c2e] md:text-base">
+                {aboutMeetMegan.credentials.map((credential) => (
+                  <li key={credential} className="border-l-2 border-[var(--color-primary)] pl-4">
+                    {credential}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-xl font-medium md:text-2xl">
+                {aboutMeetMegan.approachTitle}
+              </h3>
+              <div className="mt-5 grid gap-4">
+                {aboutMeetMegan.approach.map((item) => (
+                  <article key={item.title} className="border border-black/10 bg-white p-5">
+                    <h4 className="text-base font-medium md:text-lg">{item.title}</h4>
+                    <p className="mt-2 text-sm leading-6 text-[#585858] md:text-base md:leading-7">
+                      {item.description}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function MapPin() {
   return (
     <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden="true">
@@ -318,14 +399,7 @@ function AboutTestimonialsSection() {
             <p className="mt-6 text-sm leading-7 text-white md:text-base">
               {testimonial.quote}
             </p>
-            <div className="mt-6 flex items-center gap-7">
-              <Image
-                src="/homepage/testimonial-avatar.jpg"
-                alt={testimonial.name}
-                width={44}
-                height={44}
-                className="rounded-full object-cover"
-              />
+            <div className="mt-6">
               <div>
                 <p className="text-sm font-medium text-white md:text-base">
                   {testimonial.name}
@@ -348,6 +422,7 @@ export default function AboutPage() {
         <AboutHeroSection />
         <AboutStorySection />
         <AboutMissionSection />
+        <MeetMeganSection />
         <AboutAreasSection />
 
         <section className="bg-[#111111] text-white">

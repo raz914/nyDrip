@@ -106,6 +106,7 @@ export default function BookingPage() {
   const [rewards, setRewards] = useState(EMPTY_REWARDS);
   const [membership, setMembership] = useState(getMembershipSummary());
   const [savedBooking, setSavedBooking] = useState(null);
+  const [cartMessage, setCartMessage] = useState("");
   const [checkoutError, setCheckoutError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [slotAvailability, setSlotAvailability] = useState({});
@@ -345,14 +346,26 @@ export default function BookingPage() {
     }
   }, [appliedCouponCode, couponContextSignature]);
 
-  function addSelectedService() {
-    const service = getServiceById(serviceId, serviceCatalog);
-
+  function addServiceToCart(service) {
     if (!service) {
       return;
     }
 
+    if (service.isIvBag && cartItems.some((item) => item.isIvBag)) {
+      setCartMessage("Only 1 IV bag can be selected at a time.");
+      return;
+    }
+
+    setCartMessage("");
     setCartItems((currentItems) => [...currentItems, makeCartItem(service)]);
+  }
+
+  function addSelectedService() {
+    addServiceToCart(getServiceById(serviceId, serviceCatalog));
+  }
+
+  function addRecommendedService(recommendedServiceId) {
+    addServiceToCart(getServiceById(recommendedServiceId, serviceCatalog));
   }
 
   function changeCategory(nextCategory) {
@@ -653,9 +666,11 @@ export default function BookingPage() {
           category={category}
           serviceId={serviceId}
           cartItems={cartItems}
+          cartMessage={cartMessage}
           onCategoryChange={changeCategory}
           onServiceChange={setServiceId}
           onAddSelectedService={addSelectedService}
+          onAddRecommendedService={addRecommendedService}
           onBack={goBack}
           onContinue={continueFromService}
         />

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { getBookingHrefForProductTitle } from "@/components/booking/data";
 import { ChevronDownIcon } from "@/components/home/icons";
 import { TextCta } from "@/components/home/primitives";
 
@@ -60,7 +59,7 @@ function ProductCard({ product }) {
           <h3 className="text-xl font-medium leading-tight">{product.title}</h3>
           <p className="text-base leading-6 text-[#2c2c2e]">{product.description}</p>
         </div>
-        <TextCta href={getBookingHrefForProductTitle(product.title)}>
+        <TextCta href={product.href}>
           Reserve Now - {product.price}
         </TextCta>
       </div>

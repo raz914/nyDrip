@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 
 import { testimonials } from "@/components/home/data";
 import { ChevronDownIcon } from "@/components/home/icons";
@@ -48,14 +47,7 @@ export default function TestimonialsCarousel() {
             <p className="mt-6 text-sm leading-7 text-white md:text-base">
               {testimonial.quote}
             </p>
-            <div className="mt-6 flex items-center gap-7">
-              <Image
-                src="/homepage/testimonial-avatar.jpg"
-                alt={testimonial.name}
-                width={44}
-                height={44}
-                className="rounded-full object-cover"
-              />
+            <div className="mt-6">
               <div>
                 <p className="text-sm font-medium text-white md:text-base">
                   {testimonial.name}

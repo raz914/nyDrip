@@ -28,6 +28,7 @@ export const featuredDrips = [
     backgroundAlt: "Fresh spring-inspired texture behind the restore drip",
     productImage: "/services/iv-therapy/spring-restore-drip.png",
     productAlt: "Spring restore product bag",
+    href: "/services/spring-restore-iv-therapy",
     overlay: true,
   },
   {
@@ -381,12 +382,14 @@ export const areasWeServe = areaEntries.map((area) => area.label);
 
 export const services = [
   { label: "IV Therapy Services", href: "/services/iv-therapy" },
+  { label: "Mobile IV Therapy", href: "/services/mobile-iv-therapy" },
   { label: "Peptide Wellness", href: "/services/peptide-wellness" },
   { label: "Injections & Boosters", href: "/services/injections-boosters" },
   { label: "Testosterone", href: "/services/testosterone-replacement" },
   { label: "Online Telehealth Consultations", href: "/services/online-telehealth-consultations" },
   { label: "Wellness Partnerships", href: "/services/corporate-partnership" },
   { label: "NAD+ Kit", href: "/services/nad-injection-kit" },
+  { label: "NAD+ Support Capsules", href: "/services/nad-support-capsules" },
   { label: "Compression Boots", href: "/services/compression-boots" },
 ];
 

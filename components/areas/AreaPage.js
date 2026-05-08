@@ -12,7 +12,8 @@ import {
 } from "@/components/home/icons";
 import { testimonials } from "@/components/home/data";
 import { FaqItem, GoogleBadge, StarRating } from "@/components/home/primitives";
-import AreaServicesCarousel from "@/components/areas/AreaServicesCarousel";
+import AreaServiceOfferingsCarousel from "@/components/areas/AreaServiceOfferingsCarousel";
+import { serviceItems } from "@/components/services/data";
 import { ServicesContactSection, ServicesFooter, ServicesHeader } from "@/components/services/sections";
 
 function ActionLink({
@@ -108,14 +109,14 @@ function AreaHeroSection({ hero }) {
   );
 }
 
-function AreaServicesSection({ areaLabel, products }) {
+function AreaServicesSection({ areaLabel }) {
   return (
     <section className="px-5 py-20 md:px-10 md:py-[100px]">
       <div className="mx-auto max-w-[1512px]">
         <h2 className="text-center text-[2.25rem] font-bold leading-none tracking-[-0.03em] md:text-[3.25rem]">
           Services We Have in {areaLabel}
         </h2>
-        <AreaServicesCarousel services={products} />
+        <AreaServiceOfferingsCarousel services={serviceItems} />
       </div>
     </section>
   );
@@ -288,14 +289,7 @@ function AreaTestimonialsSection() {
             <p className="mt-6 text-sm leading-7 text-white md:text-base">
               {testimonial.quote}
             </p>
-            <div className="mt-6 flex items-center gap-7">
-              <Image
-                src="/homepage/testimonial-avatar.jpg"
-                alt={testimonial.name}
-                width={44}
-                height={44}
-                className="rounded-full object-cover"
-              />
+            <div className="mt-6">
               <div>
                 <p className="text-sm font-medium text-white md:text-base">
                   {testimonial.name}
@@ -316,7 +310,7 @@ export default function AreaPage({ area }) {
       <ServicesHeader />
       <main className="bg-white text-[#111111]">
         <AreaHeroSection hero={area.hero} />
-        <AreaServicesSection areaLabel={area.label} products={area.products ?? []} />
+        <AreaServicesSection areaLabel={area.label} />
         <AreaLocalSection localSection={area.localSection} />
         <AreaHowItWorksSection howItWorks={area.howItWorks} />
         <AreaBookingSection booking={area.booking} />

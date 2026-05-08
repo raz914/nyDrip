@@ -4,7 +4,6 @@ import SharedNavbar from "@/components/navigation/SharedNavbar";
 import ServiceCardsCarousel from "@/components/home/ServiceCardsCarousel";
 import TestimonialsCarousel from "@/components/home/TestimonialsCarousel";
 import ContactForm from "@/components/contact/ContactForm";
-import { getBookingHrefForProductTitle } from "@/components/booking/data";
 import { publicContactEmail, publicContactMailto } from "@/lib/siteContact";
 
 import {
@@ -178,7 +177,7 @@ export function FeaturedDripsSection({ featuredDrips }) {
                     </div>
                   )}
                   <div className="mt-5 text-center">
-                    <TextCta href={getBookingHrefForProductTitle(drip.title)} className="!text-[#0d42ff] !text-[14px] !font-semibold">
+                    <TextCta href={drip.href} className="!text-[#0d42ff] !text-[14px] !font-semibold">
                       Reserve Now - {drip.price}
                     </TextCta>
                   </div>

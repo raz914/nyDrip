@@ -56,6 +56,42 @@ export const aboutMission = {
   ],
 };
 
+export const aboutMeetMegan = {
+  eyebrow: "Meet Megan",
+  name: "Dr. Megan Nickerson, DNP, MSN",
+  role: "Doctor & Managing Partner | NY Drip Lounge",
+  image: "/about/meet-megan.png",
+  imageAlt: "Dr. Megan Nickerson smiling in a bright clinical setting",
+  ctaLabel: "Book a Virtual Consultation with Megan",
+  serviceId: "online-telehealth-consultations",
+  aboutTitle: "About",
+  about:
+    "Dr. Nickerson brings over a decade of hands-on clinical experience - from transplant and critical care units to gastroenterology, rheumatology, and specialized infusion services. Her transition into wellness wasn't a departure from medicine; it was an extension of it. At NY Drip Lounge, she applies the same diagnostic discipline and safety standards she developed in high-stakes hospital environments to deliver care that is thoughtful, precise, and deeply personalized.",
+  credentialsTitle: "Credentials",
+  credentials: [
+    "Doctor of Nursing Practice (DNP) - Quinnipiac University | 2025",
+    "Master of Science in Nursing (MSN) - Kaplan University | 2015",
+  ],
+  approachTitle: "Approach",
+  approach: [
+    {
+      title: "Clinically grounded",
+      description:
+        "Dr. Nickerson's foundation was built in environments where clinical errors carry real consequences. That background informs every service at NY Drip Lounge - from how treatments are selected to how they are safely administered and monitored.",
+    },
+    {
+      title: "Individually tailored",
+      description:
+        "Before any IV, injection, or peptide protocol is recommended, Dr. Nickerson conducts a thorough review of your health history, current medications, lifestyle, and wellness goals - ensuring every plan is designed around you, not a template.",
+    },
+    {
+      title: "Prevention first",
+      description:
+        "Rather than waiting for health to deteriorate, Dr. Nickerson focuses on supporting the body before it reaches a breaking point - optimizing hydration, energy, recovery, and vitality as part of an ongoing, proactive wellness strategy.",
+    },
+  ],
+};
+
 export const aboutAreaPins = areaEntries.map((area) => ({
   label: area.label,
   slug: area.slug,

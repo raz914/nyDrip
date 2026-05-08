@@ -25,6 +25,15 @@ export const serviceItems = [
     href: "/services/iv-therapy",
   },
   {
+    title: "MOBILE IV THERAPY",
+    description:
+      "Concierge IV hydration and vitamin infusions delivered privately to your home, hotel, office, or event location across NYC and nearby service areas. Every visit is medically supervised and begins with eligibility screening.",
+    image: "/services/iv-therapy.png",
+    alt: "Mobile IV therapy service",
+    imageClassName: "object-cover object-center",
+    href: "/services/mobile-iv-therapy",
+  },
+  {
     title: "PEPTIDE WELLNESS",
     description:
       "Support recovery, fat loss, sleep, and overall vitality with advanced peptide protocols like BPC-157, CJC-1295 + Ipamorelin, Retatrutide, GHK-Cu, and Melanotan II. Whether you're focused on healing, hormone support, or body composition, our expert-guided treatments offer personalized, results-driven solutions for optimal performance and longevity.",
@@ -76,6 +85,15 @@ export const serviceItems = [
     alt: "NAD injection kit case",
     imageClassName: "object-cover object-[center_15%]",
     href: "/services/nad-injection-kit",
+  },
+  {
+    title: "NAD+ SUPPORT CAPSULES",
+    description:
+      "Support daily energy, focus, cellular wellness, and long-term performance with premium NAD+ Support Capsules built around mitochondrial, antioxidant, and cognitive support ingredients.",
+    image: "/services/nad-support-capsules/capsules.png",
+    alt: "NAD+ Support Capsules bottle",
+    imageClassName: "object-contain bg-[#f0f2f5] p-6",
+    href: "/services/nad-support-capsules",
   },
 ];
 
